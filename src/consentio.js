@@ -45,6 +45,7 @@ class Consentio {
     this.modal = null;
     this.backdrop = null;
     this.settingsModal = null;
+    this.originalOverflow = null; // Store original overflow value
 
     // Initialize if auto-show is enabled and no consent exists
     if (this.options.autoShow && !this.hasConsent()) {
@@ -91,6 +92,9 @@ class Consentio {
     if (!this.modal) {
       this.createModal();
     }
+    // Store original overflow value
+    this.originalOverflow = document.body.style.overflow;
+    
     this.modal.style.display = 'block';
     this.backdrop.style.display = 'block';
     document.body.style.overflow = 'hidden';
@@ -110,7 +114,8 @@ class Consentio {
     if (this.settingsModal) {
       this.settingsModal.style.display = 'none';
     }
-    document.body.style.overflow = '';
+    // Restore original overflow value
+    document.body.style.overflow = this.originalOverflow || '';
     this.options.onHide(this);
   }
 
@@ -172,7 +177,7 @@ class Consentio {
     this.consent = consent;
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + this.options.cookieExpiry);
-    document.cookie = `${this.options.cookieName}=${JSON.stringify(consent)}; expires=${expiryDate.toUTCString()}; path=/; SameSite=Lax`;
+    document.cookie = `${this.options.cookieName}=${encodeURIComponent(JSON.stringify(consent))}; expires=${expiryDate.toUTCString()}; path=/; SameSite=Lax`;
     
     // Trigger GTM dataLayer event for integration
     if (typeof window.dataLayer !== 'undefined') {
