@@ -1,0 +1,33 @@
+{
+  "name": "consentio",
+  "version": "1.0.0",
+  "description": "A minimalist, lightweight consent modal designed to simplify privacy compliance.",
+  "scripts": {
+    "build": "gulp build",
+    "watch": "gulp watch",
+    "serve": "cd ./docs && bundle exec jekyll serve"
+  },
+  "keywords": [
+    "consent",
+    "cookies",
+    "gdpr",
+    "privacy",
+    "modal",
+    "compliance",
+    "frontend",
+    "vanilla-js"
+  ],
+  "author": "ChrisMavrommatis",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ChrisMavrommatis/consentio.git"
+  },
+  "devDependencies": {
+    "gulp": "^5.0.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-if": "^3.0.0",
+    "gulp-rename": "^2.1.0",
+    "gulp-uglify": "^3.0.2"
+  }
+}
