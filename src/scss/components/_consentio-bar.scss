@@ -1,0 +1,54 @@
+:host {
+	consentio-bar {
+		box-sizing: border-box;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		z-index: 15002;
+		line-height: 1;
+		box-shadow: 0 0 10px var(--bar-shadow-color);
+		overflow-y: auto;
+		background: var(--bar-bg-color);
+		color: var(--bar-text-color);
+		padding: 15px 10px 30px 15px;
+
+		// 	-webkit-transition: opacity 0.3s ease-out;
+		// 	transition: opacity 0.3s ease-out;
+		// 	max-height: 96vh;
+		// 	-webkit-overflow-scrolling: touch;
+		>.container {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-between;
+			align-items: center;
+			margin: 0 auto;
+			width: 80%;
+
+			>main {
+				max-width: 1000px;
+				width: 100%;
+
+				>h5 {
+					color: var(--bar-title-color);
+					margin: 0 0 10px;
+					padding: 0;
+					font-size: 20px;
+					line-height: 1.2;
+					font-weight: 300;
+				}
+
+				>p {
+					font-size: 14px;
+				}
+			}
+
+			>footer {
+				align-items: end;
+				margin: -5px;
+			}
+		}
+
+	}
+
+}

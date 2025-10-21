@@ -1,3 +1,4 @@
 # Consentio
 
-Consentio is a minimalist, lightweight consent modal designed to simplify privacy compliance
+Consentio is a lightweight, frontend-only consent management solution for privacy compliance.
+It integrates seamlessly with tag manager and provides transparent consent handling.
