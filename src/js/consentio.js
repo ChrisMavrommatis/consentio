@@ -8,6 +8,12 @@
  * @license Apache-2.0
  */
 
+import ConsentioAppElement from './consentio-app.js';
+import ConsentioBarElement from './consentio-bar.js';
+import ConsentioRequiredElement from './consentio-required.js';
+import ConsentioFloatingButtonElement from './consentio-floating-button.js';
+import ConsentioModalElement from './consentio-modal.js';
+
 class Consentio {
 	static _defaultConfig = {
 		cookieName: 'consentio',
@@ -26,13 +32,22 @@ class Consentio {
 		};
 
 		this.el = null;
+		this.defineCustomElements();
 		this.init();
 	}
 
 	init() {
-		this.el = document.createElement("consentio-wrapper");
+		this.el = document.createElement("consentio-app");
 		this.el.config = this.config;
 		document.body.appendChild(this.el);
+	}
+
+	defineCustomElements() {
+		customElements.define('consentio-app', ConsentioAppElement);
+		customElements.define('consentio-bar', ConsentioBarElement);
+		customElements.define('consentio-required', ConsentioRequiredElement);
+		customElements.define('consentio-floating-button', ConsentioFloatingButtonElement);
+		customElements.define('consentio-modal', ConsentioModalElement);
 	}
 
 }

@@ -21,6 +21,12 @@
 
 	--modal-title-color: #455a64;
 
+
+	--floating-btn-bg-color: #37474f;
+	--floating-btn-bg-color-hover: lighten(--floating-btn-bg-color, 15%);
+	--floating-btn-color: #ffffff;
+	--floating-btn-color-hover: #ffffff;
+
 	--link-text-color: #546e7a;
 	--link-text-color-hover: lighten(#546e7a, 5%);
 }
@@ -50,7 +56,3 @@
 // $theme-switch-on-color: #37474f;
 
 // $theme-table-border-color: darken(#bdbdbd, 35%) !default;
-
-// $theme-floating-btn-bg-color: #37474f;
-// $theme-floating-btn-bg-color-hover: lighten(#37474f, 5%);
-// $theme-floating-btn-color: #ffffff;

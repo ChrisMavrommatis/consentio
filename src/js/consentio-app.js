@@ -6,7 +6,7 @@ import barTemplate from '../html/consentio-bar.html';
 import modalTemplate from '../html/consentio-modal.html';
 import floatingButtonTemplate from '../html/consentio-floating-button.html';
 
-class ConsentioWrapperElement extends HTMLElement {
+class ConsentioAppElement extends HTMLElement {
 
 	constructor() {
 		super();
@@ -46,12 +46,31 @@ class ConsentioWrapperElement extends HTMLElement {
 		this.required = document.createElement("consentio-required");
 		this._shadow.appendChild(this.required);
 
-		this._shadow.innerHTML += TemplateRenderer.render(barTemplate, {
+		this.bar = this.renderNode(barTemplate, {
 			barTitle: this.config.texts.barTitle,
 			barDescription: this.config.texts.barDescription,
 			buttonSettings: this.config.texts.buttonSettings,
 			buttonAcceptAll: this.config.texts.buttonAcceptAll,
 		});
+		this._shadow.appendChild(this.bar);
+
+		this.modal = this.renderNode(modalTemplate, {
+
+		});
+		this._shadow.appendChild(this.modal);
+
+		this.floatingButton = this.renderNode(floatingButtonTemplate, {
+
+		});
+		this._shadow.appendChild(this.floatingButton);
+
+	}
+
+	renderNode(template, data) {
+		const htmlString = TemplateRenderer.render(template, data);
+		const templateElement = document.createElement('template');
+		templateElement.innerHTML = htmlString.trim();
+		return templateElement.content.firstChild;
 	}
 
 
@@ -59,4 +78,4 @@ class ConsentioWrapperElement extends HTMLElement {
 
 }
 
-export default ConsentioWrapperElement;
+export default ConsentioAppElement;
