@@ -4,6 +4,7 @@ import TemplateRenderer from './template-renderer.js';
 
 import barTemplate from '../html/consentio-bar.html';
 import modalTemplate from '../html/consentio-modal.html';
+import consentItemTemplate from '../html/consent-item.html';
 import floatingButtonTemplate from '../html/consentio-floating-button.html';
 
 class ConsentioAppElement extends HTMLElement {
@@ -17,6 +18,10 @@ class ConsentioAppElement extends HTMLElement {
 		this.required = null;
 		this.bar = null;
 		this.modal = null;
+		this.strictly_necessary = null;
+		this.preferences_functionality = null;
+		this.statistics_performance = null;
+		this.marketing_advertising = null;
 		this.floatingButton = null;
 	}
 
@@ -37,33 +42,67 @@ class ConsentioAppElement extends HTMLElement {
 	}
 
 	render() {
-		const style = document.createElement('style');
-		style.textContent = styles;
-		this._shadow.appendChild(style);
-		// create element
-		// append elements
+		if (!this.isRendered) {
+			const style = document.createElement('style');
+			style.textContent = styles;
+			this._shadow.appendChild(style);
 
-		this.required = document.createElement("consentio-required");
-		this._shadow.appendChild(this.required);
+			this.required = document.createElement("consentio-required");
+			this._shadow.appendChild(this.required);
+		}
 
-		this.bar = this.renderNode(barTemplate, {
+		var newBar = this.renderNode(barTemplate, {
 			barTitle: this.config.texts.barTitle,
 			barDescription: this.config.texts.barDescription,
 			buttonSettings: this.config.texts.buttonSettings,
 			buttonAcceptAll: this.config.texts.buttonAcceptAll,
 		});
-		this._shadow.appendChild(this.bar);
 
-		this.modal = this.renderNode(modalTemplate, {
+		this.addOrReplace(newBar, this.bar);
 
+		this.strictly_necessary = this.renderNode(consentItemTemplate, {
+			consentKey: 'strictly_necessary',
+			consentTitle: this.config.texts.strictlyNecessaryTitle,
+			consentDescription: this.config.texts.strictlyNecessaryDescription,
 		});
-		this._shadow.appendChild(this.modal);
-
-		this.floatingButton = this.renderNode(floatingButtonTemplate, {
-
+		this.preferences_functionality = this.renderNode(consentItemTemplate, {
+			consentKey: 'preferences_functionality',
+			consentTitle: this.config.texts.preferencesTitle,
+			consentDescription: this.config.texts.preferencesDescription,
 		});
-		this._shadow.appendChild(this.floatingButton);
+		this.statistics_performance = this.renderNode(consentItemTemplate, {
+			consentKey: 'statistics_performance',
+			consentTitle: this.config.texts.statisticsTitle,
+			consentDescription: this.config.texts.statisticsDescription,
+		});
+		this.marketing_advertising = this.renderNode(consentItemTemplate, {
+			consentKey: 'marketing_advertising',
+			consentTitle: this.config.texts.marketingTitle,
+			consentDescription: this.config.texts.marketingDescription,
+		});
 
+
+		var newModal = this.renderNode(modalTemplate, {
+			modalTitle: this.config.texts.modalTitle,
+			modalDescription: this.config.texts.modalDescription,
+			buttonSave: this.config.texts.buttonSave,
+			buttonCancel: this.config.texts.buttonCancel,
+		});
+		var consentList = newModal.querySelector('ul');
+		consentList.appendChild(this.strictly_necessary);
+		consentList.appendChild(this.preferences_functionality);
+		consentList.appendChild(this.statistics_performance);
+		consentList.appendChild(this.marketing_advertising);
+
+		this.addOrReplace(newModal, this.modal);
+
+
+		if (!this.isRendered) {
+			this.floatingButton = this.renderNode(floatingButtonTemplate, {
+
+			});
+			this._shadow.appendChild(this.floatingButton);
+		}
 	}
 
 	renderNode(template, data) {
@@ -71,6 +110,16 @@ class ConsentioAppElement extends HTMLElement {
 		const templateElement = document.createElement('template');
 		templateElement.innerHTML = htmlString.trim();
 		return templateElement.content.firstChild;
+	}
+
+	addOrReplace(newEl, oldEl) {
+		if (!this.isRendered) {
+			this._shadow.appendChild(newEl);
+		}
+		else {
+			this._shadow.replaceChild(newEl, oldEl);
+		}
+		oldEl = newEl;
 	}
 
 

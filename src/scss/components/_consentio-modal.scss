@@ -1,0 +1,75 @@
+@use '../media-variables' as *;
+
+
+:host {
+
+	consentio-modal {
+
+		position: fixed;
+		top: 10%;
+		z-index: 15003;
+		left: 0;
+		right: 0;
+		background-color: var(--modal-bg-color);
+		color: var(--modal-text-color);
+		padding: 0;
+		margin: auto;
+		overflow-y: auto;
+		border-radius: 2px;
+		box-shadow: 0 0 10px var(--bar-shadow-color);
+
+		width: 70%;
+		max-height: 90%; //non fixed
+		height: 70%; // fixed
+
+		@media #{$medium-and-down} {
+			top: 5%;
+			width: 90%;
+			height: 90%;
+		}
+
+		//opacity: 1;
+		//will-change: top, opacity;
+		// transform: scaleX(1) scaleY(1);
+
+		main {
+			padding: 24px 24px 0px 24px;
+			position: absolute;
+			overflow-y: auto;
+			height: calc(100% - 48px - 24px);
+			max-height: 100%;
+
+			p {
+				padding-bottom: 10px;
+			}
+		}
+
+
+
+		footer {
+			border-radius: 0 0 2px 2px;
+			position: absolute;
+			bottom: 0;
+			padding: 4px 6px;
+			height: 40px;
+			width: calc(100% - 12px);
+			text-align: right;
+			background-color: var(--modal-footer-bg-color);
+			border-top: 1px solid var(--modal-footer-border-color);
+
+			.logo {
+				position: absolute;
+				padding: 6px 12px 12px 12px;
+			}
+		}
+	}
+
+	h1,
+	h2,
+	h3,
+	h4 {
+		margin-top: 0;
+		color: var(--modal-title-color);
+	}
+
+}

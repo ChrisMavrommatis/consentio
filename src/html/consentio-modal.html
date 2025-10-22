@@ -1,20 +1,17 @@
 <consentio-modal>
-	<div class="content">
-		<h4>Cookie Settings</h4>
-		<p>
-			Here you can change your cookie preferences. Clicking on save will save the current settings, while clicking on
-			cancel makes no change.
-			According to the European general data protection regulation (GDPR) and the ePrivacy directive, websites must
-			receive the user’s consent before using any cookie besides the strictly necessary ones.
-			You can expand each section to learn a bit more for each category. If you are interested to learn more, then
-			follow
-			the link.
-		</p>
+	<main>
+		<h4>{{ modalTitle }}</h4>
+		<p>{{ modalDescription }}</p>
 		<ul class="collapsible">
 		</ul>
-	</div>
-	<div class="footer">
-		<a class="button-flat">Cancel</a>
-		<a class="button-flat">Save</a>
-	</div>
+	</main>
+	<footer>
+		<div class="logo">
+			<a href="https://github.com/ChrisMavrommatis/consentio" target="_blank" rel="noopener noreferrer" class="link">
+				Consentio
+			</a>
+		</div>
+		<a class="button-flat">{{ buttonCancel }}</a>
+		<a class="button-flat">{{ buttonSave }}</a>
+	</footer>
 </consentio-modal>

@@ -15,14 +15,55 @@ import ConsentioFloatingButtonElement from './consentio-floating-button.js';
 import ConsentioModalElement from './consentio-modal.js';
 
 class Consentio {
+	static version = '0.0.1';
 	static _defaultConfig = {
 		cookieName: 'consentio',
+		debug: true,
 		texts: {
 			barTitle: 'Cookie Policy',
 			barDescription: 'This site uses cookies to enhance your experience. We are assuming that you are okay with that, but you can change that by clicking at the settings button.',
 			buttonSettings: 'Settings',
-			buttonAcceptAll: 'Accept All'
-		}
+			buttonSave: 'Save',
+			buttonCancel: 'Cancel',
+			buttonAcceptAll: 'Accept All',
+			modalTitle: 'Cookie Settings',
+			modalDescription: `Here you can change your cookie preferences. Clicking on save will save the current settings, while clicking on cancel makes no change.
+			According to the European general data protection regulation (GDPR) and the ePrivacy directive, websites must receive the user’s consent before using any cookie 
+			besides the strictly necessary ones. You can expand each section to learn a bit more for each category. If you are interested to learn more, then follow the link.`,
+			strictlyNecessaryTitle: 'Strictly Necessary Cookies',
+			strictlyNecessaryDescription: `These cookies are essential for you to browse the website and use its features, such as accessing secure areas of the site. 
+			Cookies that allow web shops to hold your items in your cart while you are shopping online are an example of strictly necessary cookies.`,
+			preferencesTitle: 'Preferences Cookies',
+			preferencesDescription: `Preference cookies enable a website to remember information that changes the way the website behaves or looks, 
+			such as your preferred language or the region that you are in.`,
+			statisticsTitle: 'Statistics Cookies',
+			statisticsDescription: `Statistic cookies help website owners to understand how visitors interact with websites by collecting and reporting information anonymously.`,
+			marketingTitle: 'Marketing Cookies',
+			marketingDescription: `Marketing cookies are used to track visitors across websites. The intention is to display ads that are relevant and engaging for the
+			 individual user and thereby more valuable for publishers and third party advertisers.`,
+		},
+		consents: [
+			{
+				key: 'strictly_necessary',
+				alwaysOn: true,
+				defaultState: 'granted'
+			},
+			{
+				key: 'preferences_functionality',
+				alwaysOn: false,
+				defaultState: 'denied'
+			},
+			{
+				key: 'statistics_performance',
+				alwaysOn: false,
+				defaultState: 'denied'
+			},
+			{
+				key: 'marketing_advertising',
+				alwaysOn: false,
+				defaultState: 'denied'
+			}
+		],
 	};
 
 	constructor(options = {}) {
@@ -41,6 +82,7 @@ class Consentio {
 		this.el.config = this.config;
 		document.body.appendChild(this.el);
 	}
+
 
 	defineCustomElements() {
 		customElements.define('consentio-app', ConsentioAppElement);

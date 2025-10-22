@@ -6,6 +6,7 @@
 		z-index: 15000;
 		box-sizing: border-box;
 
+
 		button {
 			font-family: inherit;
 			line-height: inherit;
@@ -25,7 +26,7 @@
 			padding: 0;
 
 			&:hover {
-				background: var(--floating-btn-bg-color-hover);
+				filter: brightness(115%);
 			}
 
 			.icon {
@@ -35,7 +36,7 @@
 				width: inherit;
 
 				&:hover {
-					color: var(--floating-btn-color-hover);
+					filter: brightness(115%);
 				}
 			}
 		}

@@ -18,8 +18,7 @@
 		-webkit-tap-highlight-color: transparent;
 
 		&:hover {
-			color: var(--button-text-color-hover);
-			background-color: var(--button-bg-color-hover);
+			filter: brightness(115%);
 		}
 	}
 
@@ -40,8 +39,7 @@
 		-webkit-tap-highlight-color: transparent;
 
 		&:hover {
-			color: var(--button-flat-text-color-hover);
-			background-color: var(--button-flat-bg-color-hover);
+			filter: brightness(115%);
 		}
 	}
 }

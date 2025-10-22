@@ -1,6 +1,4 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const loader = {
 	entry: './src/js/consentio-loader.js',
@@ -14,9 +12,9 @@ const loader = {
 		rules: [
 			{
 				test: /\.scss$/i,
+				type: 'asset/source',
 				use: [
-					'to-string-loader',
-					'css-loader',
+					'postcss-loader',
 					'sass-loader'
 				],
 			},
@@ -27,10 +25,6 @@ const loader = {
 		],
 	},
 	plugins: [
-		new HtmlWebpackPlugin(),
-		new MiniCssExtractPlugin({
-			filename: 'styles.css',
-		}),
 	],
 	optimization: {
 		minimize: false
