@@ -1,12 +1,19 @@
 const path = require('path');
+const { library } = require('webpack');
 
-const loader = {
-	entry: './src/js/consentio-loader.js',
+const consentio = {
+	entry: './src/js/consentio.js',
 	mode: 'production',
 	output: {
-		filename: 'consentio-loader.js',
+		filename: 'consentio.js',
 		path: path.resolve(__dirname, 'docs/js'),
 		clean: true,
+		library: {
+			name: 'Consentio',
+			type: 'umd',
+			export: 'default'
+		},
+		globalObject: 'this'
 	},
 	module: {
 		rules: [
@@ -31,6 +38,43 @@ const loader = {
 	}
 }
 
+const minifiedConsentio = {
+	...consentio,
+	mode: 'production',
+	output: {
+		filename: 'consentio.min.js',
+		path: path.resolve(__dirname, 'docs/js'),
+		clean: false,
+		library: {
+			name: 'Consentio',
+			type: 'umd',
+			export: 'default'
+		},
+		globalObject: 'this'
+	},
+	optimization: {
+		minimize: true
+	}
+}
+
+
+const loader = {
+	entry: './src/js/consentio-loader.js',
+	mode: 'production',
+	output: {
+		filename: 'consentio-loader.js',
+		path: path.resolve(__dirname, 'docs/js'),
+		clean: false,
+	},
+	module: {
+		rules: []
+	},
+	plugins: [
+	],
+	optimization: {
+		minimize: false
+	}
+}
 const minifiedLoader = {
 	...loader,
 	mode: 'production',
@@ -44,4 +88,11 @@ const minifiedLoader = {
 	}
 }
 
-module.exports = [loader, minifiedLoader];
+
+
+module.exports = [
+	consentio,
+	minifiedConsentio,
+	loader,
+	minifiedLoader
+];

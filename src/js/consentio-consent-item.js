@@ -46,47 +46,47 @@ class ConsentioConsentItemElement extends HTMLElement {
 
 	render() {
 		if (this.alwaysOn !== null) {
-			var switchLabel = this.switch.querySelector('label');
+			const switchLabel = this.switch.querySelector('label');
 			switchLabel.innerHTML = '';
 			switchLabel.textContent = this.alwaysOn;
 		}
 		if (!this.cookies || !this.tableHeaders) {
 			return;
 		}
-		var tableFragment = document.createDocumentFragment();
-		var table = document.createElement('table');
+		const tableFragment = document.createDocumentFragment();
+		const table = document.createElement('table');
 		tableFragment.appendChild(table);
 
-		var thead = document.createElement('thead');
+		const thead = document.createElement('thead');
 		table.appendChild(thead);
-		var headerRow = document.createElement('tr');
+		const headerRow = document.createElement('tr');
 		thead.appendChild(headerRow);
 
 		Array.from(Object.keys(this.tableHeaders)).forEach(key => {
-			var th = document.createElement('th');
+			const th = document.createElement('th');
 			th.appendChild(document.createTextNode(this.tableHeaders[key]));
 			headerRow.appendChild(th);
 		});
 
-		var tbody = document.createElement('tbody');
+		const tbody = document.createElement('tbody');
 		table.appendChild(tbody);
 		this.cookies.forEach(cookie => {
-			var row = document.createElement('tr');
+			const row = document.createElement('tr');
 			tbody.appendChild(row);
 
-			var nameCell = document.createElement('td');
+			const nameCell = document.createElement('td');
 			nameCell.appendChild(document.createTextNode(cookie.name));
 			row.appendChild(nameCell);
 
-			var purposeCell = document.createElement('td');
+			const purposeCell = document.createElement('td');
 			purposeCell.appendChild(document.createTextNode(cookie.purpose));
 			row.appendChild(purposeCell);
 
-			var provenanceCell = document.createElement('td');
+			const provenanceCell = document.createElement('td');
 			provenanceCell.appendChild(document.createTextNode(cookie.provenance));
 			row.appendChild(provenanceCell);
 
-			var durationCell = document.createElement('td');
+			const durationCell = document.createElement('td');
 			durationCell.appendChild(document.createTextNode(cookie.duration));
 			row.appendChild(durationCell);
 		});

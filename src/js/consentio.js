@@ -8,6 +8,7 @@
  * @license Apache-2.0
  */
 
+
 import ConsentioAppElement from './consentio-app.js';
 import ConsentioBarElement from './consentio-bar.js';
 import ConsentioRequiredElement from './consentio-required.js';
@@ -103,3 +104,4 @@ class Consentio {
 
 
 export default Consentio;
+

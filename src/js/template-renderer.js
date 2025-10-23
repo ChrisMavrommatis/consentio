@@ -13,7 +13,7 @@ class TemplateRenderer {
 	}
 
 	static domSanitize(value) {
-		var div = document.createElement('div');
+		const div = document.createElement('div');
 		div.appendChild(document.createTextNode(value));
 		return div.innerHTML
 	}

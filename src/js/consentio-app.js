@@ -51,14 +51,14 @@ class ConsentioAppElement extends HTMLElement {
 			this._shadow.appendChild(this.required);
 		}
 
-		var newBar = this.renderNode(barTemplate, {
+		const newBar = this.renderNode(barTemplate, {
 			barTitle: this.config.texts.barTitle,
 			barDescription: this.config.texts.barDescription,
 			buttonSettings: this.config.texts.buttonSettings,
 			buttonAcceptAll: this.config.texts.buttonAcceptAll,
 		});
 
-		var cookieTableHeaders = {
+		const cookieTableHeaders = {
 			cookieName: this.config.texts.cookieTableHeaderName,
 			cookiePurpose: this.config.texts.cookieTableHeaderPurpose,
 			cookieProvenance: this.config.texts.cookieTableHeaderProvenance,
@@ -97,13 +97,13 @@ class ConsentioAppElement extends HTMLElement {
 		});
 
 
-		var newModal = this.renderNode(modalTemplate, {
+		const newModal = this.renderNode(modalTemplate, {
 			modalTitle: this.config.texts.modalTitle,
 			modalDescription: this.config.texts.modalDescription,
 			buttonSave: this.config.texts.buttonSave,
 			buttonCancel: this.config.texts.buttonCancel,
 		});
-		var consentList = newModal.querySelector('consentio-consent-items');
+		const consentList = newModal.querySelector('consentio-consent-items');
 		consentList.appendChild(this.strictly_necessary);
 		consentList.appendChild(this.preferences_functionality);
 		consentList.appendChild(this.statistics_performance);
