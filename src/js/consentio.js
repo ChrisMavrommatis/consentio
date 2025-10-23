@@ -12,6 +12,7 @@ import ConsentioAppElement from './consentio-app.js';
 import ConsentioBarElement from './consentio-bar.js';
 import ConsentioRequiredElement from './consentio-required.js';
 import ConsentioFloatingButtonElement from './consentio-floating-button.js';
+import ConsentioConsentItemElement from './consentio-consent-item.js';
 import ConsentioModalElement from './consentio-modal.js';
 
 class Consentio {
@@ -41,6 +42,11 @@ class Consentio {
 			marketingTitle: 'Marketing Cookies',
 			marketingDescription: `Marketing cookies are used to track visitors across websites. The intention is to display ads that are relevant and engaging for the
 			 individual user and thereby more valuable for publishers and third party advertisers.`,
+			alwaysOnLabel: 'Always On',
+			cookieTableHeaderName: 'Cookie Name',
+			cookieTableHeaderPurpose: 'Cookie Purpose',
+			cookieTableHeaderProvenance: 'Provenance',
+			cookieTableHeaderDuration: 'Duration'
 		},
 		consents: [
 			{
@@ -89,6 +95,7 @@ class Consentio {
 		customElements.define('consentio-bar', ConsentioBarElement);
 		customElements.define('consentio-required', ConsentioRequiredElement);
 		customElements.define('consentio-floating-button', ConsentioFloatingButtonElement);
+		customElements.define('consentio-consent-item', ConsentioConsentItemElement);
 		customElements.define('consentio-modal', ConsentioModalElement);
 	}
 

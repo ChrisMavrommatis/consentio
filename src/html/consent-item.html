@@ -1,15 +1,14 @@
-<li id="{{ consentKey }}">
-	<div class="collapsible-header">
-		<div class="collapsible-header-title">{{ consentTitle }}</div>
-		<div class="switch">
+<consentio-consent-item id="{{ consentKey }}">
+	<div class="consent-header">
+		<h5>{{ consentTitle }}</h5>
+		<consentio-switch>
 			<label>
 				<input name="{{ consentKey }}_cookies" id="{{ consentKey }}_cookies" type="checkbox" autocomplete="off" />
 				<span class="switch-lever"></span>
 			</label>
-		</div>
+		</consentio-switch>
 	</div>
-	<div class="collapsible-body" style="display: none">
+	<div class="consent-body" style="display: none">
 		<span>{{ consentDescription }}</span>
-		{{ consentCookies }}
 	</div>
-</li>
+</consentio-consent-item>

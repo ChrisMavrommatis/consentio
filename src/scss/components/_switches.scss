@@ -1,5 +1,5 @@
 :host {
-	.switch {
+	consentio-switch {
 		user-select: none;
 		-webkit-tap-highlight-color: transparent;
 
@@ -26,7 +26,7 @@
 			}
 		}
 
-		&-lever {
+		.switch-lever {
 			content: "";
 			display: inline-block;
 			position: relative;

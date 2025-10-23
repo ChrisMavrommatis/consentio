@@ -1,0 +1,50 @@
+@use '../media-variables' as *;
+
+:host {
+	consentio-consent-items {
+		margin-top: 1rem;
+
+		consentio-consent-item {
+			.consent-header {
+				display: flex;
+				cursor: pointer;
+				line-height: 1.5;
+				padding: 1rem;
+				align-items: center;
+				justify-content: space-between;
+				background-color: var(--consent-header-bg-color);
+				color: var(--consent-header-text-color);
+				border-bottom: 1px solid var(--consent-border-color);
+				border-left: 1px solid var(--consent-border-color);
+				border-right: 1px solid var(--consent-border-color);
+				// 	-webkit-tap-highlight-color: transparent;
+
+				h5 {
+					max-width: 57%;
+					display: flex;
+				}
+			}
+
+
+
+			.consent-body {
+				display: none;
+				border-bottom: 1px solid var(--consent-border-color);
+				border-left: 1px solid var(--consent-border-color);
+				border-right: 1px solid var(--consent-border-color);
+				box-sizing: border-box;
+				padding: 1.5rem;
+
+				@media #{$medium-and-down} {
+					padding: 1rem;
+				}
+			}
+		}
+
+		consentio-consent-item:first-child {
+			.consent-header {
+				border-top: 1px solid var(--consent-border-color);
+			}
+		}
+	}
+}

@@ -58,6 +58,12 @@ class ConsentioAppElement extends HTMLElement {
 			buttonAcceptAll: this.config.texts.buttonAcceptAll,
 		});
 
+		var cookieTableHeaders = {
+			cookieName: this.config.texts.cookieTableHeaderName,
+			cookiePurpose: this.config.texts.cookieTableHeaderPurpose,
+			cookieProvenance: this.config.texts.cookieTableHeaderProvenance,
+			cookieDuration: this.config.texts.cookieTableHeaderDuration
+		};
 		this.addOrReplace(newBar, this.bar);
 
 		this.strictly_necessary = this.renderNode(consentItemTemplate, {
@@ -65,6 +71,15 @@ class ConsentioAppElement extends HTMLElement {
 			consentTitle: this.config.texts.strictlyNecessaryTitle,
 			consentDescription: this.config.texts.strictlyNecessaryDescription,
 		});
+		this.strictly_necessary.alwaysOn = this.config.texts.alwaysOnLabel;
+		this.strictly_necessary.tableHeaders = cookieTableHeaders;
+		this.strictly_necessary.cookies = [{
+			name: 'session_id',
+			purpose: 'Maintains user session',
+			provenance: 'First-party',
+			duration: 'Session'
+		}];
+
 		this.preferences_functionality = this.renderNode(consentItemTemplate, {
 			consentKey: 'preferences_functionality',
 			consentTitle: this.config.texts.preferencesTitle,
@@ -88,7 +103,7 @@ class ConsentioAppElement extends HTMLElement {
 			buttonSave: this.config.texts.buttonSave,
 			buttonCancel: this.config.texts.buttonCancel,
 		});
-		var consentList = newModal.querySelector('ul');
+		var consentList = newModal.querySelector('consentio-consent-items');
 		consentList.appendChild(this.strictly_necessary);
 		consentList.appendChild(this.preferences_functionality);
 		consentList.appendChild(this.statistics_performance);
