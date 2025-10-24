@@ -15,12 +15,14 @@ import ConsentioRequiredElement from './consentio-required.js';
 import ConsentioFloatingButtonElement from './consentio-floating-button.js';
 import ConsentioConsentItemElement from './consentio-consent-item.js';
 import ConsentioModalElement from './consentio-modal.js';
+import ConsentioState from './consentio-state.js'
 
 class Consentio {
 	static version = '0.0.1';
 	static _defaultConfig = {
 		cookieName: 'consentio',
 		debug: true,
+		version: 1,
 		texts: {
 			barTitle: 'Cookie Policy',
 			barDescription: 'This site uses cookies to enhance your experience. We are assuming that you are okay with that, but you can change that by clicking at the settings button.',
@@ -79,12 +81,18 @@ class Consentio {
 			...options
 		};
 
+		this.state = null
 		this.el = null;
 		this.defineCustomElements();
 		this.init();
 	}
 
 	init() {
+		this.state = new ConsentioState(
+			this.config.cookieName,
+			this.config.version,
+			this.config.consents
+		);
 		this.el = document.createElement("consentio-app");
 		this.el.config = this.config;
 		document.body.appendChild(this.el);
