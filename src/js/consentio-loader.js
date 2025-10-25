@@ -37,14 +37,38 @@
 		}
 
 		let config = {
-
+			debug: true,
 		};
-		let cookies = [{
-			name: 'session_id',
-			purpose: 'Maintains user session',
-			provenance: 'First-party',
-			duration: 'Session'
-		}];
+		let cookies = [
+			{
+				name: 'session_id',
+				purpose: 'Maintains user session',
+				provenance: 'First-party',
+				duration: 'Session',
+				category: 'strictly_necessary'
+			},
+			{
+				name: 'analytics_id',
+				purpose: 'Collects anonymous site usage data',
+				provenance: 'Third-party',
+				duration: '1 Year',
+				category: 'statistics_performance'
+			},
+			{
+				name: 'ad_tracker',
+				purpose: 'Tracks user behavior for targeted advertising',
+				provenance: 'Third-party',
+				duration: '6 Months',
+				category: 'marketing_advertising'
+			},
+			{
+				name: 'language_pref',
+				purpose: 'Remembers user language preference',
+				provenance: 'First-party',
+				duration: '1 Year',
+				category: 'preferences_functionality'
+			}
+		];
 		try {
 			global.ConsentioInstance = new global.Consentio(config, cookies, logger);
 			logger.log('[Consentio] loaded');
@@ -55,7 +79,7 @@
 
 	// Handle load errors
 	consentioScript.onerror = function () {
-		console.error('[Consentio] Failed to load script:', consentioScript.src);
+		logger.error('[Consentio] Failed to load script:', consentioScript.src);
 	};
 
 

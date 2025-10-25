@@ -31,11 +31,7 @@ class ConsentioModalElement extends HTMLElement {
 
 	cancel(event) {
 		event.stopImmediatePropagation();
-		const customEvent = new CustomEvent('consentio:cancel-settings', {
-			bubbles: true,
-			composed: true
-		});
-		this.dispatchEvent(customEvent);
+		this.emit('consentio:cancel-settings', {});
 		this.logger?.log('[Consentio:Event] cancel-settings', 'info');
 	}
 
@@ -46,13 +42,16 @@ class ConsentioModalElement extends HTMLElement {
 			const consentName = consentItem.id;
 			state[consentName] = consentItem.readState();
 		});
-		const customEvent = new CustomEvent('consentio:save-settings', {
+		this.emit('consentio:save-settings', state);
+		this.logger?.log('[Consentio:Event] save-settings', 'info');
+	}
+
+	emit(event, data) {
+		this.dispatchEvent(new CustomEvent(event, {
 			bubbles: true,
 			composed: true,
-			detail: state
-		});
-		this.dispatchEvent(customEvent);
-		this.logger?.log('[Consentio:Event] save-settings', 'info');
+			detail: data
+		}));
 	}
 }
 

@@ -22,8 +22,9 @@ class Consentio {
 	static version = '0.0.1';
 	static _defaultConfig = {
 		cookieName: 'consentio',
-		debug: true,
+		debug: false,
 		version: 1,
+		consentRequired: false,
 		texts: {
 			barTitle: 'Cookie Policy',
 			barDescription: 'This site uses cookies to enhance your experience. We are assuming that you are okay with that, but you can change that by clicking at the settings button.',

@@ -6,6 +6,7 @@ import barTemplate from '../html/consentio-bar.html';
 import modalTemplate from '../html/consentio-modal.html';
 import consentItemTemplate from '../html/consent-item.html';
 import floatingButtonTemplate from '../html/consentio-floating-button.html';
+import ConsentioGTM from './consentio-gtm.js';
 import { showElement, hideElement } from './utils.js';
 
 class ConsentioAppElement extends HTMLElement {
@@ -24,6 +25,7 @@ class ConsentioAppElement extends HTMLElement {
 		this.modal = null;
 		this.consentItems = [];
 		this.floatingButton = null;
+		this.gtm = null;
 	}
 
 	get config() {
@@ -68,8 +70,11 @@ class ConsentioAppElement extends HTMLElement {
 		this.addEventListener('consentio:cancel-settings', this.cancelSettings.bind(this));
 		this.addEventListener('consentio:save-settings', this.saveSettings.bind(this));
 
-
+		this.gtm = new ConsentioGTM(this.logger);
 		this.isRendered = true;
+		this.emit('consentio:initialized', this.state.consents);
+		this.gtm?.defaultConsent(this.state.consents);
+
 	}
 
 	disconectedCallback() {
@@ -115,9 +120,8 @@ class ConsentioAppElement extends HTMLElement {
 			if (consent.alwaysOn) {
 				consentItem.alwaysOn = this.config.texts.alwaysOnLabel;
 			}
-			console.log('sd');
 			consentItem.tableHeaders = cookieTableHeaders;
-			consentItem.cookies = this.cookies;
+			consentItem.cookies = this.cookies.filter(cookie => cookie.category === consent.key);
 			if (this.state.consentGiven) {
 				consentItem.itemState = this.state.consents[consentItem.id];
 			} else {
@@ -160,7 +164,9 @@ class ConsentioAppElement extends HTMLElement {
 			return;
 		}
 		showElement(this.bar);
-		showElement(this.required);
+		if (this.config.consentRequired) {
+			showElement(this.required);
+		}
 	}
 
 	renderNode(template, data) {
@@ -184,7 +190,9 @@ class ConsentioAppElement extends HTMLElement {
 		hideElement(this.bar);
 		hideElement(this.floatingButton);
 		showElement(this.modal);
-		showElement(this.required);
+		if (this.config.consentRequired) {
+			showElement(this.required);
+		}
 	}
 	acceptAll(event) {
 		event.stopImmediatePropagation();
@@ -196,6 +204,8 @@ class ConsentioAppElement extends HTMLElement {
 		hideElement(this.bar);
 		hideElement(this.required);
 		showElement(this.floatingButton);
+		this.emit('consentio:consent-update', this.state.consents);
+		this.gtm?.updateConsent(this.state.consents);
 	}
 
 	cancelSettings(event) {
@@ -206,13 +216,16 @@ class ConsentioAppElement extends HTMLElement {
 		hideElement(this.modal);
 		if (!this.state.consentGiven) {
 			showElement(this.bar);
-			showElement(this.required);
+			if (this.config.consentRequired) {
+				showElement(this.required);
+			}
 			return;
 		}
 		hideElement(this.bar);
 		hideElement(this.required);
 		showElement(this.floatingButton);
 	}
+
 	saveSettings(event) {
 		event.stopImmediatePropagation();
 		this.logger.log(event, 'info');
@@ -224,13 +237,24 @@ class ConsentioAppElement extends HTMLElement {
 		hideElement(this.modal);
 		if (!this.state.consentGiven) {
 			showElement(this.bar);
-			showElement(this.required);
+			if (this.config.consentRequired) {
+				showElement(this.required);
+			}
 			return;
 		}
 		hideElement(this.bar);
 		hideElement(this.required);
 		showElement(this.floatingButton);
+		this.emit('consentio:consent-update', this.state.consents);
+		this.gtm?.updateConsent(this.state.consents);
+	}
 
+	emit(event, data) {
+		this.dispatchEvent(new CustomEvent(event, {
+			bubbles: true,
+			composed: true,
+			detail: data
+		}));
 	}
 
 	// public api

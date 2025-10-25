@@ -14,11 +14,15 @@ class ConsentioFloatingButtonElement extends HTMLElement {
 
 	openSettings(event) {
 		event.stopImmediatePropagation();
-		const customEvent = new CustomEvent('consentio:open-settings', {
+		this.emit('consentio:open-settings', {});
+	}
+
+	emit(event, data) {
+		this.dispatchEvent(new CustomEvent(event, {
 			bubbles: true,
-			composed: true
-		});
-		this.dispatchEvent(customEvent);
+			composed: true,
+			detail: data
+		}));
 	}
 
 

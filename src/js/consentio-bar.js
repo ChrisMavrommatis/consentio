@@ -29,22 +29,22 @@ class ConsentioBarElement extends HTMLElement {
 
 	openSettings(event) {
 		event.stopImmediatePropagation();
-		const customEvent = new CustomEvent('consentio:open-settings', {
-			bubbles: true,
-			composed: true
-		});
-		this.dispatchEvent(customEvent);
+		this.emit('consentio:open-settings', {});
 		this.logger?.log('[Consentio:Event] open-settings', 'info');
 	}
 
 	acceptAll(event) {
 		event.stopImmediatePropagation();
-		const customEvent = new CustomEvent('consentio:accept-all-consents', {
-			bubbles: true,
-			composed: true
-		});
-		this.dispatchEvent(customEvent);
+		this.emit('consentio:accept-all-consents', {});
 		this.logger?.log('[Consentio:Event] accept-all-consents', 'info');
+	}
+
+	emit(event, data) {
+		this.dispatchEvent(new CustomEvent(event, {
+			bubbles: true,
+			composed: true,
+			detail: data
+		}));
 	}
 
 
