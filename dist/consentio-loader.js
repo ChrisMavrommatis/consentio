@@ -1,3 +1,4 @@
+/******/ (() => { // webpackBootstrap
 (function (global, doc, logger, customElementsRegistry) {
 	// see where this file was loaded
 	// constains 'consentio-loader' either consentio-loader.js or consentio-loader.min.js
@@ -64,3 +65,6 @@
 
 
 
+
+/******/ })()
+;

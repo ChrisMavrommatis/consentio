@@ -18,6 +18,7 @@ class ConsentioAppElement extends HTMLElement {
 		this._config = {};
 		this._state = {};
 		this._cookies = [];
+		this._logger = null;
 		this.required = null;
 		this.bar = null;
 		this.modal = null;
@@ -52,13 +53,33 @@ class ConsentioAppElement extends HTMLElement {
 	}
 
 	set cookies(value) {
-		this._cookies = [...this._cookies, ...value];
+		this._cookies = [...value];
+	}
+
+	get logger() {
+		return this._logger;
+	}
+	set logger(value) {
+		this._logger = value;
 	}
 
 	connectedCallback() {
 		this.render();
 		this.initState();
+		this.addEventListener('consentio:open-settings', this.openSettings.bind(this));
+		this.addEventListener('consentio:accept-all-consents', this.acceptAll.bind(this));
+		this.addEventListener('consentio:cancel-settings', this.cancelSettings.bind(this));
+		this.addEventListener('consentio:save-settings', this.saveSettings.bind(this));
+
+
 		this.isRendered = true;
+	}
+
+	disconectedCallback() {
+		this.removeEventListener('consentio:open-settings', this.openSettings.bind(this));
+		this.removeEventListener('consentio:accept-all-consents', this.acceptAll.bind(this));
+		this.removeEventListener('consentio:cancel-settings', this.cancelSettings.bind(this));
+		this.removeEventListener('consentio:save-settings', this.saveSettings.bind(this));
 	}
 
 	render() {
@@ -86,6 +107,7 @@ class ConsentioAppElement extends HTMLElement {
 		};
 		this.addOrReplace(newBar, this.bar);
 		this.bar = newBar;
+		this.bar.logger = this.logger;
 
 		this.strictly_necessary = this.renderNode(consentItemTemplate, {
 			consentKey: 'strictly_necessary',
@@ -94,23 +116,31 @@ class ConsentioAppElement extends HTMLElement {
 		});
 		this.strictly_necessary.alwaysOn = this.config.texts.alwaysOnLabel;
 		this.strictly_necessary.tableHeaders = cookieTableHeaders;
+		this.strictly_necessary.cookies = this.cookies;
 
 		this.preferences_functionality = this.renderNode(consentItemTemplate, {
 			consentKey: 'preferences_functionality',
 			consentTitle: this.config.texts.preferencesTitle,
 			consentDescription: this.config.texts.preferencesDescription,
 		});
+		this.preferences_functionality.tableHeaders = cookieTableHeaders;
+		this.preferences_functionality.cookies = this.cookies;
+
 		this.statistics_performance = this.renderNode(consentItemTemplate, {
 			consentKey: 'statistics_performance',
 			consentTitle: this.config.texts.statisticsTitle,
 			consentDescription: this.config.texts.statisticsDescription,
 		});
+		this.statistics_performance.tableHeaders = cookieTableHeaders;
+		this.statistics_performance.cookies = this.cookies;
+
 		this.marketing_advertising = this.renderNode(consentItemTemplate, {
 			consentKey: 'marketing_advertising',
 			consentTitle: this.config.texts.marketingTitle,
 			consentDescription: this.config.texts.marketingDescription,
 		});
-
+		this.marketing_advertising.tableHeaders = cookieTableHeaders;
+		this.marketing_advertising.cookies = this.cookies;
 
 		const newModal = this.renderNode(modalTemplate, {
 			modalTitle: this.config.texts.modalTitle,
@@ -126,6 +156,7 @@ class ConsentioAppElement extends HTMLElement {
 
 		this.addOrReplace(newModal, this.modal);
 		this.modal = newModal;
+		this.modal.logger = this.logger;
 
 
 		if (!this.isRendered) {
@@ -145,7 +176,8 @@ class ConsentioAppElement extends HTMLElement {
 			showElement(this.floatingButton);
 			return;
 		}
-		showElement(this.bar)
+		showElement(this.bar);
+		showElement(this.required);
 	}
 
 	renderNode(template, data) {
@@ -164,6 +196,29 @@ class ConsentioAppElement extends HTMLElement {
 		}
 	}
 
+	openSettings(event) {
+		event.stopImmediatePropagation();
+		hideElement(this.bar);
+		showElement(this.modal);
+		showElement(this.required);
+	}
+	acceptAll(event) {
+		event.stopImmediatePropagation();
+	}
+
+	cancelSettings(event) {
+		event.stopImmediatePropagation();
+		hideElement(this.modal);
+		if (!this.state.consentGiven) {
+			showElement(this.bar);
+			showElement(this.required);
+			return;
+		}
+		hideElement(this.required);
+	}
+	saveSettings(event) {
+		event.stopImmediatePropagation();
+	}
 
 	// public api
 

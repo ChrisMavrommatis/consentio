@@ -1,12 +1,13 @@
 const path = require('path');
-const { library } = require('webpack');
+const CopyPlugin = require("copy-webpack-plugin");
+const { type } = require('os');
 
 const consentio = {
 	entry: './src/js/consentio.js',
 	mode: 'production',
 	output: {
 		filename: 'consentio.js',
-		path: path.resolve(__dirname, 'docs/js'),
+		path: path.resolve(__dirname, 'dist'),
 		clean: true,
 		library: {
 			name: 'Consentio',
@@ -43,7 +44,7 @@ const minifiedConsentio = {
 	mode: 'production',
 	output: {
 		filename: 'consentio.min.js',
-		path: path.resolve(__dirname, 'docs/js'),
+		path: path.resolve(__dirname, 'dist'),
 		clean: false,
 		library: {
 			name: 'Consentio',
@@ -52,6 +53,8 @@ const minifiedConsentio = {
 		},
 		globalObject: 'this'
 	},
+	plugins: [
+	],
 	optimization: {
 		minimize: true
 	}
@@ -63,7 +66,7 @@ const loader = {
 	mode: 'production',
 	output: {
 		filename: 'consentio-loader.js',
-		path: path.resolve(__dirname, 'docs/js'),
+		path: path.resolve(__dirname, 'dist'),
 		clean: false,
 	},
 	module: {
@@ -80,19 +83,40 @@ const minifiedLoader = {
 	mode: 'production',
 	output: {
 		filename: 'consentio-loader.min.js',
-		path: path.resolve(__dirname, 'docs/js'),
+		path: path.resolve(__dirname, 'dist'),
 		clean: false
 	},
+	plugins: [
+
+	],
 	optimization: {
 		minimize: true
 	}
 }
 
-
+const copyDistToDocs = {
+	entry: {
+		'consentio-loader': './dist/consentio-loader.js',
+		'consentio-loader.min': './dist/consentio-loader.min.js',
+		'consentio': './dist/consentio.js',
+		'consentio.min': './dist/consentio.min.js',
+	},
+	output: {
+		path: path.resolve(__dirname, 'docs/js'),
+		filename: '[name].js',
+		clean: true
+	},
+	mode: 'production',
+	optimization: {
+		minimize: false
+	}
+}
 
 module.exports = [
 	consentio,
 	minifiedConsentio,
 	loader,
-	minifiedLoader
+	minifiedLoader,
+	copyDistToDocs
 ];
+module.exports.parallelism = 1;

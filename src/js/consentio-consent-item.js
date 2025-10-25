@@ -94,11 +94,11 @@ class ConsentioConsentItemElement extends HTMLElement {
 	}
 
 	connectedCallback() {
-		this.addEventListener('click', this.toggleBody);
+		this.addEventListener('click', this.toggleBody.bind(this));
 		this.render();
 	}
 	disconnectedCallback() {
-		this.removeEventListener('click', this.toggleBody);
+		this.removeEventListener('click', this.toggleBody.bind(this));
 	}
 }
 

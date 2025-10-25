@@ -2,10 +2,20 @@ class ConsentioBarElement extends HTMLElement {
 
 	constructor() {
 		super();
-		this.settingsBtn = this.querySelector('button[data-role="Settings"]');
-		this.acceptAllBtn = this.querySelector('button[data-role="AcceptAll"]');
+		this.settingsBtn = this.querySelector('button[data-role="settings"]');
+		this.acceptAllBtn = this.querySelector('button[data-role="acceptAll"]');
+		this._logger = null;
 	}
 
+
+	get logger() {
+		return this._logger;
+	}
+
+	set logger(value) {
+		this._logger = value;
+
+	}
 	connectedCallback() {
 		this.settingsBtn.addEventListener('click', this.openSettings.bind(this));
 		this.acceptAllBtn.addEventListener('click', this.acceptAll.bind(this));
@@ -17,22 +27,24 @@ class ConsentioBarElement extends HTMLElement {
 	}
 
 
-	openSettings() {
-		const event = new CustomEvent('open-consentio-modal', {
+	openSettings(event) {
+		event.stopImmediatePropagation();
+		const customEvent = new CustomEvent('consentio:open-settings', {
 			bubbles: true,
 			composed: true
 		});
-		this.dispatchEvent(event);
-		console.log('[Consentio] Opening settings modal');
+		this.dispatchEvent(customEvent);
+		this.logger?.log('[Consentio:Event] open-settings', 'info');
 	}
 
-	acceptAll() {
-		const event = new CustomEvent('accept-all-consents', {
+	acceptAll(event) {
+		event.stopImmediatePropagation();
+		const customEvent = new CustomEvent('consentio:accept-all-consents', {
 			bubbles: true,
 			composed: true
 		});
-		this.dispatchEvent(event);
-		console.log('[Consentio] Accepting all consents');
+		this.dispatchEvent(customEvent);
+		this.logger?.log('[Consentio:Event] accept-all-consents', 'info');
 	}
 
 

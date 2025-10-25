@@ -16,6 +16,7 @@ import ConsentioFloatingButtonElement from './consentio-floating-button.js';
 import ConsentioConsentItemElement from './consentio-consent-item.js';
 import ConsentioModalElement from './consentio-modal.js';
 import ConsentioState from './consentio-state.js'
+import ConsentioLogger from './consentio-logger.js'
 
 class Consentio {
 	static version = '0.0.1';
@@ -75,7 +76,7 @@ class Consentio {
 		],
 	};
 
-	constructor(options = {}, cookies = []) {
+	constructor(options = {}, cookies = [], logger = {}) {
 		this.config = {
 			...Consentio._defaultConfig,
 			...options
@@ -84,6 +85,7 @@ class Consentio {
 			...cookies
 		];
 
+		this.logger = new ConsentioLogger(logger, this.config.debug);
 		this.state = null
 		this.el = null;
 		this.defineCustomElements();
@@ -100,6 +102,7 @@ class Consentio {
 		this.el.config = this.config;
 		this.el.state = this.state;
 		this.el.cookies = this.cookies;
+		this.el.logger = this.logger;
 		document.body.appendChild(this.el);
 	}
 
