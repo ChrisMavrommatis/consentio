@@ -133,10 +133,7 @@ class ConsentioAppElement extends HTMLElement {
 		this.required = null;
 		this.bar = null;
 		this.modal = null;
-		this.strictly_necessary = null;
-		this.preferences_functionality = null;
-		this.statistics_performance = null;
-		this.marketing_advertising = null;
+		this.consentItems = [];
 		this.floatingButton = null;
 	}
 
@@ -156,7 +153,7 @@ class ConsentioAppElement extends HTMLElement {
 	}
 
 	set state(value) {
-		this._state = { ...this._state, ...value };
+		this._state = value;
 	}
 
 	get cookies() {
@@ -220,38 +217,25 @@ class ConsentioAppElement extends HTMLElement {
 		this.bar = newBar;
 		this.bar.logger = this.logger;
 
-		this.strictly_necessary = this.renderNode(consent_item, {
-			consentKey: 'strictly_necessary',
-			consentTitle: this.config.texts.strictlyNecessaryTitle,
-			consentDescription: this.config.texts.strictlyNecessaryDescription,
+		this.consentItems = this.config.consents.map(consent => {
+			const consentItem = this.renderNode(consent_item, {
+				consentKey: consent.key,
+				consentTitle: consent.title,
+				consentDescription: consent.description,
+			});
+			if (consent.alwaysOn) {
+				consentItem.alwaysOn = this.config.texts.alwaysOnLabel;
+			}
+			console.log('sd');
+			consentItem.tableHeaders = cookieTableHeaders;
+			consentItem.cookies = this.cookies;
+			if (this.state.consentGiven) {
+				consentItem.itemState = this.state.consents[consentItem.id];
+			} else {
+				consentItem.itemState = consent.defaultState;
+			}
+			return consentItem;
 		});
-		this.strictly_necessary.alwaysOn = this.config.texts.alwaysOnLabel;
-		this.strictly_necessary.tableHeaders = cookieTableHeaders;
-		this.strictly_necessary.cookies = this.cookies;
-
-		this.preferences_functionality = this.renderNode(consent_item, {
-			consentKey: 'preferences_functionality',
-			consentTitle: this.config.texts.preferencesTitle,
-			consentDescription: this.config.texts.preferencesDescription,
-		});
-		this.preferences_functionality.tableHeaders = cookieTableHeaders;
-		this.preferences_functionality.cookies = this.cookies;
-
-		this.statistics_performance = this.renderNode(consent_item, {
-			consentKey: 'statistics_performance',
-			consentTitle: this.config.texts.statisticsTitle,
-			consentDescription: this.config.texts.statisticsDescription,
-		});
-		this.statistics_performance.tableHeaders = cookieTableHeaders;
-		this.statistics_performance.cookies = this.cookies;
-
-		this.marketing_advertising = this.renderNode(consent_item, {
-			consentKey: 'marketing_advertising',
-			consentTitle: this.config.texts.marketingTitle,
-			consentDescription: this.config.texts.marketingDescription,
-		});
-		this.marketing_advertising.tableHeaders = cookieTableHeaders;
-		this.marketing_advertising.cookies = this.cookies;
 
 		const newModal = this.renderNode(consentio_modal, {
 			modalTitle: this.config.texts.modalTitle,
@@ -260,10 +244,9 @@ class ConsentioAppElement extends HTMLElement {
 			buttonCancel: this.config.texts.buttonCancel,
 		});
 		const consentList = newModal.querySelector('consentio-consent-items');
-		consentList.appendChild(this.strictly_necessary);
-		consentList.appendChild(this.preferences_functionality);
-		consentList.appendChild(this.statistics_performance);
-		consentList.appendChild(this.marketing_advertising);
+		this.consentItems.forEach(consentItem => {
+			consentList.appendChild(consentItem);
+		});
 
 		this.addOrReplace(newModal, this.modal);
 		this.modal = newModal;
@@ -310,25 +293,55 @@ class ConsentioAppElement extends HTMLElement {
 	openSettings(event) {
 		event.stopImmediatePropagation();
 		hideElement(this.bar);
+		hideElement(this.floatingButton);
 		showElement(this.modal);
 		showElement(this.required);
 	}
 	acceptAll(event) {
 		event.stopImmediatePropagation();
+		this.state.acceptAll();
+		this.consentItems.forEach((consentItem) => {
+			consentItem.updateState(this.state.consents[consentItem.id]);
+			consentItem.reset();
+		});
+		hideElement(this.bar);
+		hideElement(this.required);
+		showElement(this.floatingButton);
 	}
 
 	cancelSettings(event) {
 		event.stopImmediatePropagation();
+		this.consentItems.forEach((consentItem) => {
+			consentItem.reset();
+		});
 		hideElement(this.modal);
 		if (!this.state.consentGiven) {
 			showElement(this.bar);
 			showElement(this.required);
 			return;
 		}
+		hideElement(this.bar);
 		hideElement(this.required);
+		showElement(this.floatingButton);
 	}
 	saveSettings(event) {
 		event.stopImmediatePropagation();
+		this.logger.log(event, 'info');
+		this.state.updateState(event.detail);
+		this.consentItems.forEach((consentItem) => {
+			consentItem.updateState(this.state.consents[consentItem.id]);
+			consentItem.reset();
+		});
+		hideElement(this.modal);
+		if (!this.state.consentGiven) {
+			showElement(this.bar);
+			showElement(this.required);
+			return;
+		}
+		hideElement(this.bar);
+		hideElement(this.required);
+		showElement(this.floatingButton);
+
 	}
 
 	// public api
@@ -408,6 +421,24 @@ class ConsentioRequiredElement extends HTMLElement {
 class ConsentioFloatingButtonElement extends HTMLElement {
 	constructor() {
 		super();
+		this.button = this.querySelector('button');
+	}
+
+	connectedCallback() {
+		this.button.addEventListener('click', this.openSettings.bind(this));
+	}
+
+	disconnectedCallback() {
+		this.button.removeEventListener('click', this.openSettings.bind(this));
+	}
+
+	openSettings(event) {
+		event.stopImmediatePropagation();
+		const customEvent = new CustomEvent('consentio:open-settings', {
+			bubbles: true,
+			composed: true
+		});
+		this.dispatchEvent(customEvent);
 	}
 
 
@@ -424,9 +455,11 @@ class ConsentioConsentItemElement extends HTMLElement {
 		super();
 		this.consentBody = this.querySelector('.consent-body');
 		this.switch = this.querySelector('consentio-switch');
+		this.input = this.switch.querySelector('input');
 		this._alwaysOn = null;
 		this._cookies = [];
 		this._tableHeaders = null;
+		this._itemState = null;
 	}
 
 	set alwaysOn(value) {
@@ -450,6 +483,31 @@ class ConsentioConsentItemElement extends HTMLElement {
 
 	get tableHeaders() {
 		return this._tableHeaders;
+	}
+
+	get itemState() {
+		return this._itemState;
+	}
+
+	set itemState(value) {
+		this._itemState = value;
+	}
+
+	readState() {
+		if (!!this.alwaysOn) {
+			return 'granted';
+		}
+		return this.input.checked ? 'granted' : 'denied';
+	}
+
+	updateState(value) {
+		this.itemState = value;
+		this.input.checked = value === 'granted';
+	}
+
+	reset() {
+		this.input.checked = this.itemState === 'granted';
+		hideElement(this.consentBody);
 	}
 
 	toggleBody(event) {
@@ -480,6 +538,7 @@ class ConsentioConsentItemElement extends HTMLElement {
 		const headerRow = document.createElement('tr');
 		thead.appendChild(headerRow);
 
+
 		Array.from(Object.keys(this.tableHeaders)).forEach(key => {
 			const th = document.createElement('th');
 			th.appendChild(document.createTextNode(this.tableHeaders[key]));
@@ -509,6 +568,7 @@ class ConsentioConsentItemElement extends HTMLElement {
 			row.appendChild(durationCell);
 		});
 		this.consentBody.appendChild(tableFragment);
+		this.input.checked = this.itemState === 'granted';
 	}
 
 	connectedCallback() {
@@ -518,6 +578,9 @@ class ConsentioConsentItemElement extends HTMLElement {
 	disconnectedCallback() {
 		this.removeEventListener('click', this.toggleBody.bind(this));
 	}
+
+
+
 }
 
 /* harmony default export */ const consentio_consent_item = (ConsentioConsentItemElement);
@@ -531,6 +594,9 @@ class ConsentioModalElement extends HTMLElement {
 		this._logger = null;
 		this.cancelBtn = this.querySelector('[data-role="cancel"]');
 		this.saveBtn = this.querySelector('[data-role="save"]');
+		this.consents = Array.from(
+			this.querySelectorAll('consentio-consent-item')
+		);
 	}
 
 	get logger() {
@@ -564,9 +630,15 @@ class ConsentioModalElement extends HTMLElement {
 
 	save(event) {
 		event.stopImmediatePropagation();
+		const state = {};
+		this.consents.forEach((consentItem) => {
+			const consentName = consentItem.id;
+			state[consentName] = consentItem.readState();
+		});
 		const customEvent = new CustomEvent('consentio:save-settings', {
 			bubbles: true,
-			composed: true
+			composed: true,
+			detail: state
 		});
 		this.dispatchEvent(customEvent);
 		this.logger?.log('[Consentio:Event] save-settings', 'info');
@@ -714,6 +786,22 @@ class ConsentioState {
 			return null;
 		}
 	}
+
+	updateState(newState) {
+		this.consents = newState;
+		var state = { version: this.version, ...this.consents };
+		cookies.set(this.cookieName, JSON.stringify(state));
+		this.consentGiven = true;
+	}
+
+	acceptAll() {
+		Array.from(Object.keys(this.consents)).forEach((key) => {
+			this.consents[key] = 'granted';
+		});
+		var state = { version: this.version, ...this.consents };
+		cookies.set(this.cookieName, JSON.stringify(state));
+		this.consentGiven = true;
+	}
 }
 
 /* harmony default export */ const consentio_state = (ConsentioState);
@@ -788,17 +876,6 @@ class Consentio {
 			modalDescription: `Here you can change your cookie preferences. Clicking on save will save the current settings, while clicking on cancel makes no change.
 			According to the European general data protection regulation (GDPR) and the ePrivacy directive, websites must receive the user’s consent before using any cookie 
 			besides the strictly necessary ones. You can expand each section to learn a bit more for each category. If you are interested to learn more, then follow the link.`,
-			strictlyNecessaryTitle: 'Strictly Necessary Cookies',
-			strictlyNecessaryDescription: `These cookies are essential for you to browse the website and use its features, such as accessing secure areas of the site. 
-			Cookies that allow web shops to hold your items in your cart while you are shopping online are an example of strictly necessary cookies.`,
-			preferencesTitle: 'Preferences Cookies',
-			preferencesDescription: `Preference cookies enable a website to remember information that changes the way the website behaves or looks, 
-			such as your preferred language or the region that you are in.`,
-			statisticsTitle: 'Statistics Cookies',
-			statisticsDescription: `Statistic cookies help website owners to understand how visitors interact with websites by collecting and reporting information anonymously.`,
-			marketingTitle: 'Marketing Cookies',
-			marketingDescription: `Marketing cookies are used to track visitors across websites. The intention is to display ads that are relevant and engaging for the
-			 individual user and thereby more valuable for publishers and third party advertisers.`,
 			alwaysOnLabel: 'Always On',
 			cookieTableHeaderName: 'Cookie Name',
 			cookieTableHeaderPurpose: 'Cookie Purpose',
@@ -808,21 +885,32 @@ class Consentio {
 		consents: [
 			{
 				key: 'strictly_necessary',
+				title: 'Strictly Necessary Cookies',
+				description: `These cookies are essential for you to browse the website and use its features, such as accessing secure areas of the site. 
+				Cookies that allow web shops to hold your items in your cart while you are shopping online are an example of strictly necessary cookies.`,
 				alwaysOn: true,
 				defaultState: 'granted'
 			},
 			{
 				key: 'preferences_functionality',
+				title: 'Preferences Cookies',
+				description: `Preference cookies enable a website to remember information that changes the way the website behaves or looks, 
+				such as your preferred language or the region that you are in.`,
 				alwaysOn: false,
 				defaultState: 'denied'
 			},
 			{
 				key: 'statistics_performance',
+				title: 'Statistics Cookies',
+				description: `Statistic cookies help website owners to understand how visitors interact with websites by collecting and reporting information anonymously.`,
 				alwaysOn: false,
 				defaultState: 'denied'
 			},
 			{
 				key: 'marketing_advertising',
+				title: 'Marketing Cookies',
+				description: `Marketing cookies are used to track visitors across websites. The intention is to display ads that are relevant and engaging for the
+			 individual user and thereby more valuable for publishers and third party advertisers.`,
 				alwaysOn: false,
 				defaultState: 'denied'
 			}

@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "description": "A minimalist, lightweight consent modal designed to simplify privacy compliance.",
   "scripts": {
-    "build": "npx webpack",
-    "watch": "npx webpack --watch",
+    "build": "npx webpack --env build=dist",
+    "watch": "npx webpack --watch --env build=docs ",
     "serve": "cd ./docs && bundle exec jekyll serve"
   },
   "keywords": [
@@ -24,8 +24,6 @@
     "url": "https://github.com/ChrisMavrommatis/consentio.git"
   },
   "devDependencies": {
-    "copy-webpack-plugin": "^13.0.1",
-    "file-loader": "^6.2.0",
     "html-loader": "^5.1.0",
     "postcss": "^8.5.6",
     "postcss-loader": "^8.2.0",

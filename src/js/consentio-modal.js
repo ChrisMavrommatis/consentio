@@ -5,6 +5,9 @@ class ConsentioModalElement extends HTMLElement {
 		this._logger = null;
 		this.cancelBtn = this.querySelector('[data-role="cancel"]');
 		this.saveBtn = this.querySelector('[data-role="save"]');
+		this.consents = Array.from(
+			this.querySelectorAll('consentio-consent-item')
+		);
 	}
 
 	get logger() {
@@ -38,9 +41,15 @@ class ConsentioModalElement extends HTMLElement {
 
 	save(event) {
 		event.stopImmediatePropagation();
+		const state = {};
+		this.consents.forEach((consentItem) => {
+			const consentName = consentItem.id;
+			state[consentName] = consentItem.readState();
+		});
 		const customEvent = new CustomEvent('consentio:save-settings', {
 			bubbles: true,
-			composed: true
+			composed: true,
+			detail: state
 		});
 		this.dispatchEvent(customEvent);
 		this.logger?.log('[Consentio:Event] save-settings', 'info');

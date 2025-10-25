@@ -6,9 +6,11 @@ class ConsentioConsentItemElement extends HTMLElement {
 		super();
 		this.consentBody = this.querySelector('.consent-body');
 		this.switch = this.querySelector('consentio-switch');
+		this.input = this.switch.querySelector('input');
 		this._alwaysOn = null;
 		this._cookies = [];
 		this._tableHeaders = null;
+		this._itemState = null;
 	}
 
 	set alwaysOn(value) {
@@ -32,6 +34,31 @@ class ConsentioConsentItemElement extends HTMLElement {
 
 	get tableHeaders() {
 		return this._tableHeaders;
+	}
+
+	get itemState() {
+		return this._itemState;
+	}
+
+	set itemState(value) {
+		this._itemState = value;
+	}
+
+	readState() {
+		if (!!this.alwaysOn) {
+			return 'granted';
+		}
+		return this.input.checked ? 'granted' : 'denied';
+	}
+
+	updateState(value) {
+		this.itemState = value;
+		this.input.checked = value === 'granted';
+	}
+
+	reset() {
+		this.input.checked = this.itemState === 'granted';
+		hideElement(this.consentBody);
 	}
 
 	toggleBody(event) {
@@ -62,6 +89,7 @@ class ConsentioConsentItemElement extends HTMLElement {
 		const headerRow = document.createElement('tr');
 		thead.appendChild(headerRow);
 
+
 		Array.from(Object.keys(this.tableHeaders)).forEach(key => {
 			const th = document.createElement('th');
 			th.appendChild(document.createTextNode(this.tableHeaders[key]));
@@ -91,6 +119,7 @@ class ConsentioConsentItemElement extends HTMLElement {
 			row.appendChild(durationCell);
 		});
 		this.consentBody.appendChild(tableFragment);
+		this.input.checked = this.itemState === 'granted';
 	}
 
 	connectedCallback() {
@@ -100,6 +129,9 @@ class ConsentioConsentItemElement extends HTMLElement {
 	disconnectedCallback() {
 		this.removeEventListener('click', this.toggleBody.bind(this));
 	}
+
+
+
 }
 
 export default ConsentioConsentItemElement;

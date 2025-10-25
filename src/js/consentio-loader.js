@@ -26,7 +26,6 @@
 	// Create and configure the main script
 	const consentioScript = doc.createElement('script');
 	consentioScript.src = `${basePath}consentio${isMinified ? '.min' : ''}.js`;
-	consentioScript.async = true;
 	doc.head.appendChild(consentioScript);
 
 	// Handle successful load

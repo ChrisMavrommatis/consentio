@@ -39,6 +39,22 @@ class ConsentioState {
 			return null;
 		}
 	}
+
+	updateState(newState) {
+		this.consents = newState;
+		var state = { version: this.version, ...this.consents };
+		Cookies.set(this.cookieName, JSON.stringify(state));
+		this.consentGiven = true;
+	}
+
+	acceptAll() {
+		Array.from(Object.keys(this.consents)).forEach((key) => {
+			this.consents[key] = 'granted';
+		});
+		var state = { version: this.version, ...this.consents };
+		Cookies.set(this.cookieName, JSON.stringify(state));
+		this.consentGiven = true;
+	}
 }
 
 export default ConsentioState

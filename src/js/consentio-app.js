@@ -22,10 +22,7 @@ class ConsentioAppElement extends HTMLElement {
 		this.required = null;
 		this.bar = null;
 		this.modal = null;
-		this.strictly_necessary = null;
-		this.preferences_functionality = null;
-		this.statistics_performance = null;
-		this.marketing_advertising = null;
+		this.consentItems = [];
 		this.floatingButton = null;
 	}
 
@@ -45,7 +42,7 @@ class ConsentioAppElement extends HTMLElement {
 	}
 
 	set state(value) {
-		this._state = { ...this._state, ...value };
+		this._state = value;
 	}
 
 	get cookies() {
@@ -109,38 +106,25 @@ class ConsentioAppElement extends HTMLElement {
 		this.bar = newBar;
 		this.bar.logger = this.logger;
 
-		this.strictly_necessary = this.renderNode(consentItemTemplate, {
-			consentKey: 'strictly_necessary',
-			consentTitle: this.config.texts.strictlyNecessaryTitle,
-			consentDescription: this.config.texts.strictlyNecessaryDescription,
+		this.consentItems = this.config.consents.map(consent => {
+			const consentItem = this.renderNode(consentItemTemplate, {
+				consentKey: consent.key,
+				consentTitle: consent.title,
+				consentDescription: consent.description,
+			});
+			if (consent.alwaysOn) {
+				consentItem.alwaysOn = this.config.texts.alwaysOnLabel;
+			}
+			console.log('sd');
+			consentItem.tableHeaders = cookieTableHeaders;
+			consentItem.cookies = this.cookies;
+			if (this.state.consentGiven) {
+				consentItem.itemState = this.state.consents[consentItem.id];
+			} else {
+				consentItem.itemState = consent.defaultState;
+			}
+			return consentItem;
 		});
-		this.strictly_necessary.alwaysOn = this.config.texts.alwaysOnLabel;
-		this.strictly_necessary.tableHeaders = cookieTableHeaders;
-		this.strictly_necessary.cookies = this.cookies;
-
-		this.preferences_functionality = this.renderNode(consentItemTemplate, {
-			consentKey: 'preferences_functionality',
-			consentTitle: this.config.texts.preferencesTitle,
-			consentDescription: this.config.texts.preferencesDescription,
-		});
-		this.preferences_functionality.tableHeaders = cookieTableHeaders;
-		this.preferences_functionality.cookies = this.cookies;
-
-		this.statistics_performance = this.renderNode(consentItemTemplate, {
-			consentKey: 'statistics_performance',
-			consentTitle: this.config.texts.statisticsTitle,
-			consentDescription: this.config.texts.statisticsDescription,
-		});
-		this.statistics_performance.tableHeaders = cookieTableHeaders;
-		this.statistics_performance.cookies = this.cookies;
-
-		this.marketing_advertising = this.renderNode(consentItemTemplate, {
-			consentKey: 'marketing_advertising',
-			consentTitle: this.config.texts.marketingTitle,
-			consentDescription: this.config.texts.marketingDescription,
-		});
-		this.marketing_advertising.tableHeaders = cookieTableHeaders;
-		this.marketing_advertising.cookies = this.cookies;
 
 		const newModal = this.renderNode(modalTemplate, {
 			modalTitle: this.config.texts.modalTitle,
@@ -149,10 +133,9 @@ class ConsentioAppElement extends HTMLElement {
 			buttonCancel: this.config.texts.buttonCancel,
 		});
 		const consentList = newModal.querySelector('consentio-consent-items');
-		consentList.appendChild(this.strictly_necessary);
-		consentList.appendChild(this.preferences_functionality);
-		consentList.appendChild(this.statistics_performance);
-		consentList.appendChild(this.marketing_advertising);
+		this.consentItems.forEach(consentItem => {
+			consentList.appendChild(consentItem);
+		});
 
 		this.addOrReplace(newModal, this.modal);
 		this.modal = newModal;
@@ -199,25 +182,55 @@ class ConsentioAppElement extends HTMLElement {
 	openSettings(event) {
 		event.stopImmediatePropagation();
 		hideElement(this.bar);
+		hideElement(this.floatingButton);
 		showElement(this.modal);
 		showElement(this.required);
 	}
 	acceptAll(event) {
 		event.stopImmediatePropagation();
+		this.state.acceptAll();
+		this.consentItems.forEach((consentItem) => {
+			consentItem.updateState(this.state.consents[consentItem.id]);
+			consentItem.reset();
+		});
+		hideElement(this.bar);
+		hideElement(this.required);
+		showElement(this.floatingButton);
 	}
 
 	cancelSettings(event) {
 		event.stopImmediatePropagation();
+		this.consentItems.forEach((consentItem) => {
+			consentItem.reset();
+		});
 		hideElement(this.modal);
 		if (!this.state.consentGiven) {
 			showElement(this.bar);
 			showElement(this.required);
 			return;
 		}
+		hideElement(this.bar);
 		hideElement(this.required);
+		showElement(this.floatingButton);
 	}
 	saveSettings(event) {
 		event.stopImmediatePropagation();
+		this.logger.log(event, 'info');
+		this.state.updateState(event.detail);
+		this.consentItems.forEach((consentItem) => {
+			consentItem.updateState(this.state.consents[consentItem.id]);
+			consentItem.reset();
+		});
+		hideElement(this.modal);
+		if (!this.state.consentGiven) {
+			showElement(this.bar);
+			showElement(this.required);
+			return;
+		}
+		hideElement(this.bar);
+		hideElement(this.required);
+		showElement(this.floatingButton);
+
 	}
 
 	// public api
