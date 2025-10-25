@@ -75,11 +75,14 @@ class Consentio {
 		],
 	};
 
-	constructor(options = {}) {
+	constructor(options = {}, cookies = []) {
 		this.config = {
 			...Consentio._defaultConfig,
 			...options
 		};
+		this.cookies = [
+			...cookies
+		];
 
 		this.state = null
 		this.el = null;
@@ -95,6 +98,8 @@ class Consentio {
 		);
 		this.el = document.createElement("consentio-app");
 		this.el.config = this.config;
+		this.el.state = this.state;
+		this.el.cookies = this.cookies;
 		document.body.appendChild(this.el);
 	}
 

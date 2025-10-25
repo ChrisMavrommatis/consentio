@@ -37,10 +37,17 @@
 			return;
 		}
 
-		try {
-			global.ConsentioInstance = new global.Consentio({
+		let config = {
 
-			});
+		};
+		let cookies = [{
+			name: 'session_id',
+			purpose: 'Maintains user session',
+			provenance: 'First-party',
+			duration: 'Session'
+		}];
+		try {
+			global.ConsentioInstance = new global.Consentio(config, cookies);
 			logger.log('[Consentio] loaded');
 		} catch (error) {
 			logger.error('[Consentio] Initialization failed:', error);

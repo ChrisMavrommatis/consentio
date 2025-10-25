@@ -6,6 +6,7 @@ import barTemplate from '../html/consentio-bar.html';
 import modalTemplate from '../html/consentio-modal.html';
 import consentItemTemplate from '../html/consent-item.html';
 import floatingButtonTemplate from '../html/consentio-floating-button.html';
+import { showElement, hideElement } from './utils.js';
 
 class ConsentioAppElement extends HTMLElement {
 
@@ -15,6 +16,8 @@ class ConsentioAppElement extends HTMLElement {
 		this.isRendered = false;
 		this.isVisible = false;
 		this._config = {};
+		this._state = {};
+		this._cookies = [];
 		this.required = null;
 		this.bar = null;
 		this.modal = null;
@@ -36,8 +39,25 @@ class ConsentioAppElement extends HTMLElement {
 		}
 	}
 
+	get state() {
+		return this._state;
+	}
+
+	set state(value) {
+		this._state = { ...this._state, ...value };
+	}
+
+	get cookies() {
+		return this._cookies;
+	}
+
+	set cookies(value) {
+		this._cookies = [...this._cookies, ...value];
+	}
+
 	connectedCallback() {
 		this.render();
+		this.initState();
 		this.isRendered = true;
 	}
 
@@ -65,6 +85,7 @@ class ConsentioAppElement extends HTMLElement {
 			cookieDuration: this.config.texts.cookieTableHeaderDuration
 		};
 		this.addOrReplace(newBar, this.bar);
+		this.bar = newBar;
 
 		this.strictly_necessary = this.renderNode(consentItemTemplate, {
 			consentKey: 'strictly_necessary',
@@ -73,12 +94,6 @@ class ConsentioAppElement extends HTMLElement {
 		});
 		this.strictly_necessary.alwaysOn = this.config.texts.alwaysOnLabel;
 		this.strictly_necessary.tableHeaders = cookieTableHeaders;
-		this.strictly_necessary.cookies = [{
-			name: 'session_id',
-			purpose: 'Maintains user session',
-			provenance: 'First-party',
-			duration: 'Session'
-		}];
 
 		this.preferences_functionality = this.renderNode(consentItemTemplate, {
 			consentKey: 'preferences_functionality',
@@ -110,6 +125,7 @@ class ConsentioAppElement extends HTMLElement {
 		consentList.appendChild(this.marketing_advertising);
 
 		this.addOrReplace(newModal, this.modal);
+		this.modal = newModal;
 
 
 		if (!this.isRendered) {
@@ -118,6 +134,18 @@ class ConsentioAppElement extends HTMLElement {
 			});
 			this._shadow.appendChild(this.floatingButton);
 		}
+	}
+
+	initState() {
+		hideElement(this.required);
+		hideElement(this.bar);
+		hideElement(this.modal);
+		hideElement(this.floatingButton);
+		if (this.state.consentGiven) {
+			showElement(this.floatingButton);
+			return;
+		}
+		showElement(this.bar)
 	}
 
 	renderNode(template, data) {
@@ -134,7 +162,6 @@ class ConsentioAppElement extends HTMLElement {
 		else {
 			this._shadow.replaceChild(newEl, oldEl);
 		}
-		oldEl = newEl;
 	}
 
 
