@@ -77,7 +77,7 @@ class Consentio {
 		],
 	};
 
-	constructor(options = {}, cookies = [], logger = {}) {
+	constructor(options = {}, cookies = [], logger = null) {
 		this.config = {
 			...Consentio._defaultConfig,
 			...options
