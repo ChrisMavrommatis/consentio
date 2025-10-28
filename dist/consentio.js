@@ -989,7 +989,11 @@ class Consentio {
 		],
 	};
 
-	constructor(options = {}, cookies = [], logger = {}) {
+	static Create(options = {}, cookies = [], logger = null) {
+		return new Consentio(options, cookies, logger);
+	}
+
+	constructor(options = {}, cookies = [], logger = null) {
 		this.config = {
 			...Consentio._defaultConfig,
 			...options
