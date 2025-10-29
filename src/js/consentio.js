@@ -77,8 +77,8 @@ class Consentio {
 		],
 	};
 
-	static Create(options = {}, cookies = [], logger = null) {
-		return new Consentio(options, cookies, logger);
+	static Create(options = {}, cookies = []) {
+		return new Consentio(options, cookies, window.console);
 	}
 
 	constructor(options = {}, cookies = [], logger = null) {

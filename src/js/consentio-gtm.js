@@ -7,14 +7,12 @@ class ConsentioGTM {
 	defaultConsent(state) {
 		const gtmConsents = this.mapConsentsToGTM(state);
 		this.push('consent', 'default', gtmConsents);
-		this.dataLayer.push({ event: 'default_consent' });
 		this.logger?.log('[Consentio:GTM] Default consent set', 'info');
 	}
 
 	updateConsent(state) {
 		const gtmConsents = this.mapConsentsToGTM(state);
 		this.push('consent', 'update', gtmConsents);
-		this.dataLayer.push({ event: 'update_consent' });
 		this.logger?.log('[Consentio:GTM] Consent updated', 'info');
 	}
 

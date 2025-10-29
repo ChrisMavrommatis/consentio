@@ -104,14 +104,12 @@ class ConsentioGTM {
 	defaultConsent(state) {
 		const gtmConsents = this.mapConsentsToGTM(state);
 		this.push('consent', 'default', gtmConsents);
-		this.dataLayer.push({ event: 'default_consent' });
 		this.logger?.log('[Consentio:GTM] Default consent set', 'info');
 	}
 
 	updateConsent(state) {
 		const gtmConsents = this.mapConsentsToGTM(state);
 		this.push('consent', 'update', gtmConsents);
-		this.dataLayer.push({ event: 'update_consent' });
 		this.logger?.log('[Consentio:GTM] Consent updated', 'info');
 	}
 
@@ -989,8 +987,8 @@ class Consentio {
 		],
 	};
 
-	static Create(options = {}, cookies = [], logger = null) {
-		return new Consentio(options, cookies, logger);
+	static Create(options = {}, cookies = []) {
+		return new Consentio(options, cookies, window.console);
 	}
 
 	constructor(options = {}, cookies = [], logger = null) {
