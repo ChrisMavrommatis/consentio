@@ -10,13 +10,16 @@
 	<link href="{{ '/css/main.css' | relative_url }}" rel="stylesheet" />
 	<link href="{{ '/css/pygments.css' | relative_url }}" rel="stylesheet" />
 	<link rel="icon" href="{{ '/favicon.ico' | relative_url }}" />
+	<script async src="{{ '/js/consentio-loader.min.js' | relative_url }}" data-consentio-loader
+		data-consentio-loader-debug="false" data-consentio-config="{{ '/assets/consentio-config.json' | relative_url }}"
+		data-consentio-cookies="{{ '/assets/consentio-cookies.json' | relative_url }}">
+		</script>
 
 </head>
 
 <body class="{{ site.default_theme }}">
 	{{ content }}
 	<script type="module" src="{{ '/css/beercss/beer.min.js' | relative_url }}"></script>
-	<script src="{{ '/js/consentio-loader.min.js' | relative_url }}"></script>
 </body>
 
 </html>

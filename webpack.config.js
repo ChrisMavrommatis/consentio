@@ -102,8 +102,8 @@ module.exports = (env, argv) => {
 	return [
 		consentio,
 		minifiedConsentio,
-		// loader,
-		// minifiedLoader,
+		loader,
+		minifiedLoader,
 	];
 
 };

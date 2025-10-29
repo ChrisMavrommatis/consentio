@@ -1,0 +1,30 @@
+[
+	{
+		"name": "session_id",
+		"purpose": "Maintains user session",
+		"provenance": "First-party",
+		"duration": "Session",
+		"category": "strictly_necessary"
+	},
+	{
+		"name": "analytics_id",
+		"purpose": "Collects anonymous site usage data",
+		"provenance": "Third-party",
+		"duration": "1 Year",
+		"category": "statistics_performance"
+	},
+	{
+		"name": "ad_tracker",
+		"purpose": "Tracks user behavior for targeted advertising",
+		"provenance": "Third-party",
+		"duration": "6 Months",
+		"category": "marketing_advertising"
+	},
+	{
+		"name": "language_pref",
+		"purpose": "Remembers user language preference",
+		"provenance": "First-party",
+		"duration": "1 Year",
+		"category": "preferences_functionality"
+	}
+]

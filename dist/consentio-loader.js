@@ -1,5 +1,8 @@
+/******/ (() => { // webpackBootstrap
 (function (global, doc, logger, customElementsRegistry) {
-
+	// see where this file was loaded
+	// constains 'consentio-loader' either consentio-loader.js or consentio-loader.min.js
+	// Find the loader script
 
 	const getResource = function (url) {
 		return new Promise((resolve, reject) => {
@@ -27,10 +30,6 @@
 	}
 
 	const debug = loaderScript.dataset.consentioLoaderDebug === 'true';
-
-	// see where this file was loaded
-	// constains 'consentio-loader' either consentio-loader.js or consentio-loader.min.js
-	// Find the loader script
 	const loaderSrc = loaderScript.getAttribute('src');
 	const basePath = loaderSrc.substring(0, loaderSrc.lastIndexOf('/') + 1);
 	const isMinified = loaderSrc.includes('.min.js');
@@ -109,3 +108,6 @@
 
 
 
+
+/******/ })()
+;
