@@ -19,7 +19,7 @@ import ConsentioState from './consentio-state.js'
 import ConsentioLogger from './consentio-logger.js'
 
 class Consentio {
-	static version = '0.0.1';
+	static version = '0.0.4';
 	static _defaultConfig = {
 		cookieName: 'consentio',
 		debug: false,
