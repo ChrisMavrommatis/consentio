@@ -1,6 +1,6 @@
 {
   "name": "consentio",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "A minimalist, lightweight consent modal designed to simplify privacy compliance.",
   "scripts": {
     "build": "npx webpack --env build=dist",

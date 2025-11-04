@@ -991,10 +991,25 @@ class Consentio {
 		return new Consentio(options, cookies, window.console);
 	}
 
+	static mergeConsents(defaultConsents, customConsents) {
+		const consentMap = Object.fromEntries(defaultConsents.map(c => [c.key, c]));
+		customConsents.forEach(c => {
+			consentMap[c.key] = { ...consentMap[c.key], ...c };
+		});
+		return Object.values(consentMap);
+	}
+
 	constructor(options = {}, cookies = [], logger = null) {
 		this.config = {
 			...Consentio._defaultConfig,
-			...options
+			...options,
+			texts: {
+				...Consentio._defaultConfig.texts,
+				...(options.texts || {})
+			},
+			consents: options.consents
+				? Consentio.mergeConsents(Consentio._defaultConfig.consents, options.consents)
+				: Consentio._defaultConfig.consents
 		};
 		this.cookies = [
 			...cookies
@@ -1006,6 +1021,8 @@ class Consentio {
 		this.defineCustomElements();
 		this.init();
 	}
+
+
 
 	init() {
 		this.state = new consentio_state(
