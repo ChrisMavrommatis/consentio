@@ -1,7 +1,7 @@
 {
   "name": "consentio",
   "version": "0.0.4",
-  "description": "A minimalist, lightweight consent modal designed to simplify privacy compliance.",
+  "description": "Consentio is a minimalist, lightweight consent modal built for static sites, providing seamless tag manager integration and transparent consent handling.",
   "scripts": {
     "build": "npx webpack --env build=dist",
     "watch": "npx webpack --watch --env build=docs ",

@@ -26,17 +26,17 @@
 		return;
 	}
 
-	const debug = loaderScript.dataset.consentioLoaderDebug === 'true';
+	const debug = loaderScript.dataset.debug === 'true';
 
 	// see where this file was loaded
-	// constains 'consentio-loader' either consentio-loader.js or consentio-loader.min.js
+	// contains 'consentio-loader' either consentio-loader.js or consentio-loader.min.js
 	// Find the loader script
 	const loaderSrc = loaderScript.getAttribute('src');
 	const basePath = loaderSrc.substring(0, loaderSrc.lastIndexOf('/') + 1);
 	const isMinified = loaderSrc.includes('.min.js');
 
-	const configUrl = loaderScript.dataset.consentioConfig || null;
-	const cookiesUrl = loaderScript.dataset.consentioCookies || null;
+	const configUrl = loaderScript.dataset.configUrl || null;
+	const cookiesUrl = loaderScript.dataset.cookiesUrl || null;
 
 
 

@@ -22,9 +22,9 @@ class Cookies {
 	};
 
 	static assign(target) {
-		for (var i = 1; i < arguments.length; i++) {
-			var source = arguments[i];
-			for (var key in source) {
+		for (let i = 1; i < arguments.length; i++) {
+			const source = arguments[i];
+			for (const key in source) {
 				target[key] = source[key];
 			}
 		}
@@ -45,8 +45,8 @@ class Cookies {
 			.replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent)
 			.replace(/[()]/g, escape);
 
-		var stringifiedAttributes = '';
-		for (var attributeName in attributes) {
+		let stringifiedAttributes = '';
+		for (const attributeName in attributes) {
 			if (!attributes[attributeName]) {
 				continue;
 			}
@@ -67,14 +67,14 @@ class Cookies {
 			return;
 		}
 
-		var cookies = document.cookie ? document.cookie.split('; ') : [];
-		var jar = {};
-		for (var i = 0; i < cookies.length; i++) {
-			var parts = cookies[i].split('=');
-			var value = parts.slice(1).join('=');
+		const cookies = document.cookie ? document.cookie.split('; ') : [];
+		let jar = {};
+		for (let i = 0; i < cookies.length; i++) {
+			const parts = cookies[i].split('=');
+			const value = parts.slice(1).join('=');
 
 			try {
-				var foundKey = decodeURIComponent(parts[0]);
+				const foundKey = decodeURIComponent(parts[0]);
 				jar[foundKey] = Cookies.converter.read(value, foundKey);
 
 				if (key === foundKey) {
