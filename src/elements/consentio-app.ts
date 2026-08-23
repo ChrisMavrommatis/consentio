@@ -7,6 +7,7 @@ import modalTemplate from '../templates/consentio-modal.html';
 import consentItemTemplate from '../templates/consentio-consent-item.html';
 import floatingButtonTemplate from '../templates/consentio-floating-button.html';
 import ConsentioGTM from '../lib/gtm.js';
+import { signalMapFrom } from '../lib/consent-signals.js';
 import { showElement, hideElement } from '../lib/dom.js';
 
 import type ConsentioBarElement from './consentio-bar.js';
@@ -94,12 +95,13 @@ class ConsentioAppElement extends HTMLElement {
 		this.addEventListener('consentio:cancel-settings', this.cancelSettings.bind(this));
 		this.addEventListener('consentio:save-settings', this.saveSettings.bind(this));
 
-		this.gtm = new ConsentioGTM(this.logger);
+		// The signal map comes from the configured categories, so a category a site adds
+		// can route to a signal instead of falling into a hardcoded four-key lookup.
+		this.gtm = new ConsentioGTM(this.logger, signalMapFrom(this.config.consents));
 		this.isRendered = true;
 		this.emit('consentio:initialized', this.state.consents);
-		// Issue 1 - the blocker. This is the only `consent default` in the codebase and it
-		// fires here, after two fetches and a DOM insert. Brief 3 moves it to the core.
-		this.gtm?.defaultConsent(this.state.consents);
+		// No `consent default` from here. It runs after two fetches and a DOM insert, long
+		// after the tag manager read consent. The loader pushes the default on its first pass.
 
 	}
 

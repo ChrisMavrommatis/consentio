@@ -86,11 +86,10 @@ export function boot(options: ConsentioOptions = {}, cookies: CookieDescriptor[]
 /**
  * Import a module for its side effects, by URL rather than by specifier.
  *
- * `consentio-loader.ts` has no imports and no exports, which is exactly right for a file
- * that ships as a plain `<script>` - but it means TypeScript calls it "not a module" and
- * refuses a static specifier. Giving it a URL keeps the tests honest without adding an
- * `export {}` to the source, which would flip webpack's output into a strict-mode module
- * wrapper and change the shipped bundle.
+ * `consentio-loader.ts` runs entirely for its side effect and exports nothing, so a static
+ * specifier would read as an unused import. More to the point, each scenario needs the
+ * module evaluated fresh against a document arranged beforehand, and only a dynamic import
+ * gives the test that control.
  */
 export function importScript(url: URL): Promise<unknown> {
 	return import(url.href);

@@ -14,6 +14,9 @@ const jar = new Map();
 // `name=value; attr; attr=x` string on write. An expiry in the past is a deletion, which
 // is how Cookies.remove works.
 const doc = {
+	// A real document has this, and it is null anywhere outside a running script tag.
+	// The loader tests read it, and `undefined` would read as "there is no page at all".
+	currentScript: null,
 	get cookie() {
 		return Array.from(jar, ([name, value]) => `${name}=${value}`).join('; ');
 	},

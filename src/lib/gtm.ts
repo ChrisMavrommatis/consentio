@@ -1,45 +1,31 @@
+import { ADS_DATA_REDACTION, DEFAULT_SIGNAL_MAP, needsAdsDataRedaction, toGoogleSignals } from './consent-signals.js';
+import type { SignalMap } from './consent-signals.js';
 import type ConsentioLogger from './logger.js';
-import type { ConsentRecord, ConsentState } from '../types.js';
+import type { ConsentRecord } from '../types.js';
 
+/**
+ * The asynchronous half. It only ever pushes `consent update` - the default belongs to
+ * the loader, which pushes it before the tag manager. Anything pushed from here has
+ * already missed the tag's read of the consent defaults.
+ */
 class ConsentioGTM {
 	declare logger: ConsentioLogger | null;
 	declare dataLayer: unknown[];
+	declare signalMap: SignalMap;
 
-	constructor(logger: ConsentioLogger | null) {
+	constructor(logger: ConsentioLogger | null, signalMap: SignalMap = DEFAULT_SIGNAL_MAP) {
 		this.logger = logger;
+		this.signalMap = signalMap;
 		this.dataLayer = window.dataLayer = window.dataLayer || [];
 	}
 
-	// Issue 1 - this is the only `consent default` push in the codebase and it runs after
-	// two fetches and a DOM insert, long after the tag manager has read consent. The fix
-	// is the core split in brief 3, not a change here.
-	defaultConsent(state: ConsentRecord): void {
-		const gtmConsents = this.mapConsentsToGTM(state);
-		this.push('consent', 'default', gtmConsents);
-		this.logger?.log('[Consentio:GTM] Default consent set', 'info');
-	}
-
 	updateConsent(state: ConsentRecord): void {
-		const gtmConsents = this.mapConsentsToGTM(state);
-		this.push('consent', 'update', gtmConsents);
+		const signals = toGoogleSignals(state, this.signalMap);
+		this.push('consent', 'update', signals);
+		// Pushed either way, so that revoking marketing turns redaction back on rather
+		// than leaving it wherever the previous push left it.
+		this.push('set', ADS_DATA_REDACTION, needsAdsDataRedaction(signals));
 		this.logger?.log('[Consentio:GTM] Consent updated', 'info');
-	}
-
-	// Issues 2, 4 and 5 all live in this object literal: `essential_storage` is not a
-	// Google signal, the keys are hardcoded to the four default categories, and the seven
-	// real signals are not all named on every push. Brief 3 replaces it.
-	mapConsentsToGTM(state: ConsentRecord): Record<string, ConsentState> {
-		return {
-			essential_storage: state['strictly_necessary'],
-			security_storage: state['strictly_necessary'],
-			functionality_storage: state['preferences_functionality'],
-			personalization_storage: state['preferences_functionality'],
-			analytics_storage: state['statistics_performance'],
-			ad_storage: state['marketing_advertising'],
-			ad_user_data: state['marketing_advertising'],
-			ad_personalization: state['marketing_advertising']
-		};
-
 	}
 
 	// The overload declares the variadic call; the implementation forwards `arguments`

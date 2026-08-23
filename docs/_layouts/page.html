@@ -10,7 +10,10 @@
 	<link href="{{ '/css/main.css' | relative_url }}" rel="stylesheet" />
 	<link href="{{ '/css/pygments.css' | relative_url }}" rel="stylesheet" />
 	<link rel="icon" href="{{ '/favicon.ico' | relative_url }}" />
-	<script async src="{{ '/js/consentio-loader.min.js' | relative_url }}" data-consentio-loader
+	<!-- Blocking, and first. The loader pushes the deny-by-default on its first pass, and
+	     that has to reach the dataLayer before any tag reads it. `async` or `defer` here
+	     puts it back behind the tag and gates nothing - the loader warns if you add one. -->
+	<script src="{{ '/js/consentio-loader.min.js' | relative_url }}" data-consentio-loader
 		data-debug="false" data-config-url="{{ '/data/consentio-config.json' | relative_url }}"
 		data-cookies-url="{{ '/data/consentio-cookies.json' | relative_url }}">
 		</script>

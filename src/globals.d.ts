@@ -11,6 +11,7 @@ declare module '*.html' {
 
 interface Window {
 	dataLayer?: unknown[];
+	ConsentioDefault?: import('./types.js').ConsentioDefaultState;
 	Consentio?: new (options?: object, cookies?: unknown[], logger?: Console) => unknown;
 	ConsentioInstance?: unknown;
 }

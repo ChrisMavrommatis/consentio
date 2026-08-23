@@ -71,13 +71,17 @@ defect means deleting a `todo` flag in the same diff, which is the proof the fix
 
 - **defect 12** - jsdom's cookie jar accepts a `secure` cookie over http instead of dropping it, so only the
   serialised attributes can be asserted. Check the real symptom by hand on `http://localhost`
-- **defect 1** - it is about ordering relative to a third-party script, which no unit test observes. All
-  this suite can say is the half it can see: the async bundle must never push a `consent default`. The other
-  half - a synchronous push that lands before the tag manager - has nothing to test against until plan 3
-  builds `consentio-core`, and even then it is a proxy for a page-level check that does not exist
-- **defect 4** - the pre-split signal map is a hardcoded object literal with no seam, and every Google signal
-  is already driven by one of the four default categories, so an app-level test cannot tell a site-added
-  category apart from the default that shares its signal. The test arrives with `signalMapFrom` in plan 3
+- **defect 1** - it is about ordering relative to a third-party script, and Google reads consent at tag
+  load. No unit test can observe that. `consentio-loader/` checks the properties that make the correct
+  ordering *possible* - the push happens during module evaluation, before any fetch and before the bundle is
+  injected - and the async bundle never pushes a default at all. **That is a proxy, and a weak one.** What
+  would actually settle it: a real page with the loader as a blocking `<script>` above the tag manager
+  snippet, a real container, and Tag Assistant showing the `consent default` arriving before the container
+  loads. `docs/_layouts/page.html` is wired for the first part; the rest has not been done
+- **the Google Tag Manager template route is not covered at all.** A custom template cannot inject a
+  blocking script, so it sets the default itself in the tag manager's sandbox and never runs
+  `consentio-loader.js`. That code lives in its own repository and is tested there, not here. The two must
+  agree on the cookie name, version and shape or a returning visitor is asked twice
 - **`isHidden`** is `display === 'none' || offsetParent === null`, and jsdom does no layout, so
   `offsetParent` is null for every element. Only the inline-display half is observable; assertions set
   `display` explicitly

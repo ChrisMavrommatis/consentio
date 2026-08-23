@@ -2,6 +2,7 @@ import test, { beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 
 import ConsentioGTM from '../../../src/lib/gtm.js';
+import { signalMapFrom } from '../../../src/lib/consent-signals.js';
 import { FULL_CONSENT, GOOGLE_SIGNALS, pushes, resetDataLayer } from '../../basics.mjs';
 
 beforeEach(resetDataLayer);
@@ -13,15 +14,15 @@ test('updateConsent pushes a consent update', () => {
 	assert.equal(push.action, 'update');
 });
 
-test('issue 1 - the async half never pushes a consent default', { todo: true }, () => {
+test('issue 1 - the async half never pushes a consent default', () => {
 	const gtm = new ConsentioGTM(null) as ConsentioGTM & { defaultConsent?: unknown };
-	assert.equal(gtm.defaultConsent, undefined, 'the default belongs to consentio-core, which runs before the tag manager');
+	assert.equal(gtm.defaultConsent, undefined, 'the default belongs to the loader, which pushes it before the tag manager');
 
 	gtm.updateConsent(FULL_CONSENT);
 	assert.deepEqual(pushes().filter((push) => push.action === 'default'), []);
 });
 
-test('issues 2 and 5 - the update names the seven Google signals and nothing else', { todo: true }, () => {
+test('issues 2 and 5 - the update names the seven Google signals and nothing else', () => {
 	new ConsentioGTM(null).updateConsent({ strictly_necessary: 'granted' });
 	assert.deepEqual(Object.keys(pushes()[0].payload).sort(), [...GOOGLE_SIGNALS].sort());
 });
@@ -38,22 +39,23 @@ test('issue 5 - revoking a category pushes it as denied rather than omitting it'
 	}
 });
 
-test('issue 3 - ads_data_redaction is turned on when ad_storage ends up denied', { todo: true }, () => {
+test('issue 3 - ads_data_redaction is turned on when ad_storage ends up denied', () => {
 	new ConsentioGTM(null).updateConsent(FULL_CONSENT);
 	const redaction = pushes().find((push) => push.action === 'ads_data_redaction');
 	assert.ok(redaction, 'no ads_data_redaction was pushed');
 	assert.equal(redaction.payload as unknown, true);
 });
 
-test('issue 3 - ads_data_redaction is turned off again when marketing is granted', { todo: true }, () => {
+test('issue 3 - ads_data_redaction is turned off again when marketing is granted', () => {
 	new ConsentioGTM(null).updateConsent({ ...FULL_CONSENT, marketing_advertising: 'granted' });
 	const redaction = pushes().find((push) => push.action === 'ads_data_redaction');
 	assert.equal(redaction!.payload as unknown, false);
 });
 
-// Issue 4 has no test here, deliberately. The pre-split map is a hardcoded object
-// literal with no seam to inject a category into, and an app-level version passes for
-// the wrong reason: every Google signal is already driven by one of the four default
-// categories, so a site-added category routed to a shared signal cannot be told apart
-// from the default that already drives it. The test arrives with signalMapFrom in
-// plan 3, which is the first point at which it can mean anything.
+test('issue 4 - a site-added category reaches its signal through the configured map', () => {
+	const map = signalMapFrom([
+		{ key: 'house_analytics', title: '', description: '', alwaysOn: false, defaultState: 'denied', signals: ['analytics_storage'] }
+	]);
+	new ConsentioGTM(null, map).updateConsent({ house_analytics: 'granted' });
+	assert.equal(pushes()[0].payload.analytics_storage, 'granted');
+});

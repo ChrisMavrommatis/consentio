@@ -13,9 +13,10 @@
 		// Strict is on: the port needed only assertions and casts to satisfy it, no
 		// behaviour change. Suppressions carry a register issue number.
 		"strict": true,
-		// consentio-loader.ts is a plain script, not a module, so alwaysStrict would add a
-		// strict-mode prologue and silently move it from sloppy to strict. The port is meant
-		// to change nothing; a later brief can opt the loader in deliberately.
+		// Left off from the port, when consentio-loader.ts was a plain script and a strict-mode
+		// prologue would have silently changed its behaviour. It now imports the consent
+		// modules, so it is a module and strict either way; this line is now inert and can go
+		// whenever someone wants to check nothing else was leaning on it.
 		"alwaysStrict": false
 	},
 	"include": ["src/**/*.ts", "src/**/*.d.ts", "test/**/*.mts"]
