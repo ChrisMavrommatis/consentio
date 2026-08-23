@@ -4,6 +4,9 @@
   "description": "Consentio is a minimalist, lightweight consent modal built for static sites, providing seamless tag manager integration and transparent consent handling.",
   "scripts": {
     "build": "npx webpack --env build=dist",
+    "typecheck": "npx tsc --noEmit",
+    "test": "node --import ./test/register.mjs --test \"test/**/*.test.mts\"",
+    "test:plain": "node --import ./test/register-plain.mjs --test \"test/lib/logger.test.mts\" \"test/lib/cookies/attributes.test.mts\" \"test/lib/cookies/read-write.test.mts\" \"test/lib/state/*.test.mts\" \"test/lib/gtm/*.test.mts\"",
     "watch": "npx webpack --watch --env build=docs ",
     "serve": "cd ./docs && bundle exec jekyll serve"
   },
@@ -18,17 +21,25 @@
     "vanilla-js"
   ],
   "author": "ChrisMavrommatis",
+  "engines": {
+    "node": ">=22.15"
+  },
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ChrisMavrommatis/consentio.git"
   },
   "devDependencies": {
+    "@types/jsdom": "^30.0.0",
+    "@types/node": "^26.2.0",
     "html-loader": "^5.1.0",
+    "jsdom": "^30.0.1",
     "postcss": "^8.5.6",
     "postcss-loader": "^8.2.0",
     "sass": "^1.93.2",
     "sass-loader": "^16.0.5",
+    "ts-loader": "^9.6.2",
+    "typescript": "^5.9.3",
     "webpack": "^5.102.1",
     "webpack-cli": "^6.0.1"
   }

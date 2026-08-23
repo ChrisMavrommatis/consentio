@@ -8,7 +8,7 @@ module.exports = (env, argv) => {
 	const dest = env.build === 'docs' ? 'docs/js' : 'dist';
 
 	const consentio = {
-		entry: './src/js/consentio.js',
+		entry: './src/consentio.ts',
 		mode: 'production',
 		output: {
 			filename: 'consentio.js',
@@ -21,8 +21,19 @@ module.exports = (env, argv) => {
 			},
 			globalObject: 'this'
 		},
+		resolve: {
+			extensions: ['.ts', '.js'],
+			extensionAlias: {
+				'.js': ['.ts', '.js'],
+			},
+		},
 		module: {
 			rules: [
+				{
+					test: /\.ts$/,
+					use: 'ts-loader',
+					exclude: /node_modules/,
+				},
 				{
 					test: /\.scss$/i,
 					type: 'asset/source',
@@ -67,15 +78,27 @@ module.exports = (env, argv) => {
 
 
 	const loader = {
-		entry: './src/js/consentio-loader.js',
+		entry: './src/consentio-loader.ts',
 		mode: 'production',
 		output: {
 			filename: 'consentio-loader.js',
 			path: path.resolve(__dirname, dest),
 			clean: false,
 		},
+		resolve: {
+			extensions: ['.ts', '.js'],
+			extensionAlias: {
+				'.js': ['.ts', '.js'],
+			},
+		},
 		module: {
-			rules: []
+			rules: [
+				{
+					test: /\.ts$/,
+					use: 'ts-loader',
+					exclude: /node_modules/,
+				},
+			]
 		},
 		plugins: [
 		],

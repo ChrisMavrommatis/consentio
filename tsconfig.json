@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		// ES2022 is what the sources already ship - static class fields, optional chaining,
+		// async/await - and webpack passes them through untouched. Anything lower would
+		// downlevel the port and change the bundle.
+		"target": "ES2022",
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"skipLibCheck": true,
+		// Strict is on: the port needed only assertions and casts to satisfy it, no
+		// behaviour change. Suppressions carry a register issue number.
+		"strict": true,
+		// consentio-loader.ts is a plain script, not a module, so alwaysStrict would add a
+		// strict-mode prologue and silently move it from sloppy to strict. The port is meant
+		// to change nothing; a later brief can opt the loader in deliberately.
+		"alwaysStrict": false
+	},
+	"include": ["src/**/*.ts", "src/**/*.d.ts", "test/**/*.mts"]
+}
