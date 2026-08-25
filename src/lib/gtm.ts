@@ -28,8 +28,7 @@ class ConsentioGTM {
 		this.logger?.log('[Consentio:GTM] Consent updated', 'info');
 	}
 
-	// The overload declares the variadic call; the implementation forwards `arguments`
-	// verbatim to the dataLayer, so it stays parameterless and keeps the gtag shape.
+	// Parameterless on purpose: `arguments` is forwarded verbatim to keep the gtag shape.
 	push(...args: unknown[]): void;
 	push(): void {
 		this.dataLayer.push(arguments);

@@ -11,14 +11,13 @@ class ConsentioState {
 	constructor(cookieName: string, version: number, consents: ConsentCategory[]) {
 		this.cookieName = cookieName;
 		this.version = version;
-		// readConsents returns null when there is nothing to honour; the block below backfills it.
+		// Null when there is nothing to honour at this version; the block below backfills it.
 		this.consents = readConsents(cookieName, version)!;
 		this.consentGiven = this.consents !== null;
 		if (!this.consentGiven) {
-			// Just in case version didn't match
+			// A stored value at the wrong version is discarded, not merged.
 			clearConsents(this.cookieName);
 
-			// Initialize Minimum consent state
 			this.consents = {};
 			consents.forEach((consent, index) => {
 				this.consents[consent.key] = consent.alwaysOn ? 'granted' : consent.defaultState;

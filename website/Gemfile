@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby "3.1.6"
+ruby file: ".ruby-version"
 
 git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 # Hello! This is where you manage which Jekyll version is used to run.
@@ -10,8 +10,15 @@ git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 #
 # This will help ensure the proper Jekyll version is running.
 # Happy Jekylling!
-gem "jekyll", "~> 4.2.1"
+gem "jekyll", "~> 4.4"
 gem "webrick"
+
+# Ruby 3.4 moved these out of the default gems. Liquid requires bigdecimal without
+# declaring it, and under Bundler an undeclared bundled gem is a LoadError, not a
+# warning - the build will not start without it. logger goes the same way in Ruby
+# 3.5 and Jekyll does not declare it either; naming it now silences the warning.
+gem "bigdecimal"
+gem "logger"
 gem "kramdown-parser-gfm"
 gem "jekyll-include-cache"
 # This is the default theme for new Jekyll sites. You may change this to anything you like.

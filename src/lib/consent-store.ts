@@ -2,9 +2,8 @@ import Cookies from './cookies.js';
 import type { ConsentRecord } from '../types.js';
 
 /**
- * Denied for everything except strictly necessary. The core pushes this when there is no
- * stored choice to honour, and it is the only defensible default - which is what lets the
- * core skip the config file entirely and stay synchronous.
+ * Denied for everything except strictly necessary - the fallback when there is no stored
+ * choice. It needs no config file, which is what lets the loader push it synchronously.
  */
 export const BASELINE_CONSENTS: ConsentRecord = {
 	strictly_necessary: 'granted'

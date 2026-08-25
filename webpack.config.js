@@ -5,7 +5,7 @@ module.exports = (env, argv) => {
 	this.parallelism = 1;
 	console.log(`Environment Build: ${env.build}`);
 
-	const dest = env.build === 'docs' ? 'docs/js' : 'dist';
+	const dest = env.build === 'website' ? 'website/js' : 'dist';
 
 	const consentio = {
 		entry: './src/consentio.ts',

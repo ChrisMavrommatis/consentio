@@ -1,4 +1,8 @@
 /build
 /node_modules
-/docs/js/consentio*
+/website/js/consentio*
+/website/_site
 .idea
+
+# Working brief for the relaunch. Survives sessions, is not published.
+/.agents/relaunch-brief.md

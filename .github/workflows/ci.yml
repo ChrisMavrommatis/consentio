@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The test harness resolves .ts through module.registerHooks and relies on Node's
+      # built-in type stripping, so it needs Node 22.15 or newer. See test/register.mjs.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm test
+
+      # Runs the cookie, saved-state and Google-signal tests with no browser at all, to
+      # keep them from quietly acquiring one. They also run under `npm test` above.
+      - run: npm run test:plain

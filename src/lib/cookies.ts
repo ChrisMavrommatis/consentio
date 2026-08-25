@@ -23,8 +23,7 @@ class Cookies {
 		}
 	};
 
-	// The overload declares the variadic call; the implementation reads `arguments`
-	// so it stays parameterless and the emitted body is unchanged.
+	// Parameterless on purpose: the implementation reads `arguments`.
 	static assign(target: CookieAttributes, ...sources: (CookieAttributes | undefined)[]): CookieAttributes;
 	static assign(target: CookieAttributes): CookieAttributes {
 		for (let i = 1; i < arguments.length; i++) {

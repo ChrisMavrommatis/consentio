@@ -9,15 +9,15 @@ author:
   name                  : "Chris Mavrommatis"
   url                   : "https://github.com/ChrisMavrommatis"
   
-# the base hostname & protocol for your site, e.g. http://example.com# Welcome to Jekyll!
-# url                     : "https://docs.binacle.net"
+# The base hostname and protocol. Absolute links and any sitemap are built from this plus baseurl.
+url                     : "https://chrismavrommatis.github.io"
 
 remote_theme            : just-the-docs/just-the-docs
 ############################################################
 # Where things are
 ############################################################
 source              : ./
-destination         : ../build/docs
+destination         : ./_site
 collections_dir     : collections
 plugins_dir         : _plugins       # takes an array of strings and loads plugins in that order
 layouts_dir         : _layouts
@@ -68,7 +68,7 @@ unpublished         : false
 detach              : false
 port                : 4001
 host                : 127.0.0.1
-baseurl             : ""    # does not include hostname
+baseurl             : "/consentio"    # GitHub project pages serve from /<repo>. Does not include hostname
 show_dir_listing    : false
 disable_disk_cache  : true
 

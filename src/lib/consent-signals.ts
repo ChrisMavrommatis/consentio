@@ -23,8 +23,8 @@ export type ConsentSignals = Record<GoogleSignal, ConsentState>;
 export type SignalMap = Record<string, readonly GoogleSignal[]>;
 
 /**
- * What the four built-in categories map to. The core uses this as-is: it has no config
- * file, so it has nothing else to go on.
+ * What the four built-in categories map to. The loader uses this as-is - it has no config
+ * when it pushes - so a site's own routing does not reach the default push. Issue 27.
  */
 export const DEFAULT_SIGNAL_MAP: SignalMap = {
 	strictly_necessary: ['security_storage'],
@@ -34,10 +34,9 @@ export const DEFAULT_SIGNAL_MAP: SignalMap = {
 };
 
 /**
- * Build the map from the configured categories, so a category a site adds can reach a
- * signal instead of falling into a hardcoded four-key lookup and reaching nothing. A
- * category that names no `signals` falls back to the built-in mapping for its key, which
- * is what lets a site override copy without restating the routing.
+ * Build the map from the configured categories. A category that names no `signals` falls
+ * back to the built-in mapping for its key, so a site can override copy without restating
+ * the routing.
  */
 export function signalMapFrom(categories: readonly ConsentCategory[]): SignalMap {
 	const map: SignalMap = {};
@@ -59,10 +58,9 @@ export function toGoogleSignals(consents: ConsentRecord, map: SignalMap = DEFAUL
 		return sources.length > 0 && sources.every((key) => consents[key] === 'granted') ? 'granted' : 'denied';
 	};
 
-	// Every signal is named, one line each, on purpose. The return type is
-	// Record<GoogleSignal, ConsentState>, so deleting a line here fails the build - and a
-	// signal left out of a `consent update` keeps its previous value, which is how a
-	// category that was granted and then revoked stays granted.
+	// Every signal is named on purpose: one left out of a `consent update` keeps its
+	// previous value. The Record<GoogleSignal, ConsentState> return type makes a missing
+	// line a build error.
 	return {
 		ad_storage: state('ad_storage'),
 		ad_user_data: state('ad_user_data'),

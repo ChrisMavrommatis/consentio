@@ -95,8 +95,7 @@ class ConsentioAppElement extends HTMLElement {
 		this.addEventListener('consentio:cancel-settings', this.cancelSettings.bind(this));
 		this.addEventListener('consentio:save-settings', this.saveSettings.bind(this));
 
-		// The signal map comes from the configured categories, so a category a site adds
-		// can route to a signal instead of falling into a hardcoded four-key lookup.
+		// Built from the configured categories, so a category a site adds can reach a signal.
 		this.gtm = new ConsentioGTM(this.logger, signalMapFrom(this.config.consents));
 		this.isRendered = true;
 		this.emit('consentio:initialized', this.state.consents);
@@ -285,8 +284,6 @@ class ConsentioAppElement extends HTMLElement {
 			detail: data
 		}));
 	}
-
-	// public api
 
 }
 

@@ -50,9 +50,8 @@ import { BASELINE_CONSENTS, readConsents } from './lib/consent-store.js';
 
 	const debug = loaderScript.dataset.debug === 'true';
 
-	// see where this file was loaded
-	// contains 'consentio-loader' either consentio-loader.js or consentio-loader.min.js
-	// Find the loader script
+	// The bundle is found relative to the loader's own src, and `.min.js` in the loader's
+	// filename is what selects the minified bundle.
 	const loaderSrc = loaderScript.getAttribute('src');
 	// @ts-expect-error issue 22 - src is never null-checked
 	const basePath = loaderSrc.substring(0, loaderSrc.lastIndexOf('/') + 1);
@@ -64,23 +63,18 @@ import { BASELINE_CONSENTS, readConsents } from './lib/consent-store.js';
 
 
 
-	// Prevent double initialization
 	if (global.ConsentioInstance) {
 		debug && logger.warn('[Consentio Loader] Consentio is already initialized');
 		return;
 	}
 
-	// ## The consent default ##
+	// The consent default. Synchronous, and before the injection below - everything after
+	// this point is a network round trip away.
 	//
-	// Synchronous, and before the script injection below. Everything after this point is
-	// a network round trip away, and a tag manager has read consent long before then.
-	//
-	// `async` or `defer` on the loader tag is proof the browser was told not to block, so
-	// the default cannot arrive in time. Warn regardless of the debug flag: a banner that
-	// silently gates nothing is worth the noise.
+	// Warn about async/defer regardless of the debug flag: a banner that silently gates
+	// nothing is worth the noise.
 	if (!global.ConsentioDefault) {
-		// The attributes, not the .async/.defer properties. For a tag written into the page
-		// the two are equivalent, and the attribute is what the site author actually typed.
+		// The attributes, not the properties: the attribute is what the site author typed.
 		if (loaderScript.hasAttribute('async') || loaderScript.hasAttribute('defer')) {
 			logger.warn('[Consentio Loader] loaded with async or defer, so the consent default cannot arrive before the tag manager');
 		}
@@ -89,9 +83,7 @@ import { BASELINE_CONSENTS, readConsents } from './lib/consent-store.js';
 		const version = Number(loaderScript.dataset.version || 1);
 		const waitForUpdate = Number(loaderScript.dataset.waitForUpdate || 500);
 
-		// readConsents returns null when there is no stored answer to honour. Denied for
-		// everything but strictly necessary is the only defensible stand-in, and it needs
-		// no config file - which is what lets this run with nothing fetched.
+		// readConsents returns null when there is no stored answer to honour.
 		const stored = readConsents(cookieName, version);
 		const consents = stored || BASELINE_CONSENTS;
 		const signals = toGoogleSignals(consents);
@@ -99,14 +91,13 @@ import { BASELINE_CONSENTS, readConsents } from './lib/consent-store.js';
 		const dataLayer: unknown[] = global.dataLayer = global.dataLayer || [];
 
 		// The gtag shape: an arguments object, not an array and not a plain object. Google
-		// reads dataLayer entries positionally, and a flattened array is not the same thing.
+		// reads dataLayer entries positionally.
 		function gtag(...args: unknown[]): void;
 		function gtag(): void {
 			dataLayer.push(arguments);
 		}
 
-		// wait_for_update only helps a first-time visitor. A returning one already has their
-		// real answer, so making the tag wait for a banner that will not appear only delays it.
+		// wait_for_update only helps a first-time visitor; a returning one already has an answer.
 		gtag('consent', 'default', toConsentDefault(signals, stored ? null : waitForUpdate));
 		gtag('set', ADS_DATA_REDACTION, needsAdsDataRedaction(signals));
 
@@ -114,14 +105,11 @@ import { BASELINE_CONSENTS, readConsents } from './lib/consent-store.js';
 		debug && logger.info('[Consentio Loader] Consent default pushed:', consents);
 	}
 
-	// Create and configure the main script
 	const consentioScript = doc.createElement('script');
 	consentioScript.src = `${basePath}consentio${isMinified ? '.min' : ''}.js`;
 	doc.head.appendChild(consentioScript);
 
-	// Handle successful load
 	consentioScript.onload = async function () {
-		// Check if Consentio constructor exists
 		if (typeof global.Consentio !== 'function') {
 			logger.error('[Consentio Loader] Constructor not found after script load');
 			return;
@@ -167,7 +155,6 @@ import { BASELINE_CONSENTS, readConsents } from './lib/consent-store.js';
 		}
 	};
 
-	// Handle load errors
 	consentioScript.onerror = async function () {
 		logger.error('[Consentio Loader] Failed to load script:', consentioScript.src);
 	};
