@@ -11,6 +11,10 @@ release body, so write these entries for the people using Consentio, not for the
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.1.0]
+
 ### 🔀 Changed
 
 - The consent default is now pushed by the loader, before the tag manager starts, instead of by the banner

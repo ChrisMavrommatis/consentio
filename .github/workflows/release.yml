@@ -59,11 +59,18 @@ jobs:
 
       # The bundle carries package.json's version. A tag that says something else is a
       # permanent lie, and the CDN serves it forever.
+      # Through the environment, like every other step here. Interpolating the input
+      # straight into the shell lets whoever dispatches choose what runs; the semver check
+      # above happens to reject those characters today, which is step order, not a design.
       - name: package.json agrees
-        run: node scripts/version.mjs check '${{ inputs.version }}'
+        env:
+          VERSION: ${{ inputs.version }}
+        run: node scripts/version.mjs check "$VERSION"
 
       - name: The changelog section exists and is not empty
-        run: node scripts/changelog.mjs check '${{ inputs.version }}'
+        env:
+          VERSION: ${{ inputs.version }}
+        run: node scripts/changelog.mjs check "$VERSION"
 
       # 0.0.1 to 0.0.4 are already on origin. Re-releasing a version silently is worse
       # than not releasing at all. Check the remote too - a tag can be there and not in

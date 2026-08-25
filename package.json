@@ -1,6 +1,6 @@
 {
   "name": "consentio",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "A small, frontend-only consent banner for static sites. Pushes Google Consent Mode signals to dataLayer and stores the answer in one cookie.",
   "scripts": {
     "build": "npx webpack --env build=lib",
