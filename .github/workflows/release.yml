@@ -1,0 +1,171 @@
+name: Release
+
+# One dispatch does the whole thing, including making the tag.
+#
+# It cannot be a tag trigger. jsDelivr serves the git tree at the tag, so
+# consentio@0.1.0/dist/consentio.min.js is whatever dist/ held in the commit the tag
+# points at. A workflow firing after the tag exists cannot change that commit - it would
+# publish whatever happened to be sitting there, which is exactly how 0.0.4 shipped a
+# bundle no source produced. So this builds and commits dist/ first, then tags that
+# commit.
+#
+# Before dispatching: rename `## [Unreleased]` in CHANGELOG.md to the version, open a
+# fresh empty Unreleased above it, bump package.json, and push both to main.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, with no leading v - for example 0.1.0'
+        required: true
+        type: string
+      dry_run:
+        description: 'Run every check and stop. Nothing is committed, tagged or published.'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  # Seconds, and it runs alone. A missing changelog section and an already-used version
+  # are both cheap to find, and a tag is permanent - there is no fixing one afterwards.
+  gate:
+    name: gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: The dispatch ref is main
+        if: github.ref_name != 'main'
+        run: |
+          echo "Release from main. This dispatch was on ${{ github.ref_name }}."
+          exit 1
+
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: '24'
+
+      - name: The version is semver, with no leading v
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)*$' \
+            || { echo "'$VERSION' is not a version. Write 0.1.0, not v0.1.0."; exit 1; }
+
+      # The bundle carries package.json's version. A tag that says something else is a
+      # permanent lie, and the CDN serves it forever.
+      - name: package.json agrees
+        run: node scripts/version.mjs check '${{ inputs.version }}'
+
+      - name: The changelog section exists and is not empty
+        run: node scripts/changelog.mjs check '${{ inputs.version }}'
+
+      # 0.0.1 to 0.0.4 are already on origin. Re-releasing a version silently is worse
+      # than not releasing at all. Check the remote too - a tag can be there and not in
+      # the runner's checkout.
+      - name: The version is not already tagged
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          if git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
+            echo "Tag $VERSION already exists here."
+            exit 1
+          fi
+          if git ls-remote --tags --exit-code origin "refs/tags/$VERSION" >/dev/null 2>&1; then
+            echo "Tag $VERSION already exists on origin."
+            exit 1
+          fi
+          echo "$VERSION is not tagged."
+
+  # Verify, then commit, tag and publish - in one job, so the dist/ that is committed is
+  # the exact one the tests ran against.
+  release:
+    name: release
+    needs: gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: '24'
+          cache: npm
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build:dist
+      - run: npm test
+      - run: npm run test:plain
+
+      - name: The release notes
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          node scripts/changelog.mjs extract "$VERSION" > "$RUNNER_TEMP/notes.md"
+          echo "--- release body ---"
+          cat "$RUNNER_TEMP/notes.md"
+
+      - name: What a real run would commit
+        run: git status --porcelain -- dist/ CHANGELOG.md
+
+      # Nothing above this line is irreversible. Nothing below the commit is reversible.
+      - name: Commit dist/ and the release date
+        if: ${{ !inputs.dry_run }}
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          node scripts/changelog.mjs date "$VERSION" "$(date -u +%F)"
+          git add -- dist CHANGELOG.md
+          if git diff --cached --quiet; then
+            echo "Nothing to commit; tagging the current main."
+          else
+            # The subject shape matters: ci.yml's guard uses it to tell this commit from a
+            # hand-written dist/.
+            git commit -m "release $VERSION"
+            git push origin main
+          fi
+
+      - name: Tag that commit
+        if: ${{ !inputs.dry_run }}
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          git tag -a "$VERSION" -m "Consentio $VERSION"
+          git push origin "refs/tags/$VERSION"
+
+      # The web UI cannot make a bare tag, so a release may already exist for one made
+      # that way. Edit it if it does, create it if it does not.
+      - name: Publish the release
+        if: ${{ !inputs.dry_run }}
+        env:
+          VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          files=(dist/consentio.js dist/consentio.min.js dist/consentio-loader.js dist/consentio-loader.min.js)
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            gh release edit "$VERSION" --notes-file "$RUNNER_TEMP/notes.md"
+            gh release upload "$VERSION" "${files[@]}" --clobber
+          else
+            gh release create "$VERSION" --title "$VERSION" --notes-file "$RUNNER_TEMP/notes.md" "${files[@]}"
+          fi
+
+      - name: Dry run - what did not happen
+        if: ${{ inputs.dry_run }}
+        run: |
+          echo "Dry run. Nothing was committed, tagged or published."
+          echo "Every gate and the full verify ran. Dispatch again with dry_run off to release."

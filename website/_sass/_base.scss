@@ -1,0 +1,201 @@
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+	scroll-behavior: smooth;
+	scroll-padding-top: 5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+}
+
+body {
+	margin: 0;
+	background: var(--bg);
+	color: var(--fg);
+	font-family: var(--font-body);
+	font-size: 17px;
+	line-height: 1.65;
+	-webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+	line-height: 1.25;
+	letter-spacing: -0.01em;
+	margin: 2.5rem 0 .75rem;
+	scroll-margin-top: 5rem;
+}
+
+h1 {
+	font-size: 2.1rem;
+	margin-top: 0;
+}
+
+h2 {
+	font-size: 1.45rem;
+	padding-top: 1.75rem;
+	border-top: 1px solid var(--rule);
+}
+
+h3 {
+	font-size: 1.15rem;
+}
+
+p,
+ul,
+ol {
+	margin: 0 0 1rem;
+}
+
+ul,
+ol {
+	padding-left: 1.35rem;
+}
+
+li + li {
+	margin-top: .35rem;
+}
+
+a {
+	color: var(--link);
+	text-underline-offset: .18em;
+}
+
+a:hover {
+	text-decoration-thickness: 2px;
+}
+
+hr {
+	height: 0;
+	margin: 2.5rem 0;
+	border: 0;
+	border-top: 1px solid var(--rule);
+}
+
+strong {
+	font-weight: 650;
+}
+
+// Focus is a named deliverable of the banner's accessibility work; the page it demonstrates
+// on has to hold the same line.
+:focus-visible {
+	outline: 3px solid var(--focus);
+	outline-offset: 2px;
+	border-radius: 3px;
+}
+
+// Tables carry most of the reference material. display:block plus width:max-content is what
+// lets a wide one scroll on its own instead of pushing the whole page sideways; min-width
+// keeps a narrow one filling the column.
+table {
+	display: block;
+	width: max-content;
+	min-width: 100%;
+	max-width: 100%;
+	margin: 0 0 1.25rem;
+	overflow-x: auto;
+	border: 1px solid var(--rule);
+	border-radius: var(--radius);
+	border-collapse: collapse;
+	font-size: .92rem;
+}
+
+th,
+td {
+	padding: .6rem .8rem;
+	text-align: left;
+	vertical-align: top;
+	border-bottom: 1px solid var(--rule);
+}
+
+thead th {
+	background: var(--bg-soft);
+	font-weight: 650;
+	white-space: nowrap;
+}
+
+tbody tr:last-child td {
+	border-bottom: 0;
+}
+
+tbody tr:hover {
+	background: var(--bg-soft);
+}
+
+code {
+	font-family: var(--font-mono);
+	font-size: .875em;
+}
+
+:not(pre) > code {
+	padding: .12em .35em;
+	background: var(--bg-sunken);
+	border-radius: 4px;
+	overflow-wrap: break-word;
+}
+
+pre {
+	margin: 0 0 1.25rem;
+	padding: 1rem 1.1rem;
+	overflow-x: auto;
+	background: var(--hl-bg);
+	color: var(--hl-fg);
+	border: 1px solid var(--rule);
+	border-radius: var(--radius);
+	font-size: .875rem;
+	line-height: 1.55;
+	tab-size: 2;
+}
+
+pre code {
+	font-size: inherit;
+}
+
+// Troubleshooting is written as term-then-explanation, which is a definition list. Without
+// this it renders as an unspaced browser default and reads as a wall.
+dl {
+	margin: 0 0 1.25rem;
+}
+
+dt {
+	margin: 1rem 0 .25rem;
+	font-weight: 650;
+}
+
+dt:first-child {
+	margin-top: 0;
+}
+
+dd {
+	margin: 0 0 0 1.1rem;
+	padding-left: .9rem;
+	border-left: 2px solid var(--rule);
+	color: var(--fg-muted);
+}
+
+blockquote {
+	margin: 0 0 1.25rem;
+	padding: .9rem 1.1rem;
+	background: var(--note-bg);
+	border-left: 4px solid var(--note-rule);
+	border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+blockquote > :last-child {
+	margin-bottom: 0;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+}

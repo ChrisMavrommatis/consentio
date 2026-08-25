@@ -1,0 +1,14 @@
+<consentio-consent-item id="{{ consentKey }}">
+	<div class="consent-header" role="button" tabindex="0" aria-expanded="false" aria-controls="{{ consentKey }}_body">
+		<h5 id="{{ consentKey }}_title">{{ consentTitle }}</h5>
+		<consentio-switch>
+			<label>
+				<input name="{{ consentKey }}_cookies" id="{{ consentKey }}_cookies" type="checkbox" autocomplete="off" />
+				<span class="switch-lever"></span>
+			</label>
+		</consentio-switch>
+	</div>
+	<div class="consent-body" id="{{ consentKey }}_body" style="display: none">
+		<span>{{ consentDescription }}</span>
+	</div>
+</consentio-consent-item>

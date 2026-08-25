@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: typecheck, build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+      # The test harness resolves .ts through module.registerHooks and relies on Node's
+      # built-in type stripping. package.json says >=24 and this follows it.
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: '24'
+          cache: npm
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm test
+
+      # Runs the cookie, saved-state and Google-signal tests with no browser at all, to
+      # keep them from quietly acquiring one. They also run under `npm test` above.
+      - run: npm run test:plain
+
+  dist:
+    name: dist is fresh and only CI wrote it
+    runs-on: ubuntu-latest
+    steps:
+      # Full history: the guard below reads the commits the push actually carried.
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: '24'
+          cache: npm
+
+      # jsDelivr serves the committed dist/ out of a git tag, so whatever is in there is
+      # what the world gets. This is the check that stops a bundle no source produces
+      # shipping again - defect 24. The build is byte-reproducible, so a diff here means
+      # dist/ and src/ genuinely disagree.
+      - run: npm ci
+      - run: npm run build:dist
+      # --intent-to-add first, so a file the build emits and dist/ does not have shows up
+      # as a diff rather than as an untracked file git diff would ignore.
+      - name: dist/ matches what src/ builds
+        run: |
+          git add --intent-to-add -- dist/
+          git diff --exit-code -- dist/
+
+      # Freshness catches stale. This catches hand-written and coincidentally fresh, which
+      # freshness cannot see: the tree is right, so only the commit tells the two apart.
+      - name: only the release workflow writes dist/
+        env:
+          BEFORE: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: .github/scripts/dist-guard.sh

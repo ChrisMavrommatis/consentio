@@ -1,0 +1,16 @@
+<consentio-modal role="dialog" aria-modal="true" aria-labelledby="consentio-modal-title">
+	<main>
+		<h4 id="consentio-modal-title">{{ modalTitle }}</h4>
+		<p>{{ modalDescription }}</p>
+		<consentio-consent-items></consentio-consent-items>
+	</main>
+	<footer>
+		<div class="logo">
+			<a href="https://github.com/ChrisMavrommatis/consentio" target="_blank" rel="noopener noreferrer" class="link">
+				<strong>Consentio</strong>
+			</a>
+		</div>
+		<button type="button" class="button-flat" data-role="cancel">{{ buttonCancel }}</button>
+		<button type="button" class="button-flat" data-role="save">{{ buttonSave }}</button>
+	</footer>
+</consentio-modal>

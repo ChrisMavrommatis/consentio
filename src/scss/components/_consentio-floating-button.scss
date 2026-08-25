@@ -29,6 +29,11 @@
 				filter: brightness(115%);
 			}
 
+			&:focus-visible {
+				outline: 2px solid var(--focus-ring-color);
+				outline-offset: 4px;
+			}
+
 			.icon {
 				color: var(--floating-btn-color);
 				padding: 12px;

@@ -1,0 +1,55 @@
+// The light set is not monokai; the dark one is. Both are mixins because the dark set has to
+// be applied twice - once for an explicit `body.dark`, once for a visitor whose system asks
+// for dark and who has chosen nothing.
+@mixin hl-light {
+	--hl-bg: #f8f8f2;
+	--hl-fg: #333333;
+	--hl-comment: #75715e;
+	--hl-error: #a61717;
+	--hl-error-bg: #e3d2d2;
+	--hl-keyword: #0086b3;
+	--hl-namespace: #d73a49;
+	--hl-literal: #795e26;
+	--hl-string: #df5000;
+	--hl-attr: #795e26;
+	--hl-class: #6f42c1;
+	--hl-number: #005cc5;
+	--hl-inserted: #22863a;
+	--hl-deleted: #d73a49;
+	--hl-strong: bold;
+	--hl-emph: italic;
+}
+
+@mixin hl-dark {
+	--hl-bg: #272822;
+	--hl-fg: #f8f8f2;
+	--hl-comment: #75715e;
+	--hl-error: #960050;
+	--hl-error-bg: #1e0010;
+	--hl-keyword: #66d9ef;
+	--hl-namespace: #f92672;
+	--hl-literal: #ae81ff;
+	--hl-string: #e6db74;
+	--hl-attr: #a6e22e;
+	--hl-class: #a6e22e;
+	--hl-number: #ae81ff;
+	--hl-inserted: #a6e22e;
+	--hl-deleted: #f92672;
+	--hl-strong: bold;
+	--hl-emph: italic;
+}
+
+:root,
+body.light {
+	@include hl-light;
+}
+
+body.dark {
+	@include hl-dark;
+}
+
+@media (prefers-color-scheme: dark) {
+	body:not(.light) {
+		@include hl-dark;
+	}
+}

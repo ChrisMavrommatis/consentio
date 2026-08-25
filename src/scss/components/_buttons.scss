@@ -20,6 +20,11 @@
 		&:hover {
 			filter: brightness(115%);
 		}
+
+		&:focus-visible {
+			outline: 2px solid var(--focus-ring-color);
+			outline-offset: 2px;
+		}
 	}
 
 	.button-flat {
@@ -40,6 +45,11 @@
 
 		&:hover {
 			filter: brightness(115%);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--focus-ring-color);
+			outline-offset: 2px;
 		}
 	}
 }

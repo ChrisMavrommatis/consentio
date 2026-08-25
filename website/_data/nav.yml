@@ -1,0 +1,33 @@
+# The sidebar, and the order the previous/next links walk. One list, so the two cannot
+# disagree. Reading order: what it is, how to put it in, what to do when it misbehaves,
+# then the reference nobody reads until they need it.
+- title: Start here
+  items:
+    - title: Overview
+      url: /
+    - title: Try it on this page
+      url: /try-it/
+    - title: Try it through a tag manager
+      url: /try-it/tag-manager/
+- title: Set it up
+  items:
+    - title: Put it in your HTML
+      url: /install/direct/
+    - title: Use Google Tag Manager
+      url: /install/tag-manager/
+    - title: Troubleshooting
+      url: /troubleshooting/
+- title: Reference
+  items:
+    - title: Settings
+      url: /configuration/
+    - title: How it works
+      url: /how-it-works/
+    - title: The cookie
+      url: /cookie/
+    - title: What it tells Google
+      url: /datalayer/
+    - title: Asking everyone again
+      url: /versioning/
+    - title: Events
+      url: /events/
