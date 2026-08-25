@@ -11,7 +11,7 @@ test('assigning config after the first render rebuilds the bar and the modal', (
 	assert.notEqual(app.bar, before, 'render() builds fresh nodes');
 });
 
-test('issue 13 - a re-render re-applies visibility instead of showing everything', { todo: true }, () => {
+test('issue 13 - a re-render re-applies visibility instead of showing everything', () => {
 	const visible = [app.bar, app.modal].filter((el) => el!.style.display !== 'none');
 	assert.ok(
 		visible.length <= 1,
@@ -19,7 +19,7 @@ test('issue 13 - a re-render re-applies visibility instead of showing everything
 	);
 });
 
-test('issue 13 - the bar is the one that stays visible after a re-render', { todo: true }, () => {
+test('issue 13 - the bar is the one that stays visible after a re-render', () => {
 	assert.equal(app.bar!.style.display, 'block');
 	assert.equal(app.modal!.style.display, 'none');
 });

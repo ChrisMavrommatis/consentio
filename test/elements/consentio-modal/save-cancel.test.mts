@@ -46,7 +46,7 @@ test('cancelling emits consentio:cancel-settings and reports no state', () => {
 	assert.deepEqual(seen[0].detail, {});
 });
 
-test('issue 7 - a disconnected modal stops emitting', { todo: true }, () => {
+test('issue 7 - a disconnected modal stops emitting', () => {
 	const { modal } = mountModal();
 	proto.disconnectedCallback!.call(modal);
 	const seen = captureEvents('consentio:cancel-settings', () => click(modal.cancelBtn!));

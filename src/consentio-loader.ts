@@ -50,13 +50,7 @@ import { BASELINE_CONSENTS, readConsents } from './lib/consent-store.js';
 
 	const debug = loaderScript.dataset.debug === 'true';
 
-	// The bundle is found relative to the loader's own src, and `.min.js` in the loader's
-	// filename is what selects the minified bundle.
 	const loaderSrc = loaderScript.getAttribute('src');
-	// @ts-expect-error issue 22 - src is never null-checked
-	const basePath = loaderSrc.substring(0, loaderSrc.lastIndexOf('/') + 1);
-	// @ts-expect-error issue 22 - src is never null-checked
-	const isMinified = loaderSrc.includes('.min.js');
 
 	const configUrl = loaderScript.dataset.configUrl || null;
 	const cookiesUrl = loaderScript.dataset.cookiesUrl || null;
@@ -104,6 +98,18 @@ import { BASELINE_CONSENTS, readConsents } from './lib/consent-store.js';
 		global.ConsentioDefault = { cookieName, version, consents, consentGiven: stored !== null };
 		debug && logger.info('[Consentio Loader] Consent default pushed:', consents);
 	}
+
+	// The consent default above is the job that cannot be missed, so a tag pasted inline
+	// rather than linked loses the banner and keeps the default. Issue 22.
+	if (loaderSrc === null) {
+		logger.error('[Consentio Loader] the loader tag has no src, so the banner cannot be located');
+		return;
+	}
+
+	// The bundle sits beside the loader, and `.min.js` in the loader's own filename is what
+	// selects the minified build.
+	const basePath = loaderSrc.substring(0, loaderSrc.lastIndexOf('/') + 1);
+	const isMinified = loaderSrc.includes('.min.js');
 
 	const consentioScript = doc.createElement('script');
 	consentioScript.src = `${basePath}consentio${isMinified ? '.min' : ''}.js`;

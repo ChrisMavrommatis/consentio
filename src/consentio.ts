@@ -85,27 +85,57 @@ class Consentio {
 	declare el: ConsentioAppElement | null;
 
 	static Create(options: ConsentioOptions = {}, cookies: CookieDescriptor[] = []): Consentio {
-		return new Consentio(options, cookies, window.console);
+		// The loader's double-init guard reads this, so Create has to set it or the two
+		// entry points cannot see each other - which is what makes issue 8 bite.
+		const instance = new Consentio(options, cookies, window.console);
+		window.ConsentioInstance = instance;
+		return instance;
 	}
 
-	static mergeConsents(defaultConsents: ConsentCategory[], customConsents: ConsentCategoryOverride[]): ConsentCategory[] {
+	/**
+	 * The four categories are fixed, so this only ever changes copy. An unknown key is
+	 * warned about and dropped rather than added: a fifth category could never reach a
+	 * Google signal, and the loader has to know the set before it can read any config.
+	 */
+	static mergeConsents(defaultConsents: ConsentCategory[], customConsents: ConsentCategoryOverride[], logger: Console | null = null): ConsentCategory[] {
 		const consentMap: Record<string, ConsentCategory> = Object.fromEntries(defaultConsents.map(c => [c.key, c]));
 		customConsents.forEach(c => {
-			consentMap[c.key] = { ...consentMap[c.key], ...c };
+			if (!Object.prototype.hasOwnProperty.call(consentMap, c.key)) {
+				// Warned, not thrown: the rest of the config is still good and a blank page
+				// is a worse answer than a banner missing one category nobody could use.
+				logger?.warn(`[Consentio] unknown consent category "${c.key}" ignored - the four categories are fixed`);
+				return;
+			}
+			// Field by field, not a spread of the whole override: a spread carries anything
+			// else the site wrote through, including the `signals` routing that used to be
+			// honoured here. Copy is a site's to change; taxonomy is not.
+			const changes: Partial<ConsentCategory> = {};
+			if (c.title !== undefined) { changes.title = c.title; }
+			if (c.description !== undefined) { changes.description = c.description; }
+			if (c.alwaysOn !== undefined) { changes.alwaysOn = c.alwaysOn; }
+			if (c.defaultState !== undefined) { changes.defaultState = c.defaultState; }
+			consentMap[c.key] = { ...consentMap[c.key], ...changes };
 		});
 		return Object.values(consentMap);
 	}
 
 	constructor(options: ConsentioOptions = {}, cookies: CookieDescriptor[] = [], logger: Console | null = null) {
+		// One cookie identity, not two. The loader already resolved the name and the version
+		// off its own tag and published them; taking them back means a tag and a config JSON
+		// that disagree cannot point the two halves at different cookies. The tag manager
+		// route never runs the loader, so it keeps taking the config's values.
+		const fromLoader = typeof window === 'undefined' ? undefined : window.ConsentioDefault;
+
 		this.config = {
 			...Consentio._defaultConfig,
 			...options,
+			...(fromLoader ? { cookieName: fromLoader.cookieName, version: fromLoader.version } : {}),
 			texts: {
 				...Consentio._defaultConfig.texts,
 				...(options.texts || {})
 			},
 			consents: options.consents
-				? Consentio.mergeConsents(Consentio._defaultConfig.consents, options.consents)
+				? Consentio.mergeConsents(Consentio._defaultConfig.consents, options.consents, logger)
 				: Consentio._defaultConfig.consents
 		};
 		this.cookies = [
@@ -132,17 +162,40 @@ class Consentio {
 		this.el.state = this.state;
 		this.el.cookies = this.cookies;
 		this.el.logger = this.logger;
-		document.body.appendChild(this.el);
+		this.attach();
+	}
+
+	/**
+	 * The loader appends the bundle with no `defer`, so a loader tag in `<head>` reaches
+	 * here while `document.body` is still null. Issue 10.
+	 */
+	attach(): void {
+		if (document.body) {
+			document.body.appendChild(this.el!);
+			return;
+		}
+		document.addEventListener('DOMContentLoaded', () => {
+			document.body.appendChild(this.el!);
+		}, { once: true });
 	}
 
 
 	defineCustomElements(): void {
-		customElements.define('consentio-app', ConsentioAppElement);
-		customElements.define('consentio-bar', ConsentioBarElement);
-		customElements.define('consentio-required', ConsentioRequiredElement);
-		customElements.define('consentio-floating-button', ConsentioFloatingButtonElement);
-		customElements.define('consentio-consent-item', ConsentioConsentItemElement);
-		customElements.define('consentio-modal', ConsentioModalElement);
+		const elements: [string, CustomElementConstructor][] = [
+			['consentio-app', ConsentioAppElement],
+			['consentio-bar', ConsentioBarElement],
+			['consentio-required', ConsentioRequiredElement],
+			['consentio-floating-button', ConsentioFloatingButtonElement],
+			['consentio-consent-item', ConsentioConsentItemElement],
+			['consentio-modal', ConsentioModalElement]
+		];
+		// define() throws on a name already taken, so a second Consentio on the page would
+		// die here rather than reuse the registry. Issue 8.
+		for (const [name, constructor] of elements) {
+			if (!customElements.get(name)) {
+				customElements.define(name, constructor);
+			}
+		}
 	}
 
 }

@@ -177,9 +177,14 @@ value, which is how a category that was granted and then revoked stays granted. 
 
 ## How a release actually runs
 
-**Built 25 Aug 2026, never dispatched.** This lives here because
-[../plans/2-release-pipeline.md](../plans/2-release-pipeline.md) is deleted once its work is committed, and
-the procedure has to survive it. Today the only other copy is a comment inside `release.yml` itself.
+**Built 25 Aug 2026, never dispatched.** The plan that built it has been deleted, so this is the record.
+The only other copy is a comment inside `release.yml` itself.
+
+**Why a dispatch and not a tag trigger**, which is the shape most people expect. The CDN serves the git tree
+at the tag: `consentio@0.1.0/dist/consentio.min.js` is whatever `dist/` held in the commit the tag points at.
+A workflow that fires *after* the tag exists cannot change that commit, so it would publish whatever `dist/`
+happened to be sitting there. **That is exactly how `0.0.4` shipped stale.** The dispatch builds and commits
+`dist/` first, then tags that commit, so a tag can only ever point at a fresh build.
 
 **The workflow does not bump the version, and it does not name the release.** Three things are the
 maintainer's, by hand on `main`, **before** dispatching:
@@ -207,7 +212,9 @@ reversible:
   the release stops after building and before tagging. That is a safe place to stop, but it stops.
 - **The commit subject `release <version>` and the bot's committer address are how `dist-guard.sh` tells a
   released `dist/` from a hand-written one.** Changing either shape silently disarms the guard. It catches
-  mistakes, not someone deliberately setting that email - and that is the right bar for it.
+  mistakes, not someone deliberately setting that email - and that is the right bar for it. The guard is a
+  script in `.github/scripts/` rather than inline YAML for one reason: as a script it has tests, and inline
+  the one thing it exists to decide could only ever be exercised by a real push.
 
 **CI is red until the first release.** The freshness job rebuilds `dist/` and diffs it, and the committed
 `dist/` is stale - defect 24. Every file differs, plus one the build emits and `dist/` does not have. That

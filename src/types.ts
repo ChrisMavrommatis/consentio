@@ -1,5 +1,3 @@
-import type { GoogleSignal } from './lib/consent-signals.js';
-
 export type ConsentState = 'granted' | 'denied';
 
 export type LogLevel = 'error' | 'warn' | 'info' | 'log';
@@ -29,8 +27,6 @@ export interface ConsentCategory {
 	description: string;
 	alwaysOn: boolean;
 	defaultState: ConsentState;
-	/** Which Google signals this category drives. Omit to use the built-in mapping for the key. */
-	signals?: readonly GoogleSignal[];
 }
 
 /** What the loader leaves on the page once it has pushed the consent default. */
@@ -41,7 +37,10 @@ export interface ConsentioDefaultState {
 	consentGiven: boolean;
 }
 
-/** What a site may supply for a category: anything but the key is optional. */
+/**
+ * What a site may supply for one of the four categories: copy, not taxonomy. The key
+ * selects which category is being changed and must be one of the four - issue 28.
+ */
 export type ConsentCategoryOverride = Partial<ConsentCategory> & { key: string };
 
 export interface ConsentioConfig {

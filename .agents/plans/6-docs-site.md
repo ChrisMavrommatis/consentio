@@ -14,7 +14,7 @@ that is written and proven but **left switched off** until the maintainer says p
 ## Why
 
 The documentation is good and nobody can read it. Nothing publishes the site. The one-shot
-`npm run build:website` it needs landed with plan 2, so this plan is only about the deploy.
+`npm run build:website` it needs already exists, so this plan is only about the deploy.
 
 The content is also one long page. It is thorough - both routes, the full config reference, the cookie
 contract, the events - and one page is still one page, icons or not.
@@ -44,7 +44,7 @@ blocking overlay. After plan 4 that is a *good* demonstration rather than an emb
 put a live banner on the page deliberately rather than incidentally - with a control to clear the cookie and
 show it again, or nobody sees it twice.
 
-**`url` and `baseurl` are still undecided, as of 25 Aug 2026.** Plan 1 set them to the GitHub project-pages
+**`url` and `baseurl` are still undecided, as of 25 Aug 2026.** They are set to the GitHub project-pages
 defaults - `https://chrismavrommatis.github.io` with `baseurl: "/consentio"` - to stop the missing `url`
 breaking absolute links and any sitemap. A custom domain is likely but not chosen. **So do not hard-code the
 address anywhere except `_config.yml`**: no absolute URL in a layout, a page, or the deploy workflow. Then
@@ -74,10 +74,10 @@ committed. Read `git diff` on both before starting so you do not undo something 
 
 **The copy is rewritten under [../rules/plain-language.md](../rules/plain-language.md), not just moved.**
 It bans the sales register and says to state a thing once and stop. The existing page is mostly good on
-this and `package.json:4` was fixed during plan 1.
+this, and `package.json:4` has already been fixed.
 
-**The headings already carry icons and explicit anchors.** Plan 1 restyled the page under
-[../rules/icon-headings-in-public-docs.md](../rules/icon-headings-in-public-docs.md) and pinned every
+**The headings already carry icons and explicit anchors.** The page was restyled on 24 Aug 2026 under
+[../rules/icon-headings-in-public-docs.md](../rules/icon-headings-in-public-docs.md), which pinned every
 heading's `{#id}`, because kramdown would otherwise rewrite the anchors the page links to. **Splitting the
 page must carry both across** - an icon per heading, and the same ids, so the three in-page links and any
 external one still resolve.
@@ -95,7 +95,7 @@ stage or push.**
 - [ ] The site builds in one command from a clean tree, JavaScript included.
       `npm run build:website && cd website && bundle exec jekyll build` with no watcher.
 - [ ] The dead `remote_theme` line is gone or the theme is actually installed. **Say which you chose and
-      why.** `url` and `baseurl` were set during plan 1 to the GitHub project-pages defaults
+      why.** `url` and `baseurl` are already set to the GitHub project-pages defaults
       (`https://chrismavrommatis.github.io` + `/consentio`) - **confirm that is where it publishes** before
       the deploy workflow relies on them.
 - [ ] `home.md` is no longer one long page, and every section survived the split.

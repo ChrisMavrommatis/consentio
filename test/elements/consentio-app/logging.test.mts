@@ -15,7 +15,7 @@ const saveEvent = () => new CustomEvent('consentio:save-settings', {
 	}
 });
 
-test('issue 19 - saving with no logger attached does not throw', { todo: true }, () => {
+test('issue 19 - saving with no logger attached does not throw', () => {
 	const saved = app.logger;
 	app.logger = null;
 	try {
@@ -27,7 +27,7 @@ test('issue 19 - saving with no logger attached does not throw', { todo: true },
 	}
 });
 
-test('issue 19 - a message is logged, not the whole event object', { todo: true }, () => {
+test('issue 19 - a message is logged, not the whole event object', () => {
 	const logged: unknown[] = [];
 	const saved = app.logger;
 	app.logger = { log: (text: unknown) => { logged.push(text); } } as unknown as ConsentioLogger;

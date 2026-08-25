@@ -7,9 +7,13 @@ class Cookies {
 	static defaultAttributes: CookieAttributes = {
 		path: '/',
 		expires: 90,
-		sameSite: 'Lax',
-		secure: true
+		sameSite: 'Lax'
 	};
+
+	// Read at set() time, not at module load: a page's protocol is not known before it is.
+	static isSecureOrigin(): boolean {
+		return typeof location !== 'undefined' && location.protocol === 'https:';
+	}
 
 	static converter: CookieConverter = {
 		read: function (value: string): string {
@@ -36,7 +40,9 @@ class Cookies {
 	}
 
 	static set(key: string, value: string, attributes?: CookieAttributes): string {
-		attributes = this.assign({}, Cookies.defaultAttributes, attributes);
+		// Secure over https only. Unconditionally secure is dropped by the browser on plain
+		// http, which is every local dev server, and nothing says why.
+		attributes = this.assign({}, Cookies.defaultAttributes, { secure: Cookies.isSecureOrigin() }, attributes);
 
 		if (typeof attributes.expires === 'number') {
 			attributes.expires = new Date(Date.now() + attributes.expires * 864e5);

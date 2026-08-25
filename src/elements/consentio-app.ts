@@ -7,7 +7,6 @@ import modalTemplate from '../templates/consentio-modal.html';
 import consentItemTemplate from '../templates/consentio-consent-item.html';
 import floatingButtonTemplate from '../templates/consentio-floating-button.html';
 import ConsentioGTM from '../lib/gtm.js';
-import { signalMapFrom } from '../lib/consent-signals.js';
 import { showElement, hideElement } from '../lib/dom.js';
 
 import type ConsentioBarElement from './consentio-bar.js';
@@ -34,10 +33,19 @@ class ConsentioAppElement extends HTMLElement {
 	declare consentItems: ConsentioConsentItemElement[];
 	declare floatingButton: ConsentioFloatingButtonElement | null;
 	declare gtm: ConsentioGTM | null;
+	declare _handlers: [string, (event: Event) => void][];
 
 	constructor() {
 		super();
 		this._shadow = this.attachShadow({ mode: 'closed' });
+		// Bound once and kept. `this.fn.bind(this)` builds a new function object every call,
+		// so a removeEventListener handed a fresh one never matches what was added.
+		this._handlers = [
+			['consentio:open-settings', this.openSettings.bind(this)],
+			['consentio:accept-all-consents', this.acceptAll.bind(this)],
+			['consentio:cancel-settings', this.cancelSettings.bind(this)],
+			['consentio:save-settings', this.saveSettings.bind(this)]
+		];
 		this.isRendered = false;
 		this.isVisible = false;
 		// Placeholders until Consentio.init assigns the real config and state.
@@ -61,6 +69,9 @@ class ConsentioAppElement extends HTMLElement {
 		this._config = { ...this._config, ...value };
 		if (this.isRendered) {
 			this.render();
+			// render() builds fresh nodes with no inline display, and initState only runs
+			// from connectedCallback, so without this the bar and the modal show at once.
+			this.initState();
 		}
 	}
 
@@ -90,13 +101,11 @@ class ConsentioAppElement extends HTMLElement {
 	connectedCallback(): void {
 		this.render();
 		this.initState();
-		this.addEventListener('consentio:open-settings', this.openSettings.bind(this));
-		this.addEventListener('consentio:accept-all-consents', this.acceptAll.bind(this));
-		this.addEventListener('consentio:cancel-settings', this.cancelSettings.bind(this));
-		this.addEventListener('consentio:save-settings', this.saveSettings.bind(this));
+		for (const [event, handler] of this._handlers) {
+			this.addEventListener(event, handler);
+		}
 
-		// Built from the configured categories, so a category a site adds can reach a signal.
-		this.gtm = new ConsentioGTM(this.logger, signalMapFrom(this.config.consents));
+		this.gtm = new ConsentioGTM(this.logger);
 		this.isRendered = true;
 		this.emit('consentio:initialized', this.state.consents);
 		// No `consent default` from here. It runs after two fetches and a DOM insert, long
@@ -104,11 +113,10 @@ class ConsentioAppElement extends HTMLElement {
 
 	}
 
-	disconectedCallback(): void {
-		this.removeEventListener('consentio:open-settings', this.openSettings.bind(this));
-		this.removeEventListener('consentio:accept-all-consents', this.acceptAll.bind(this));
-		this.removeEventListener('consentio:cancel-settings', this.cancelSettings.bind(this));
-		this.removeEventListener('consentio:save-settings', this.saveSettings.bind(this));
+	disconnectedCallback(): void {
+		for (const [event, handler] of this._handlers) {
+			this.removeEventListener(event, handler);
+		}
 	}
 
 	render(): void {
@@ -255,8 +263,7 @@ class ConsentioAppElement extends HTMLElement {
 
 	saveSettings(event: Event): void {
 		event.stopImmediatePropagation();
-		// @ts-expect-error issue 19 - logger is unguarded and the whole event object is logged
-		this.logger.log(event, 'info');
+		this.logger?.log('[Consentio:Event] save-settings', 'info');
 		this.state.updateState((event as CustomEvent<ConsentRecord>).detail);
 		this.consentItems.forEach((consentItem) => {
 			consentItem.updateState(this.state.consents[consentItem.id]);

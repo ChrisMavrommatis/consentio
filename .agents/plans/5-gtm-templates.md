@@ -11,7 +11,7 @@ deny-by-default, and [../design/issues.md](../design/issues.md) for defects 25 a
 
 The three templates are in `gtm/`. **This plan changes nothing in `src/`.**
 
-**[`../../gtm/README.md`](../../gtm/README.md) was corrected during plan 1** - it no longer claims every
+**[`../../gtm/README.md`](../../gtm/README.md) has already been corrected** - it no longer claims every
 template pins a version, and it lists both open template defects under a Known problems heading. Delete that
 heading as part of this plan, not before.
 
@@ -88,6 +88,13 @@ a defect against it. They need the gallery files, a README each, and two spellin
 in `consentio-tag-cookies` logs `Contentio Tag: Cookies`, and `consentio-tag-texts/template.tpl:9` describes
 itself as being for "the Contentio Tag".
 
+**The gallery description still sells, and this plan is the only thing that opens the file.**
+`consentio-tag/template.tpl:14` - the `description` the gallery shows - says Consentio "integrates
+seamlessly with tag manager and provides transparent consent handling". That is the sales register
+[../rules/plain-language.md](../rules/plain-language.md) bans. It was found on 24 Aug 2026 and left alone
+then, because editing a published template costs a review cycle and this plan is already paying for one.
+Rewrite it to say what the tag does.
+
 **Where these get tested, decided 25 Aug 2026: the published documentation site.** Every deliverable below
 that says "by eye" or "on a real page" needs a live page with a tag manager container on it, and the site is
 that page once plan 6 publishes it. So **this plan can be written before plan 6 and cannot be finished
@@ -123,5 +130,7 @@ bump the version.** **Do not commit, stage or push.**
       `grep -rn "\.agents" gtm/` returns nothing.
 - [ ] No `Contentio` anywhere.
       `grep -rni "contentio" gtm/` returns nothing.
+- [ ] The gallery description says what the tag does and does not sell.
+      `grep -rn "seamless" gtm/` returns nothing.
 - [ ] `src/` is untouched and the version was not bumped.
       `git diff --stat src/ package.json` is empty.

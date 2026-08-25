@@ -32,7 +32,7 @@ any spare sitting.
 - `.nvmrc` and `.gitattributes`.
 - `.github/ISSUE_TEMPLATE/`, `PULL_REQUEST_TEMPLATE.md`, `dependabot.yml`, `CODEOWNERS`.
 
-`CHANGELOG.md` is plan 2's, not this one's.
+`CHANGELOG.md` already exists at the root. Not this plan's.
 
 **Every file this plan writes carries icon headings** - see
 [../rules/icon-headings-in-public-docs.md](../rules/icon-headings-in-public-docs.md), which holds the set
@@ -48,9 +48,9 @@ from the filenames.
 
 - `package.json` says `"node": ">=22.15"`; `ci.yml` runs Node `24`. **Settled 25 Aug 2026: 24.** The floor
   exists because the test harness needs Node's built-in type stripping - see `test/register.mjs` - so this
-  is a real bump. `package.json` moves to `>=24`, `.nvmrc` says `24`, every workflow says `24`. Revisit only
-  if 24 causes trouble. Plan 2 makes the same change if it runs first; whichever gets there does it.
-- `config/` is already gone - plan 9 deleted it. Nothing to do.
+  is a real bump. `package.json` already says `>=24` and every workflow already says `24`. **What is left
+  here is `.nvmrc`, which does not exist.** Revisit the number only if 24 causes trouble.
+- `config/` is already gone. Nothing to do.
 
 **The contribution file is where the `dist/` rule has to be legible to an outsider.** A contributor has
 never read `.agents/` and never will. State the rule in its own words:

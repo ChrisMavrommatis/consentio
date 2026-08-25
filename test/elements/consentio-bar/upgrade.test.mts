@@ -9,7 +9,7 @@ customElements.define('consentio-bar', ConsentioBarElement);
 // because renderNode builds the bar inside an inert <template>, so the upgrade is
 // deferred until the finished node is inserted and the children already exist.
 
-test('issue 11 - an element built child-by-child still finds its buttons', { todo: true }, () => {
+test('issue 11 - an element built child-by-child still finds its buttons', () => {
 	const bar = document.createElement('consentio-bar') as ConsentioBarElement;
 	bar.innerHTML = '<button data-role="settings">S</button><button data-role="acceptAll">A</button>';
 	document.body.appendChild(bar);
@@ -18,7 +18,7 @@ test('issue 11 - an element built child-by-child still finds its buttons', { tod
 	assert.ok(bar.acceptAllBtn);
 });
 
-test('issue 11 - connecting an element whose children arrive later does not throw', { todo: true }, () => {
+test('issue 11 - connecting an element whose children arrive later does not throw', () => {
 	const bar = document.createElement('consentio-bar') as ConsentioBarElement;
 	document.body.appendChild(bar);
 	bar.innerHTML = '<button data-role="settings">S</button><button data-role="acceptAll">A</button>';

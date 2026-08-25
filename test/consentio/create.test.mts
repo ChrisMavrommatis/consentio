@@ -9,7 +9,7 @@ test('Create builds a working instance', () => {
 	assert.ok(instance.el);
 });
 
-test('issue 9 - Create registers the instance where the loader looks for it', { todo: true }, () => {
+test('issue 9 - Create registers the instance where the loader looks for it', () => {
 	assert.ok(
 		window.ConsentioInstance,
 		'the loader guards on global.ConsentioInstance, and Create never sets it - which is why defect 8 bites'

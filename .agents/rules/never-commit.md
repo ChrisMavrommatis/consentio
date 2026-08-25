@@ -12,6 +12,10 @@ branch switching that would move work out of view.
 work behind a message that nobody wrote carefully, and a session that stages makes the diff harder to read,
 not easier.
 
+**`git mv` stages, so it is not a way round this.** Move files with plain `mv`. `git status` then shows the
+move as a pile of deletions plus untracked files rather than as renames - **that is correct, and it must be
+left alone.** Do not run `git add -A` to make the diff read better.
+
 **No carve-outs.** Not for a "safe" file, not for a revert, not for `dist/`. If a change is so large that
 reviewing it whole is hard, say so in chat and describe how it is split - do not split it into commits.
 

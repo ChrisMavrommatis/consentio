@@ -11,7 +11,7 @@ test('the item spells disconnectedCallback correctly, so the DOM will call it', 
 	assert.equal(typeof proto.disconnectedCallback, 'function');
 });
 
-test('issue 7 - a disconnected item stops responding to clicks', { todo: true }, () => {
+test('issue 7 - a disconnected item stops responding to clicks', () => {
 	const item = mountItem();
 	proto.disconnectedCallback!.call(item);
 

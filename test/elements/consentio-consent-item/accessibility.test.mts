@@ -19,7 +19,7 @@ test('an alwaysOn item shows a text label in place of the switch', () => {
 	assert.equal(item.querySelector('.switch-lever'), null);
 });
 
-test('issue 23 - the alwaysOn label keeps its checkbox instead of detaching it', { todo: true }, () => {
+test('issue 23 - the alwaysOn label keeps its checkbox instead of detaching it', () => {
 	const item = mountItem({ alwaysOn: 'Always On' });
 	assert.ok(
 		item.contains(item.input!),

@@ -8,7 +8,9 @@ class TemplateRenderer {
 
 	static render(template: string, data: Record<string, string>): string {
 		return template.replace(/{{\s*([\w]+)\s*}}/g, (match: string, p1: string) => {
-			return this.domSanitize(data[p1] || '');
+			// Not `|| ''`: a zero and a false are values a site can legitimately supply.
+			const value = data[p1];
+			return this.domSanitize(value === undefined || value === null ? '' : String(value));
 		});
 	}
 

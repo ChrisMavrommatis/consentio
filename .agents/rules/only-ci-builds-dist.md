@@ -56,6 +56,6 @@ Two checks in the `dist` job of `.github/workflows/ci.yml` back it up, and they 
 ## The committed `dist/` is stale right now
 
 Defect 24, still open, and **CI is red on it by design** until the first release regenerates it. That is the
-freshness check doing its job, not a break. It is fixed by
-[../plans/2-release-pipeline.md](../plans/2-release-pipeline.md)'s release workflow running, not by a working
-tree - see [../plans/8-release-readiness.md](../plans/8-release-readiness.md).
+freshness check doing its job, not a break. It is fixed by the release workflow running, not by a working
+tree - see [../design/delivery.md](../design/delivery.md) for how a release runs and
+[../plans/8-release-readiness.md](../plans/8-release-readiness.md) for who dispatches it.

@@ -1,4 +1,4 @@
-import type { ConsentCategory, ConsentRecord, ConsentState } from '../types.js';
+import type { ConsentRecord, ConsentState } from '../types.js';
 
 /**
  * The seven signals Google Consent Mode reads. **This is the only file in which a Google
@@ -23,8 +23,9 @@ export type ConsentSignals = Record<GoogleSignal, ConsentState>;
 export type SignalMap = Record<string, readonly GoogleSignal[]>;
 
 /**
- * What the four built-in categories map to. The loader uses this as-is - it has no config
- * when it pushes - so a site's own routing does not reach the default push. Issue 27.
+ * What the four categories map to. The four are fixed and a site cannot re-point one, so
+ * this is the only map there is - which is what lets the loader push a correct default
+ * before it has read any config.
  */
 export const DEFAULT_SIGNAL_MAP: SignalMap = {
 	strictly_necessary: ['security_storage'],
@@ -32,22 +33,6 @@ export const DEFAULT_SIGNAL_MAP: SignalMap = {
 	statistics_performance: ['analytics_storage'],
 	marketing_advertising: ['ad_storage', 'ad_user_data', 'ad_personalization']
 };
-
-/**
- * Build the map from the configured categories. A category that names no `signals` falls
- * back to the built-in mapping for its key, so a site can override copy without restating
- * the routing.
- */
-export function signalMapFrom(categories: readonly ConsentCategory[]): SignalMap {
-	const map: SignalMap = {};
-	for (const category of categories) {
-		const signals = category.signals ?? DEFAULT_SIGNAL_MAP[category.key];
-		if (signals) {
-			map[category.key] = signals;
-		}
-	}
-	return map;
-}
 
 export function toGoogleSignals(consents: ConsentRecord, map: SignalMap = DEFAULT_SIGNAL_MAP): ConsentSignals {
 	// Deny wins. A signal is granted only when every category routed to it is granted,

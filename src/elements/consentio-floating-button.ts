@@ -1,17 +1,30 @@
 class ConsentioFloatingButtonElement extends HTMLElement {
-	declare button: HTMLButtonElement | null;
+
+	declare _onClick: (event: Event) => void;
 
 	constructor() {
 		super();
-		this.button = this.querySelector('button');
+		// Bound once: a fresh bind() never matches what addEventListener was given.
+		this._onClick = this.onClick.bind(this);
+	}
+
+	// Queried on access, so an element upgraded before its children exist still finds it.
+	get button(): HTMLButtonElement | null {
+		return this.querySelector('button');
 	}
 
 	connectedCallback(): void {
-		this.button!.addEventListener('click', this.openSettings.bind(this));
+		this.addEventListener('click', this._onClick);
 	}
 
 	disconnectedCallback(): void {
-		this.button!.removeEventListener('click', this.openSettings.bind(this));
+		this.removeEventListener('click', this._onClick);
+	}
+
+	onClick(event: Event): void {
+		if ((event.target as Element | null)?.closest('button')) {
+			this.openSettings(event);
+		}
 	}
 
 	openSettings(event: Event): void {
@@ -26,7 +39,6 @@ class ConsentioFloatingButtonElement extends HTMLElement {
 			detail: data
 		}));
 	}
-
 
 }
 

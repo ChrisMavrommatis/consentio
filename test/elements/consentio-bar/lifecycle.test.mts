@@ -17,11 +17,11 @@ function mount(): ConsentioBarElement {
 	return bar;
 }
 
-test('issue 6 - the bar exposes disconnectedCallback, spelled the way the DOM calls it', { todo: true }, () => {
+test('issue 6 - the bar exposes disconnectedCallback, spelled the way the DOM calls it', () => {
 	assert.equal(typeof proto.disconnectedCallback, 'function', 'only the misspelled disconectedCallback exists, so it never fires');
 });
 
-test('issue 7 - a disconnected bar stops emitting', { todo: true }, () => {
+test('issue 7 - a disconnected bar stops emitting', () => {
 	const bar = mount();
 	const teardown = proto.disconnectedCallback ?? proto.disconectedCallback;
 	assert.ok(teardown, 'no teardown callback of either spelling');
@@ -31,7 +31,7 @@ test('issue 7 - a disconnected bar stops emitting', { todo: true }, () => {
 	assert.equal(seen.length, 0, 'removeEventListener rebinds, so it never matches what was added');
 });
 
-test('issues 6 and 7 - removing the bar from the document leaves no listener behind', { todo: true }, () => {
+test('issues 6 and 7 - removing the bar from the document leaves no listener behind', () => {
 	const bar = mount();
 	bar.remove();
 	const seen = captureEvents('consentio:open-settings', () => click(bar.settingsBtn!));

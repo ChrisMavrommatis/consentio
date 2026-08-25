@@ -29,7 +29,7 @@ becomes a list rather than a feeling.
 
 ## Direction
 
-**The automated gates.** All of these are already built by plan 2; this is where they are all run green at
+**The automated gates.** All of these already exist in the pipeline; this is where they are all run green at
 once, on one commit:
 
 - `npm ci`, `npm run typecheck`, `npm run build:dist`, `npm test`, `npm run test:plain`
@@ -37,6 +37,21 @@ once, on one commit:
 - two clean builds byte-identical - the reproducibility the freshness check rests on
 - `node scripts/changelog.mjs check <version>` - the release body exists
 - the version in `package.json` matches what is about to be tagged
+
+**The first dispatch must be a dry run, and it is the first time five things are tested at all.**
+`release.yml` was proven on 25 Aug 2026 by running the same commands in the same order against a throwaway
+copy of the tree - **no runner was used**, because there is no `gh` here and nothing may be pushed. Gate,
+verify, notes and the commit preview all passed. These five were not exercised and cannot be, off a runner:
+
+1. that the YAML parses on GitHub's side at all
+2. that `GITHUB_TOKEN` with `contents: write` may push to `main` and push a tag, under whatever branch
+   protection is set - see the release procedure in [../design/delivery.md](../design/delivery.md)
+3. that `gh release create` behaves as expected against an existing release
+4. that `${{ !inputs.dry_run }}` gates the commit, tag and publish steps the way it reads
+5. that the `main`-only ref check fires
+
+`dry_run` defaults to on, so a first dispatch costs nothing and settles 1, 4 and 5. **Do not turn it off to
+save a run.**
 
 **The checks nothing automated reaches.** `test/README.md` is honest about where the suite cannot go; this
 is that list, executed:
@@ -78,6 +93,8 @@ stage or push.**
 ## Deliverables
 
 - [ ] Every automated gate is green on one commit, and which commit is written down.
+- [ ] `release.yml` has been dispatched at least once with `dry_run` on, **on a real runner**, and what it
+      proved and did not prove is written down.
 - [ ] All six by-hand checks are done and their results recorded - including the ones that failed, if any.
       **A check nobody ran is reported as not run, never as passed.**
 - [ ] The two routes are confirmed to agree about the same visitor, by hand, on a real page.

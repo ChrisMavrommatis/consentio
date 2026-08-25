@@ -2,17 +2,26 @@ import type ConsentioLogger from '../lib/logger.js';
 
 class ConsentioBarElement extends HTMLElement {
 
-	declare settingsBtn: HTMLButtonElement | null;
-	declare acceptAllBtn: HTMLButtonElement | null;
 	declare _logger: ConsentioLogger | null;
+	declare _onClick: (event: Event) => void;
 
 	constructor() {
 		super();
-		this.settingsBtn = this.querySelector<HTMLButtonElement>('button[data-role="settings"]');
-		this.acceptAllBtn = this.querySelector<HTMLButtonElement>('button[data-role="acceptAll"]');
 		this._logger = null;
+		// Bound once and kept. `this.fn.bind(this)` builds a new function object every call,
+		// so a removeEventListener handed a fresh one never matches what was added.
+		this._onClick = this.onClick.bind(this);
 	}
 
+	// Queried on access rather than cached in the constructor: an element upgraded in
+	// place runs its constructor before its children exist.
+	get settingsBtn(): HTMLButtonElement | null {
+		return this.querySelector<HTMLButtonElement>('button[data-role="settings"]');
+	}
+
+	get acceptAllBtn(): HTMLButtonElement | null {
+		return this.querySelector<HTMLButtonElement>('button[data-role="acceptAll"]');
+	}
 
 	get logger(): ConsentioLogger | null {
 		return this._logger;
@@ -20,18 +29,27 @@ class ConsentioBarElement extends HTMLElement {
 
 	set logger(value: ConsentioLogger | null) {
 		this._logger = value;
-
 	}
+
 	connectedCallback(): void {
-		this.settingsBtn!.addEventListener('click', this.openSettings.bind(this));
-		this.acceptAllBtn!.addEventListener('click', this.acceptAll.bind(this));
+		// One delegated listener on the host, so the buttons need not exist yet.
+		this.addEventListener('click', this._onClick);
 	}
 
-	disconectedCallback(): void {
-		this.settingsBtn!.removeEventListener('click', this.openSettings.bind(this));
-		this.acceptAllBtn!.removeEventListener('click', this.acceptAll.bind(this));
+	disconnectedCallback(): void {
+		this.removeEventListener('click', this._onClick);
 	}
 
+	onClick(event: Event): void {
+		const target = event.target as Element | null;
+		if (target?.closest('button[data-role="settings"]')) {
+			this.openSettings(event);
+			return;
+		}
+		if (target?.closest('button[data-role="acceptAll"]')) {
+			this.acceptAll(event);
+		}
+	}
 
 	openSettings(event: Event): void {
 		event.stopImmediatePropagation();
@@ -52,7 +70,6 @@ class ConsentioBarElement extends HTMLElement {
 			detail: data
 		}));
 	}
-
 
 }
 

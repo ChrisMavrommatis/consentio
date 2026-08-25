@@ -177,8 +177,8 @@ the port.**
 `gtm/consentio-tag/template.tpl:144` pins
 `https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@0.0.4/dist/consentio.min.js`. So the broken loader is
 being served from a permanent, cached URL now - this is live, not a hazard the next release might introduce.
-A tag cannot be recalled, so the only remedy is a new one. Plan 2 built the pipeline that makes it - and the
-freshness check that now fails CI on this exact staleness - and plan 8 hands the dispatch over.
+A tag cannot be recalled, so the only remedy is a new one. The release pipeline that makes one is built, and
+so is the freshness check that now fails CI on this exact staleness. It has never been dispatched.
 
 ## In the Google Tag Manager template
 

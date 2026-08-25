@@ -14,6 +14,6 @@ test('the first Consentio registers every tag it renders', () => {
 	}
 });
 
-test('issue 8 - a second Consentio does not throw on customElements.define', { todo: true }, () => {
+test('issue 8 - a second Consentio does not throw on customElements.define', () => {
 	assert.doesNotThrow(() => new Consentio({}, [], null), 'define is called unconditionally, with no customElements.get guard');
 });

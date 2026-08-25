@@ -8,11 +8,11 @@ import TemplateRenderer from '../../../src/lib/template-renderer.js';
 // nothing validates it before it reaches here.
 const loose = (data: Record<string, unknown>) => data as Record<string, string>;
 
-test('issue 17 - a zero is rendered, not silently dropped', { todo: true }, () => {
+test('issue 17 - a zero is rendered, not silently dropped', () => {
 	assert.equal(TemplateRenderer.render('{{ n }}', loose({ n: 0 })), '0');
 });
 
-test('issue 17 - a false is rendered, not silently dropped', { todo: true }, () => {
+test('issue 17 - a false is rendered, not silently dropped', () => {
 	assert.equal(TemplateRenderer.render('{{ b }}', loose({ b: false })), 'false');
 });
 

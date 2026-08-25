@@ -3,23 +3,34 @@ import type { ConsentState, CookieDescriptor, CookieTableHeaders } from '../type
 
 class ConsentioConsentItemElement extends HTMLElement {
 
-	declare consentBody: HTMLElement | null;
-	declare switch: HTMLElement | null;
-	declare input: HTMLInputElement | null;
 	declare _alwaysOn: string | null;
 	declare _cookies: CookieDescriptor[];
 	declare _tableHeaders: CookieTableHeaders | null;
 	declare _itemState: ConsentState | null;
+	declare _onClick: (event: Event) => void;
 
 	constructor() {
 		super();
-		this.consentBody = this.querySelector<HTMLElement>('.consent-body');
-		this.switch = this.querySelector<HTMLElement>('consentio-switch');
-		this.input = this.switch!.querySelector<HTMLInputElement>('input');
 		this._alwaysOn = null;
 		this._cookies = [];
 		this._tableHeaders = null;
 		this._itemState = null;
+		// Bound once: a fresh bind() never matches what addEventListener was given.
+		this._onClick = this.toggleBody.bind(this);
+	}
+
+	// Queried on access rather than cached in the constructor: an element upgraded in
+	// place runs its constructor before its children exist.
+	get consentBody(): HTMLElement | null {
+		return this.querySelector<HTMLElement>('.consent-body');
+	}
+
+	get switch(): HTMLElement | null {
+		return this.querySelector<HTMLElement>('consentio-switch');
+	}
+
+	get input(): HTMLInputElement | null {
+		return this.querySelector<HTMLInputElement>('consentio-switch input');
 	}
 
 	set alwaysOn(value: string | null) {
@@ -82,9 +93,13 @@ class ConsentioConsentItemElement extends HTMLElement {
 
 	render(): void {
 		if (this.alwaysOn !== null) {
-			const switchLabel = this.switch!.querySelector('label');
-			switchLabel!.innerHTML = '';
-			switchLabel!.textContent = this.alwaysOn;
+			// The lever goes and the text arrives, but the checkbox stays. Clearing the label
+			// wholesale detached the input that updateState writes to. Issue 23. An <input>
+			// contributes no text, so the label still reads as the alwaysOn label alone.
+			const switchLabel = this.switch!.querySelector('label')!;
+			const input = switchLabel.querySelector('input');
+			const label = document.createTextNode(this.alwaysOn);
+			switchLabel.replaceChildren(...(input ? [input, label] : [label]));
 		}
 		if (!this.cookies || !this.tableHeaders) {
 			return;
@@ -132,11 +147,12 @@ class ConsentioConsentItemElement extends HTMLElement {
 	}
 
 	connectedCallback(): void {
-		this.addEventListener('click', this.toggleBody.bind(this));
+		this.addEventListener('click', this._onClick);
 		this.render();
 	}
+
 	disconnectedCallback(): void {
-		this.removeEventListener('click', this.toggleBody.bind(this));
+		this.removeEventListener('click', this._onClick);
 	}
 
 

@@ -67,7 +67,8 @@ Every element is affected - all five, and the register lists each line.
 - **23** - `consentio-consent-item.ts` clears the switch label with `innerHTML = ''`, which deletes the
   `<input>` the constructor cached. `readState()` returns `'granted'` before it reads the input, which is
   the only reason this is invisible today. Fixing 11 does not fix this on its own.
-- **20** - the version is single-sourced by plan 2. Nothing to do here but do not re-introduce a literal.
+- **20** - the version is already single-sourced from `package.json`, substituted at build time. Nothing to
+  do here but do not re-introduce a literal.
 
 **Defect 28, and direction change A - these are the two worth thinking about.**
 
@@ -132,7 +133,7 @@ version.** **Do not add a fetch or a dependency.** **Do not write `dist/`.** **D
       for plan 6.
       `npm test` and `npm run test:plain` green, with the todo count down from 40 to 12 - the 12 left are
       plan 4's. **Defects 20 and 27 have no `todo` test**, so there is no flag to remove for either; 20 is
-      plan 2's and 27 gets a test written here, see below.
+      already fixed by the release pipeline, and 27 gets a test written here, see below.
 - [ ] The spelling and the binding were fixed together.
       `grep -rn "disconectedCallback" src/` is empty **and** no `removeEventListener` in the diff contains
       `.bind(`. Either alone is worse than neither.

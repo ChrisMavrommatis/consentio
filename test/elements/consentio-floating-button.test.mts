@@ -22,7 +22,7 @@ test('clicking the button reopens the settings', () => {
 	assert.equal(seen[0].composed, true);
 });
 
-test('issue 7 - a disconnected floating button stops emitting', { todo: true }, () => {
+test('issue 7 - a disconnected floating button stops emitting', () => {
 	const button = mount();
 	proto.disconnectedCallback!.call(button);
 	const seen = captureEvents('consentio:open-settings', () => click(button.button!));

@@ -14,7 +14,7 @@ test('over https the cookie is marked secure', () => {
 	assert.match(Cookies.set('a', 'b'), /; secure/);
 });
 
-test('issue 12 - the secure flag follows the page protocol, not a hardcoded true', { todo: true }, () => {
+test('issue 12 - the secure flag follows the page protocol, not a hardcoded true', () => {
 	withOrigin('http://localhost:4000/', () => {
 		assert.doesNotMatch(Cookies.set('a', 'b'), /; secure/);
 	});

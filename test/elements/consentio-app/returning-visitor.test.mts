@@ -6,12 +6,16 @@ import { boot } from '../../helpers.mjs';
 
 // The stored choice has to exist before the element is constructed, so it is written
 // at module scope rather than in a hook.
+// Written by hand rather than through writeConsents, so the stored shape is asserted
+// here and not just round-tripped - see issue 18.
 Cookies.set('consentio', JSON.stringify({
 	version: 1,
-	strictly_necessary: 'granted',
-	preferences_functionality: 'granted',
-	statistics_performance: 'denied',
-	marketing_advertising: 'denied'
+	consents: {
+		strictly_necessary: 'granted',
+		preferences_functionality: 'granted',
+		statistics_performance: 'denied',
+		marketing_advertising: 'denied'
+	}
 }));
 
 const app = boot();

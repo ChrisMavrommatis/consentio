@@ -27,7 +27,7 @@ test('a stale cookie is cleared, not left to shadow the next write', () => {
 	assert.equal(Cookies.get('consentio'), undefined);
 });
 
-test('issue 18 - a category keyed "version" does not clobber the stored version', { todo: true }, () => {
+test('issue 18 - a category keyed "version" does not clobber the stored version', () => {
 	const categories: ConsentCategory[] = [
 		...CATEGORIES,
 		{ key: 'version', title: 'V', description: '', alwaysOn: false, defaultState: 'denied' }

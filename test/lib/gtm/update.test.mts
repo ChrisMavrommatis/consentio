@@ -2,7 +2,6 @@ import test, { beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 
 import ConsentioGTM from '../../../src/lib/gtm.js';
-import { signalMapFrom } from '../../../src/lib/consent-signals.js';
 import { FULL_CONSENT, GOOGLE_SIGNALS, pushes, resetDataLayer } from '../../basics.mjs';
 
 beforeEach(resetDataLayer);
@@ -52,10 +51,8 @@ test('issue 3 - ads_data_redaction is turned off again when marketing is granted
 	assert.equal(redaction!.payload as unknown, false);
 });
 
-test('issue 4 - a site-added category reaches its signal through the configured map', () => {
-	const map = signalMapFrom([
-		{ key: 'house_analytics', title: '', description: '', alwaysOn: false, defaultState: 'denied', signals: ['analytics_storage'] }
-	]);
-	new ConsentioGTM(null, map).updateConsent({ house_analytics: 'granted' });
-	assert.equal(pushes()[0].payload.analytics_storage, 'granted');
+test('issue 28 - a key outside the four routes nowhere and grants nothing', () => {
+	new ConsentioGTM(null).updateConsent({ house_analytics: 'granted' });
+	const payload = pushes()[0].payload;
+	assert.ok(Object.values(payload).every((value) => value === 'denied'), 'an unknown key granted a signal');
 });

@@ -5,16 +5,27 @@ import type { ConsentRecord } from '../types.js';
 class ConsentioModalElement extends HTMLElement {
 
 	declare _logger: ConsentioLogger | null;
-	declare cancelBtn: HTMLAnchorElement | null;
-	declare saveBtn: HTMLAnchorElement | null;
-	declare consents: ConsentioConsentItemElement[];
+	declare _onClick: (event: Event) => void;
 
 	constructor() {
 		super();
 		this._logger = null;
-		this.cancelBtn = this.querySelector<HTMLAnchorElement>('[data-role="cancel"]');
-		this.saveBtn = this.querySelector<HTMLAnchorElement>('[data-role="save"]');
-		this.consents = Array.from(
+		// Bound once: a fresh bind() never matches what addEventListener was given.
+		this._onClick = this.onClick.bind(this);
+	}
+
+	// Queried on access rather than cached in the constructor: an element upgraded in
+	// place runs its constructor before its children exist.
+	get cancelBtn(): HTMLAnchorElement | null {
+		return this.querySelector<HTMLAnchorElement>('[data-role="cancel"]');
+	}
+
+	get saveBtn(): HTMLAnchorElement | null {
+		return this.querySelector<HTMLAnchorElement>('[data-role="save"]');
+	}
+
+	get consents(): ConsentioConsentItemElement[] {
+		return Array.from(
 			this.querySelectorAll<ConsentioConsentItemElement>('consentio-consent-item')
 		);
 	}
@@ -28,14 +39,23 @@ class ConsentioModalElement extends HTMLElement {
 	}
 
 	connectedCallback(): void {
-		this.cancelBtn!.addEventListener('click', this.cancel.bind(this));
-		this.saveBtn!.addEventListener('click', this.save.bind(this));
-
+		// One delegated listener on the host, so the buttons need not exist yet.
+		this.addEventListener('click', this._onClick);
 	}
 
 	disconnectedCallback(): void {
-		this.cancelBtn!.removeEventListener('click', this.cancel.bind(this));
-		this.saveBtn!.removeEventListener('click', this.save.bind(this));
+		this.removeEventListener('click', this._onClick);
+	}
+
+	onClick(event: Event): void {
+		const target = event.target as Element | null;
+		if (target?.closest('[data-role="cancel"]')) {
+			this.cancel(event);
+			return;
+		}
+		if (target?.closest('[data-role="save"]')) {
+			this.save(event);
+		}
 	}
 
 	cancel(event: Event): void {
