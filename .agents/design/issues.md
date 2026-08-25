@@ -1,15 +1,15 @@
 ---
-description: Consentio's twenty-eight numbered defects, found by reading the source. Every plan cites these numbers and carries none of its own
+description: Consentio's twenty-nine numbered defects, found by reading the source. Every plan cites these numbers and carries none of its own
 ---
 
 # Consentio - the issue register
 
-**The diagnosis of record.** Twenty-eight numbered defects, found by reading the source. **The numbering is
+**The diagnosis of record.** Twenty-nine numbered defects, found by reading the source. **The numbering is
 stable** - every plan cites a number here instead of restating the problem.
 
-**Defects 6 to 28 cite the source as it was when each was found**, re-checked line by line on 25 Aug 2026.
-A defect carrying a **Fixed** line has moved on from the lines it cites; the still-open ones - 14, 15, 21,
-24, 25, 26 - were re-checked again on 25 Aug 2026 after the lifecycle fixes moved several files.
+**Defects 6 to 29 cite the source as it was when each was found**, re-checked line by line on 25 Aug 2026.
+A defect carrying a **Fixed** line has moved on from the lines it cites; the still-open ones are 21, 24, 25,
+26 and 29. 14 and 15 were fixed on 25 Aug 2026 by plan 4.
 Defects 1 to 5 are fixed and are left citing the pre-port layout - `src/js/*.js`, as the source was on 23 Aug
 2026. The port moved every file and TypeScript renamed several.
 
@@ -46,7 +46,7 @@ documentation page exist.
 ## The defects
 
 Found by reading the source on 23 Aug 2026, extended from ten items to twenty-one, to twenty-seven on
-24 Aug 2026, and to twenty-eight on 25 Aug 2026. **Numbering is stable - every plan cites these numbers.**
+24 Aug 2026, and to twenty-nine on 25 Aug 2026. **Numbering is stable - every plan cites these numbers.**
 Ranked: defect 1 is what this work
 exists for; the rest are cleanup.
 
@@ -147,10 +147,22 @@ harder here than usual. With `consentRequired: true` the overlay is a full-scree
 with no keyboard way out.
 **`website/data/consentio-config.json` sets `consentRequired: true`, so the docs site demos the worst case.**
 For a compliance tool that is the wrong thing to ship, independent of any law.
+**Fixed 25 Aug 2026.** The modal is `role="dialog"` with `aria-modal` and a name from its own heading, the
+footer controls are `<button type="button">`, the overlay is `aria-hidden`, and the bar becomes a dialog when
+`consentRequired` is set. `src/lib/focus.ts` holds Tab inside whichever surface is blocking, reads the
+**shadow root's** `activeElement` because a closed root retargets the document's to the host, and hands focus
+on at each transition. Escape from the modal goes back to the bar. Each switch takes its name from its own
+`<h5>`, set from `render()` rather than from the template - see 29. An `alwaysOn` switch is `disabled`, so it
+is named but is not a tab stop for a control that cannot change.
+**One thing this left imperfect:** `.consent-header` is `role="button"` and the switch sits inside it, so the
+accessibility tree has a checkbox inside a button. Moving the switch out of the header is a layout change and
+plan 4 forbade one. Both are reachable and named; the nesting is the compromise.
 
 **15. Clicking the switch also toggles the description body.**
 `src/elements/consentio-consent-item.ts:150` binds `click` on the whole host and the switch is inside it.
-**Still open** - plan 4's.
+**Fixed 25 Aug 2026.** The delegated listener stays on the host and returns early for anything inside
+`consentio-switch`. The header carries `role="button"`, `tabindex="0"` and `aria-expanded`, and Enter or
+Space on it does what a click does.
 
 **23. An `alwaysOn` category loses its checkbox and leaves `this.input` dangling.**
 `src/elements/consentio-consent-item.ts:85-87`. `render()` clears the switch label with `innerHTML = ''` to
@@ -253,13 +265,13 @@ override, so the rule is not enforced. That is defect 28.
 
 ### Fixed since
 
-Defects **1 to 5** were fixed on 24 Aug 2026 and **6 to 13, 16 to 19, 22, 23 and 28 on 25 Aug 2026** -
-each is marked at its own entry above, and each has a test with no `todo` flag.
+Defects **1 to 5** were fixed on 24 Aug 2026 and **6 to 19, 22, 23 and 28 on 25 Aug 2026** - each is marked
+at its own entry above, and each has a test with no `todo` flag.
 
-**Open: 14, 15, 20, 21, 24, 25, 26.** 14 and 15 are plan 4's and hold the last fourteen `todo` flags between
-them - twelve, plus defect 21's pair. 20 is single-sourced by the release pipeline and only the template's
-CDN URL still carries a literal. 21 survives as a documentation item for plan 6. 25 and 26 are the template's
-and are plan 5's.
+**Open: 20, 21, 24, 25, 26, 29.** The last two `todo` flags in the suite are defect 21's. 20 is
+single-sourced by the release pipeline and only the template's CDN URL still carries a literal. 21 survives
+as a documentation item for plan 6. 25 and 26 are the template's and are plan 5's. 29 is latent: no
+site-supplied string reaches an attribute today.
 
 **Defect 24 is not fixed.** `dist/` is untouched: `git status --porcelain dist/` is empty and no commit since
 `35a8b31` has written it, so the committed bundle is still the stale one. Rebuilding it in a working tree
@@ -277,4 +289,15 @@ possible answer. **This is what closing defect 27 costs, and it is the fix defec
 **Found on 25 Aug 2026, when the categories were settled.**
 **Fixed 25 Aug 2026.** `signals` and `signalMapFrom()` are gone. `mergeConsents` takes the four keys, warns on
 anything else and does not add it, and copies field by field rather than spreading the override - a spread
-carried through whatever else the site wrote, `signals` included.
+carried through whatever else the site wrote, `signals` included. **This one did not run the `todo` cycle** -
+the fix landed before a flagged test existed. What stands in for it: `test/consentio/config.test.mts` carried
+a *passing* test asserting that an unknown category is appended, which is the behaviour this defect forbids.
+It is now the test that it is refused.
+
+**29. A placeholder inside an attribute can break out of it.** `src/lib/template-renderer.ts:20` -
+`domSanitize` escapes through `innerHTML` on a text node, which covers `&`, `<` and `>` but **not `"`**. Every
+`{{ }}` in `src/templates/` that sits inside an attribute value is therefore only safe because the value is a
+category key, and the four keys are fixed by defect 28. A site-supplied string - a category title, a button
+label - would escape the attribute. **Found on 25 Aug 2026, while giving the switches an accessible name**,
+which is why that name is set from `render()` instead of from the template. Escape `"` and `'` in
+`domSanitize`, and the templates get their attributes back.

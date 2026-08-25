@@ -66,7 +66,11 @@ is that list, executed:
    failure mode that never fails loudly.
 4. **Defect 12 on plain http.** Serve over `http://localhost`, accept, reload. The banner does not return.
 5. **Keyboard only.** Unplug the mouse. With `consentRequired: true`, answer the banner and escape it.
+   Tab must not reach the page behind the overlay, and Escape from the settings must land back on the bar.
 6. **A second `Consentio.Create()`** in a console does not throw.
+7. **The accessibility tree**, in the browser's own inspector. No checkbox reads as unnamed, the `alwaysOn`
+   one included, and the modal reads as a dialog with a name. Plan 4 asserted both as unit tests; the tree is
+   the thing they stand in for.
 
 **The version, decided 25 Aug 2026: `0.1.0` now, `1.0.0` once it has proven itself.** Moving the consent
 default into the loader is a breaking change - the loader tag has to stop being `async`, and the loader now
@@ -95,7 +99,7 @@ stage or push.**
 - [ ] Every automated gate is green on one commit, and which commit is written down.
 - [ ] `release.yml` has been dispatched at least once with `dry_run` on, **on a real runner**, and what it
       proved and did not prove is written down.
-- [ ] All six by-hand checks are done and their results recorded - including the ones that failed, if any.
+- [ ] All seven by-hand checks are done and their results recorded - including the ones that failed, if any.
       **A check nobody ran is reported as not run, never as passed.**
 - [ ] The two routes are confirmed to agree about the same visitor, by hand, on a real page.
 - [ ] `0.1.0` is confirmed as still the right number, with its reasoning, and not applied.

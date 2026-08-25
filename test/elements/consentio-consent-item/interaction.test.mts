@@ -18,7 +18,7 @@ test('clicking the header expands the description', () => {
 	assert.equal(item.consentBody!.style.display, 'block');
 });
 
-test('issue 15 - clicking the switch does not also expand the description', { todo: true }, () => {
+test('issue 15 - clicking the switch does not also expand the description', () => {
 	const item = mountItem();
 	assert.equal(item.consentBody!.style.display, 'none');
 
@@ -26,7 +26,7 @@ test('issue 15 - clicking the switch does not also expand the description', { to
 	assert.equal(item.consentBody!.style.display, 'none', 'the click listener is on the whole host, and the switch is inside it');
 });
 
-test('issue 15 - clicking the switch still changes the switch', { todo: true }, () => {
+test('issue 15 - clicking the switch still changes the switch', () => {
 	const item = mountItem();
 	const before = item.input!.checked;
 	click(item.input!);

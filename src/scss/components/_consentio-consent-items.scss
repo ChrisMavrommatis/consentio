@@ -23,6 +23,11 @@
 					max-width: 57%;
 					display: flex;
 				}
+
+				&:focus-visible {
+					outline: 2px solid var(--focus-ring-color);
+					outline-offset: -2px;
+				}
 			}
 
 

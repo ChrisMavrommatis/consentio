@@ -15,12 +15,12 @@ class ConsentioModalElement extends HTMLElement {
 	}
 
 	// Queried on access: a constructor runs before its children exist. Issue 11.
-	get cancelBtn(): HTMLAnchorElement | null {
-		return this.querySelector<HTMLAnchorElement>('[data-role="cancel"]');
+	get cancelBtn(): HTMLElement | null {
+		return this.querySelector<HTMLElement>('[data-role="cancel"]');
 	}
 
-	get saveBtn(): HTMLAnchorElement | null {
-		return this.querySelector<HTMLAnchorElement>('[data-role="save"]');
+	get saveBtn(): HTMLElement | null {
+		return this.querySelector<HTMLElement>('[data-role="save"]');
 	}
 
 	get consents(): ConsentioConsentItemElement[] {

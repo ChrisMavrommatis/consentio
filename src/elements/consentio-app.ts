@@ -7,6 +7,7 @@ import modalTemplate from '../templates/consentio-modal.html';
 import consentItemTemplate from '../templates/consentio-consent-item.html';
 import floatingButtonTemplate from '../templates/consentio-floating-button.html';
 import ConsentioGTM from '../lib/gtm.js';
+import FocusTrap from '../lib/focus.js';
 import { showElement, hideElement } from '../lib/dom.js';
 
 import type ConsentioBarElement from './consentio-bar.js';
@@ -34,10 +35,14 @@ class ConsentioAppElement extends HTMLElement {
 	declare floatingButton: ConsentioFloatingButtonElement | null;
 	declare gtm: ConsentioGTM | null;
 	declare _handlers: [string, (event: Event) => void][];
+	declare _focus: FocusTrap;
+	declare _onKeydown: (event: Event) => void;
 
 	constructor() {
 		super();
 		this._shadow = this.attachShadow({ mode: 'closed' });
+		this._focus = new FocusTrap(this._shadow);
+		this._onKeydown = this.onKeydown.bind(this);
 		// Bound once: a fresh bind() never matches what addEventListener was given. Issue 7.
 		this._handlers = [
 			['consentio:open-settings', this.openSettings.bind(this)],
@@ -102,6 +107,8 @@ class ConsentioAppElement extends HTMLElement {
 		for (const [event, handler] of this._handlers) {
 			this.addEventListener(event, handler);
 		}
+		// On document, not on the host: a key pressed after focus escapes still has to be caught.
+		document.addEventListener('keydown', this._onKeydown);
 
 		this.gtm = new ConsentioGTM(this.logger);
 		this.isRendered = true;
@@ -113,6 +120,16 @@ class ConsentioAppElement extends HTMLElement {
 		for (const [event, handler] of this._handlers) {
 			this.removeEventListener(event, handler);
 		}
+		document.removeEventListener('keydown', this._onKeydown);
+		this._focus.leave(null);
+	}
+
+	onKeydown(event: Event): void {
+		if ((event as KeyboardEvent).key === 'Escape' && this.modal && this.modal.style.display !== 'none') {
+			this.cancelSettings(event);
+			return;
+		}
+		this._focus.handleTab(event as KeyboardEvent);
 	}
 
 	render(): void {
@@ -122,6 +139,7 @@ class ConsentioAppElement extends HTMLElement {
 			this._shadow.appendChild(style);
 
 			this.required = document.createElement("consentio-required") as ConsentioRequiredElement;
+			this.required.setAttribute('aria-hidden', 'true');
 			this._shadow.appendChild(this.required);
 		}
 
@@ -141,6 +159,11 @@ class ConsentioAppElement extends HTMLElement {
 		this.addOrReplace(newBar, this.bar);
 		this.bar = newBar;
 		this.bar.logger = this.logger;
+		if (this.config.consentRequired) {
+			// Nothing behind the overlay can be reached, so the bar is a dialog rather than a region.
+			this.bar.setAttribute('role', 'dialog');
+			this.bar.setAttribute('aria-modal', 'true');
+		}
 
 		this.consentItems = this.config.consents.map(consent => {
 			const consentItem = this.renderNode<ConsentioConsentItemElement>(consentItemTemplate, {
@@ -197,6 +220,7 @@ class ConsentioAppElement extends HTMLElement {
 		showElement(this.bar!);
 		if (this.config.consentRequired) {
 			showElement(this.required!);
+			this._focus.enter(this.bar, true);
 		}
 	}
 
@@ -224,6 +248,7 @@ class ConsentioAppElement extends HTMLElement {
 		if (this.config.consentRequired) {
 			showElement(this.required!);
 		}
+		this._focus.enter(this.modal, true);
 	}
 	acceptAll(event: Event): void {
 		event.stopImmediatePropagation();
@@ -235,6 +260,7 @@ class ConsentioAppElement extends HTMLElement {
 		hideElement(this.bar!);
 		hideElement(this.required!);
 		showElement(this.floatingButton!);
+		this._focus.leave(this.floatingButton);
 		this.emit('consentio:consent-update', this.state.consents);
 		this.gtm?.updateConsent(this.state.consents);
 	}
@@ -250,11 +276,13 @@ class ConsentioAppElement extends HTMLElement {
 			if (this.config.consentRequired) {
 				showElement(this.required!);
 			}
+			this._focus.enter(this.bar, !!this.config.consentRequired);
 			return;
 		}
 		hideElement(this.bar!);
 		hideElement(this.required!);
 		showElement(this.floatingButton!);
+		this._focus.leave(this.floatingButton);
 	}
 
 	saveSettings(event: Event): void {
@@ -271,11 +299,13 @@ class ConsentioAppElement extends HTMLElement {
 			if (this.config.consentRequired) {
 				showElement(this.required!);
 			}
+			this._focus.enter(this.bar, !!this.config.consentRequired);
 			return;
 		}
 		hideElement(this.bar!);
 		hideElement(this.required!);
 		showElement(this.floatingButton!);
+		this._focus.leave(this.floatingButton);
 		this.emit('consentio:consent-update', this.state.consents);
 		this.gtm?.updateConsent(this.state.consents);
 	}

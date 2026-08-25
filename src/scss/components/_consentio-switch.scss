@@ -62,6 +62,12 @@
 			}
 		}
 
+		input[type='checkbox']:focus-visible+.switch-lever {
+			outline: 2px solid var(--focus-ring-color);
+			outline-offset: 4px;
+			border-radius: 15px;
+		}
+
 		input[type="checkbox"]:checked {
 			&:checked {
 				+.switch-lever {

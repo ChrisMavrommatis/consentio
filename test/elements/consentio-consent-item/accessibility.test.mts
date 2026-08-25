@@ -27,17 +27,17 @@ test('issue 23 - the alwaysOn label keeps its checkbox instead of detaching it',
 	);
 });
 
-test('issue 14 - an ordinary switch has an accessible name', { todo: true }, () => {
+test('issue 14 - an ordinary switch has an accessible name', () => {
 	assert.notEqual(nameOf(mountItem().input!), '', 'the wrapping label has no text, so the checkbox is unnamed');
 });
 
-test('issue 14 - the switch is associated with the category title', { todo: true }, () => {
+test('issue 14 - the switch is associated with the category title', () => {
 	const item = mountItem();
 	const title = item.querySelector('h5')!.textContent;
 	assert.equal(nameOf(item.input!), title);
 });
 
-test('issue 14 - the expandable header says whether it is expanded', { todo: true }, () => {
+test('issue 14 - the expandable header says whether it is expanded', () => {
 	const header = mountItem().querySelector('.consent-header')!;
 	assert.ok(header.hasAttribute('aria-expanded'), 'a click target that expands a region needs aria-expanded');
 });

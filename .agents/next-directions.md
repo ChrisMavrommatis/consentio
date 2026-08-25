@@ -4,45 +4,48 @@ description: What to do next and what the maintainer has to decide. The board ow
 
 # Next directions
 
-Written 25 Aug 2026, at the end of the session that landed plan 3 and deleted plans 1, 2 and 9.
+Written 25 Aug 2026, at the end of the session that landed plan 4 and deleted plan 3.
 
 **[relaunch.md](relaunch.md) owns plan order and state.** This file does not repeat it. It holds what the
 next sitting should actually do, and what is waiting on the maintainer.
 
 ## Where things stand
 
-Plans 1, 2 and 9 are committed and deleted. Plan 3 is done and **uncommitted** - everything is in the
-working tree, nothing was staged or pushed.
+Plans 1, 2, 3 and 9 are committed and deleted. Plan 4 is done and **uncommitted** - everything is in the
+working tree, nothing was staged or pushed by this session.
 
 **Measured at the end of this session, by running the commands:**
 
-- `npm run typecheck` clean. `npm test` 213 tests, 199 pass, 0 fail, 14 todo. `npm run test:plain` 62, 60,
+- `npm run typecheck` clean. `npm test` 230 tests, 228 pass, 0 fail, 2 todo. `npm run test:plain` 62, 60,
   0 fail, 2 todo. Both exit 0.
 - `git status --porcelain dist/` empty. `git tag -l` unchanged - `0.0.1` to `0.0.4`.
 - `npm run build` writes `build/lib/` and leaves `dist/` alone.
-- The register is at twenty-eight defects. **Open: 14, 15, 21, 24, 25, 26.** Everything else is fixed or
+- The register is at twenty-nine defects. **Open: 20, 21, 24, 25, 26, 29.** Everything else is fixed or
   closed by decision.
-- The fourteen todos are defect 14 (ten), 15 (two) and 21 (two).
+- The two todos left are defect 21's.
 
-## The next sitting: plan 4
+## The next sitting: plan 5 or plan 6
 
-**[plans/4-accessibility.md](plans/4-accessibility.md).** Defects 14 and 15, and it is the last code work
-before the docs site can be written against behaviour that will not move again. Plan 3 fixed defect 23, so
-the switch label now keeps its input and the accessible name has somewhere to go.
+**Both are unblocked now.** [plans/5-gtm-templates.md](plans/5-gtm-templates.md) is the tag manager route,
+which the suite does not cover at all; [plans/6-docs-site.md](plans/6-docs-site.md) can now be written
+against behaviour that will not move again, because plan 4 was the last code work before it.
+
+Plan 5 first, on the board's order: it is the only remaining place where the cookie contract has a second
+implementation to write, and writing it late costs a gallery review.
 
 **Plan 7 is the alternative** if a short sitting is what is available. It waits on nothing, and `SECURITY.md`
 is the file a visitor checks before putting a third-party script in their `<head>`.
 
 ## Two things the maintainer has to know before the next commit
 
-**The five release-pipeline paths were not in `224043b`.** `.github/scripts/`, `.github/workflows/release.yml`,
-`CHANGELOG.md`, `scripts/` and `test/scripts/` were left untracked by that commit and are staged now.
-`ci.yml` runs `.github/scripts/dist-guard.sh` and `package.json` names `scripts/`, so a push without them is
-a red build for a reason nothing explains.
+**The cookie contract changed in plan 3.** The categories are nested under `consents` to close defect 18.
+The board and [design/delivery.md](design/delivery.md) both carry it. **Plan 5 must write the template's
+reader against the nested shape** - it is the second implementation, and it does not exist yet.
 
-**The cookie contract changed.** Plan 3 nested the categories under `consents` to close defect 18. The board
-and [design/delivery.md](design/delivery.md) both carry it. It was taken now because the tag manager template
-still reads no cookie, so there is one implementation to change rather than two.
+**The register gained defect 29.** `TemplateRenderer.domSanitize` escapes `&`, `<` and `>` but not `"`, so a
+placeholder inside an attribute value can break out of it. It is latent: every attribute placeholder in
+`src/templates/` holds a category key, and the four keys are fixed. Fix it and the templates get their
+attributes back - plan 4 had to set the switch's accessible name from `render()` to route around it.
 
 ## Still open, and still the maintainer's
 

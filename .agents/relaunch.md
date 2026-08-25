@@ -13,27 +13,33 @@ Each plan cites defect numbers from [design/issues.md](design/issues.md) and car
 
 | # | Plan | State | Gated by |
 |---|---|---|---|
-| 3 | [lifecycle and DOM](plans/3-lifecycle-and-dom.md) | **done** 25 Aug 2026, uncommitted | nothing |
-| 4 | [accessibility](plans/4-accessibility.md) | ready. **Next** | nothing |
-| 5 | [tag manager templates](plans/5-gtm-templates.md) | ready | 3, for defect 9 |
-| 6 | [docs site](plans/6-docs-site.md) | ready | 3 and 4, so it documents fixed behaviour |
+| 4 | [accessibility](plans/4-accessibility.md) | **done** 25 Aug 2026, uncommitted | nothing |
+| 5 | [tag manager templates](plans/5-gtm-templates.md) | ready. **Next** | nothing. Plan 3 fixed defect 9 |
+| 6 | [docs site](plans/6-docs-site.md) | ready | nothing. 4 has run, so it documents fixed behaviour |
 | 7 | [repo furnishing](plans/7-repo-furnishing.md) | ready | nothing. Fill a gap whenever there is a spare sitting |
 | 8 | [release readiness](plans/8-release-readiness.md) | blocked | everything above |
 
-**Plans 1, 2 and 9 are gone**, deleted 25 Aug 2026 once their work was committed. They were the guidance
-truth-up, the release pipeline and the repository restructure. What was still true in them moved out first:
-the release procedure into [design/delivery.md](design/delivery.md), the untested parts of the workflow into
+**Plans 1, 2, 3 and 9 are gone**, deleted once their work was committed - 1, 2 and 9 on 25 Aug 2026, 3
+right after. They were the guidance truth-up, the release pipeline, lifecycle and DOM, and the repository
+restructure. What was still true in them moved out first: the release procedure into
+[design/delivery.md](design/delivery.md), the untested parts of the workflow into
 [plans/8-release-readiness.md](plans/8-release-readiness.md), the layout decisions into
 [memory/the-layout-is-deliberately-flat.md](memory/the-layout-is-deliberately-flat.md), and `git mv` into
-[rules/never-commit.md](rules/never-commit.md). **The numbering does not shift** - 3 is still 3.
+[rules/never-commit.md](rules/never-commit.md). Plan 3's two browser checks it could not run - defect 12 on
+plain http, and a second `Consentio.Create()` - are checks 4 and 6 in
+[plans/8-release-readiness.md](plans/8-release-readiness.md); everything else it recorded is in the register.
+**The numbering does not shift** - 4 is still 4.
 
 **Nothing here pushes a tag or creates a repository.** Those are the maintainer's, and plan 8 is where they
 are handed over.
 
-**Re-verified 25 Aug 2026, after plan 3.** Typecheck clean, `npm test` 213/199/0 fail/**14** todo,
+**Re-verified 25 Aug 2026, after plan 4.** Typecheck clean, `npm test` 230/228/0 fail/**2** todo,
 `npm run test:plain` 62/60/0 fail/2 todo, `git status --porcelain dist/` empty, `git tag -l` unchanged.
-**The fourteen todos left are defect 14 (ten), defect 15 (two) and defect 21 (two).** The first two are
-plan 4's; 21 is a documentation item for plan 6.
+**The two todos left are defect 21's**, and they are a documentation item for plan 6.
+
+**The register is at twenty-nine.** Plan 4 added **29**: `TemplateRenderer.domSanitize` does not escape `"`,
+so a placeholder inside an attribute value can break out of it. Latent - every attribute placeholder holds a
+category key and the four keys are fixed.
 
 ## Settled by the maintainer, 25 Aug 2026
 
@@ -54,10 +60,10 @@ cheap. The rules everything else is worked under are true now; a tag is permanen
 be automated before the first one was; and the paths every later plan names were settled before those plans
 were written rather than after.
 
-**3 and 4 before 6.** Documentation written against broken behaviour has to be written twice.
+**3 and 4 before 6.** Documentation written against broken behaviour has to be written twice. Both have run.
 
-**5 after 3.** The template's `setInWindow` call exists to cover for **defect** 9 in the register. Plan 3
-fixed that defect, so the template's job is smaller than it was written to be.
+**5 after 3, which has run.** The template's `setInWindow` call exists to cover for **defect** 9 in the
+register. Plan 3 fixed that defect, so the template's job is smaller than it was written to be.
 
 **8 last, and it decides nothing on its own.** It assembles the evidence; the maintainer decides the version
 and pushes the tag.
@@ -74,7 +80,7 @@ on `origin`, so a dispatch naming an existing version must fail before anything 
 `preferences_functionality`, `statistics_performance` and `marketing_advertising`, and can change every
 string but no key and no signal routing. That **closes defect 27 with no code in the loader** - its built-in
 map is correct by definition - and opens **defect 28**, because nothing in the config layer enforces the
-rule yet. Plan 3 now carries 28 instead of 27. The reasoning is in
+rule yet. Plan 3 carried 28 instead of 27 and closed it. The reasoning is in
 [design/delivery.md](design/delivery.md).
 
 ## The cookie contract changed on 25 Aug 2026
