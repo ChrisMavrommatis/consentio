@@ -1,11 +1,31 @@
 const path = require('path');
+const webpack = require('webpack');
+
+// Where each target writes. `lib` is the default so an ordinary local build cannot reach
+// dist/ - see .agents/rules/only-ci-builds-dist.md.
+const DESTINATIONS = {
+	lib: 'build/lib',
+	website: 'website/js',
+	dist: 'dist'
+};
 
 module.exports = (env, argv) => {
 
 	this.parallelism = 1;
-	console.log(`Environment Build: ${env.build}`);
 
-	const dest = env.build === 'website' ? 'website/js' : 'dist';
+	const target = env.build ?? 'lib';
+	const dest = DESTINATIONS[target];
+	if (!dest) {
+		throw new Error(`Unknown build target '${target}'. Use one of: ${Object.keys(DESTINATIONS).join(', ')}.`);
+	}
+	console.log(`Environment Build: ${target} -> ${dest}`);
+
+	// The one place the version enters the bundle. src/ carries no literal; the test
+	// harness does the same substitution in test/resolve.mjs.
+	const version = require('./package.json').version;
+	const define = () => new webpack.DefinePlugin({
+		__CONSENTIO_VERSION__: JSON.stringify(version)
+	});
 
 	const consentio = {
 		entry: './src/consentio.ts',
@@ -49,6 +69,7 @@ module.exports = (env, argv) => {
 			],
 		},
 		plugins: [
+			define()
 		],
 		optimization: {
 			minimize: false
@@ -70,6 +91,7 @@ module.exports = (env, argv) => {
 			globalObject: 'this'
 		},
 		plugins: [
+			define()
 		],
 		optimization: {
 			minimize: true
@@ -101,6 +123,7 @@ module.exports = (env, argv) => {
 			]
 		},
 		plugins: [
+			define()
 		],
 		optimization: {
 			minimize: false
@@ -115,7 +138,7 @@ module.exports = (env, argv) => {
 			clean: false
 		},
 		plugins: [
-
+			define()
 		],
 		optimization: {
 			minimize: true

@@ -13,10 +13,8 @@ that is written and proven but **left switched off** until the maintainer says p
 
 ## Why
 
-The documentation is good and nobody can read it. Nothing publishes the site, and it cannot even be built in
-one shot - `npm run watch` is watch-mode only, so producing the site's JavaScript means starting a watcher
-and killing it. That blocks any deploy, which is why the one-shot `build:website` belongs to plan 2 and lands
-before this one.
+The documentation is good and nobody can read it. Nothing publishes the site. The one-shot
+`npm run build:website` it needs landed with plan 2, so this plan is only about the deploy.
 
 The content is also one long page. It is thorough - both routes, the full config reference, the cookie
 contract, the events - and one page is still one page, icons or not.

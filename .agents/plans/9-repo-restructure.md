@@ -132,8 +132,8 @@ output and the Jekyll output found each other after the move.
   there - plan 1 owns it and now finds it at the new path.
 - **The webpack env value is `website`, not `docs`**, and the script plan 2 will add is `build:website`.
   Renamed across plan 2, plan 6 and the dist rule so nothing names the old value.
-- **`npm run build:website` does not exist yet** - plan 2 adds it. `npx webpack --env build=website` is what
-  was used to verify, and `npm run watch` already uses the new value.
+- **`npm run build:website` was added by plan 2.** `npx webpack --env build=website` is what was used to
+  verify here, and `npm run watch` already used the new value.
 
 **Verified after the move:** `npm run typecheck` clean, `npm test` 200/160 pass/0 fail/40 todo, the webpack
 website target writes `website/js`, `bundle exec jekyll build` writes `website/_site`, the built

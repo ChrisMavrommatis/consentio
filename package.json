@@ -3,7 +3,9 @@
   "version": "0.0.4",
   "description": "A small, frontend-only consent banner for static sites. Pushes Google Consent Mode signals to dataLayer and stores the answer in one cookie.",
   "scripts": {
-    "build": "npx webpack --env build=dist",
+    "build": "npx webpack --env build=lib",
+    "build:website": "npx webpack --env build=website",
+    "build:dist": "npx webpack --env build=dist",
     "typecheck": "npx tsc --noEmit",
     "test": "node --import ./test/register.mjs --test \"test/**/*.test.mts\"",
     "test:plain": "node --import ./test/register-plain.mjs --test \"test/lib/logger.test.mts\" \"test/lib/cookies/attributes.test.mts\" \"test/lib/cookies/read-write.test.mts\" \"test/lib/state/*.test.mts\" \"test/lib/gtm/*.test.mts\" \"test/lib/consent-signals/completeness.test.mts\" \"test/lib/consent-signals/signal-map.test.mts\" \"test/lib/consent-store/*.test.mts\"",
@@ -22,7 +24,7 @@
   ],
   "author": "ChrisMavrommatis",
   "engines": {
-    "node": ">=22.15"
+    "node": ">=24"
   },
   "license": "Apache-2.0",
   "repository": {

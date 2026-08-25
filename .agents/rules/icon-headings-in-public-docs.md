@@ -64,3 +64,5 @@ Grep these before inventing one. Every icon below is already carrying a heading 
   [plain-language](plain-language.md) binds there and the two never overlap, because that rule covers text
   inside source and this one covers markdown a person reads.
 - **A `template.tpl`.** It is source the gallery parses, not a page.
+- **Version headings in `CHANGELOG.md`** - `## [Unreleased]`, `## [0.1.0] - 2026-08-25`. The release
+  workflow parses them to find the release body. The `###` headings inside a section carry icons as normal.

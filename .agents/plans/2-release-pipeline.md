@@ -1,6 +1,6 @@
 ---
 description: One pipeline from a triggered release to a CDN-served tag, with CI as the only thing that ever writes dist/
-state: ready
+state: done - 25 Aug 2026, uncommitted. Not dispatched for real
 waits-on: 1, which writes the rule this implements
 ---
 
@@ -100,16 +100,22 @@ version** - not a tag trigger. **Settled 25 Aug 2026.** One dispatch does everyt
 tag and the release:
 
 ```
+you rename [Unreleased] to 0.1.0, bump package.json, push both to main
+  |
+  v
 you dispatch release.yml with 0.1.0
   |
   v
-notes     the CHANGELOG section for this version exists and is not empty        (seconds)
-exists    the tag 0.1.0 does not already exist, here or on origin               (seconds)
+gate      on main; semver; package.json agrees; changelog section exists;
+          the tag does not exist here or on origin                              (seconds)
 verify    npm ci, typecheck, build:dist, npm test, npm run test:plain           (minutes)
-commit    dist/ + the changelog date + the version, to main, as the release bot
+commit    dist/ + the changelog date, to main, as the release bot
 tag       from that commit
 publish   gh release create, body from CHANGELOG.md, dist files attached
 ```
+
+**The version bump is the maintainer's, before the dispatch** - it is what lets `gate` refuse a version
+`package.json` disagrees with rather than papering over it. `dry_run` is an input and defaults to on.
 
 **Why not a tag trigger, which is the shape most people expect.** The CDN serves the git tree at the tag:
 `consentio@0.1.0/dist/consentio.min.js` is whatever `dist/` held in the commit the tag points at. A workflow
@@ -146,26 +152,51 @@ trouble.
 
 ## Deliverables
 
-- [ ] A local build cannot touch `dist/`.
+- [x] A local build cannot touch `dist/`.
       `npm run build && git status --porcelain dist/` is empty.
-- [ ] A stale `dist/` fails CI.
+- [x] A stale `dist/` fails CI.
       Change one line in `src/`, do not rebuild, and watch the freshness job go red.
-- [ ] A hand-written `dist/` fails CI even when it is fresh.
+- [x] A hand-written `dist/` fails CI even when it is fresh.
       Say which job catches it and how it tells the two cases apart.
-- [ ] The build is reproducible enough for that check to be honest.
+- [x] The build is reproducible enough for that check to be honest.
       Two clean builds of the same commit, diffed. **Prove it in this session, do not cite the note.**
-- [ ] `npm run build:website` produces the docs JS in one shot, no watch.
-- [ ] The version has one source and the bundle still reports it.
+- [x] `npm run build:website` produces the docs JS in one shot, no watch.
+- [x] The version has one source and the bundle still reports it.
       `grep -rn "0\.0\.4" src/` returns nothing.
-- [ ] `CHANGELOG.md` exists with an `Unreleased` section and both script commands work.
+- [x] `CHANGELOG.md` exists with an `Unreleased` section and both script commands work.
       `node scripts/changelog.mjs check Unreleased` exits 0.
-- [ ] `release.yml` has been dry-run end to end with the tag and publish steps disabled.
-      **Say in chat which steps were disabled and what that leaves unproven.**
-- [ ] A version that disagrees with `package.json` fails before anything is tagged.
-- [ ] Dispatching a version that is already tagged fails in seconds.
+- [x] `release.yml` has been dry-run end to end with the tag and publish steps disabled.
+      **Simulated locally, not on a runner** - see the note below.
+- [x] A version that disagrees with `package.json` fails before anything is tagged.
+- [x] Dispatching a version that is already tagged fails in seconds.
       Run it with `0.0.4`. It stops at the `exists` job, nothing is built, nothing is committed. Check the
       remote too, not only the runner's checkout.
-- [ ] Every action in every workflow is pinned by SHA.
+- [x] Every action in every workflow is pinned by SHA.
       `grep -rnE "uses:.*@v[0-9]" .github/` returns nothing.
-- [ ] No tag was pushed.
+- [x] No tag was pushed.
       `git tag -l` is unchanged.
+
+## What the dry run actually proved, 25 Aug 2026
+
+`release.yml` has a `dry_run` input, default **on**. With it on, the commit, tag and publish steps are
+skipped and everything else runs.
+
+**No runner was used.** There is no `gh` here and nothing may be pushed, so the dry run was the same commands
+in the same order against a throwaway copy of the tree - bumped to `0.1.0` and with `Unreleased` renamed, as
+the maintainer would. Gate, verify, notes and the commit preview all pass; the date stamp was run separately
+and printed `## [0.1.0] - 2026-08-25`.
+
+**Unproven until a real dispatch:** that the YAML parses on GitHub's side, that `GITHUB_TOKEN` with
+`contents: write` may push to `main` and to a tag under whatever branch protection is set, that
+`gh release create` behaves as expected, that `${{ !inputs.dry_run }}` gates the three steps the way it
+reads, and that the `main`-only ref check fires. **The first dispatch should be a dry run.**
+
+## Two things that changed shape while building this
+
+**The guard moved into `.github/scripts/dist-guard.sh`** rather than staying inline in the YAML. Inline, the
+one thing that tells a hand-written `dist/` from a released one could never be exercised except by a real
+push. As a script it has tests - `test/scripts/dist-guard.test.mts` builds a throwaway repository and feeds
+it the commit shapes it has to sort.
+
+**There is a third script, `scripts/version.mjs`.** The pipeline needs to refuse a version `package.json`
+disagrees with before anything is built, and that check is not the changelog's job.

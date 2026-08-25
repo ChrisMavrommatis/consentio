@@ -1,7 +1,7 @@
 ---
 description: One published template pins the version in its CDN URL, so a version bump moves two repositories - and a template update goes through review
-when: changing the version, dist/, or anything a published template pins
-paths: ["package.json", "dist/**", "gtm/**"]
+when: changing the version, dist/, user-visible behaviour, or anything a published template pins
+paths: ["package.json", "dist/**", "gtm/**", "CHANGELOG.md"]
 ---
 
 # A release moves two repositories
@@ -33,3 +33,16 @@ template sets the consent default itself - defect 26. It reads no cookie today, 
 
 The version is the maintainer's decision. **Say a bump is needed and leave it alone** - see
 [never-commit](never-commit.md).
+
+## The changelog is the release body
+
+`CHANGELOG.md`'s section for the version being released is published as the release notes, verbatim. So:
+
+- **A user-visible change adds a line to `## [Unreleased]` in the same sitting.** Written for the people
+  using Consentio, not the people writing it. A change nobody outside can see adds nothing.
+- **Version headings carry no icon** - `.github/workflows/release.yml` parses them. The `###` headings inside
+  a section do, as [icon-headings-in-public-docs](icon-headings-in-public-docs.md) says.
+- **The release is one dispatch of `release.yml` with a version.** Before it: rename `## [Unreleased]` to the
+  version, open a fresh empty one above it, bump `package.json`. All three are the maintainer's.
+- `node scripts/changelog.mjs check <version>` is what the release gate runs, and it costs nothing to run
+  first.

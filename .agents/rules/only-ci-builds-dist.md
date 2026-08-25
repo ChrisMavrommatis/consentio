@@ -1,5 +1,5 @@
 ---
-description: dist/ is the shipped product and only CI ever writes it. Today nothing enforces that, so it is enforced by hand
+description: dist/ is the shipped product and only the release workflow ever writes it. The tooling enforces it
 when: always
 paths: ["dist/**", "webpack.config.js", ".github/workflows/**", "package.json"]
 ---
@@ -25,33 +25,37 @@ configuration. Nothing failed and nothing said why.
 **A hand-run build that happens to be correct is still the problem**, because nothing distinguishes it from
 one that is not. The point is not freshness, it is that one process owns the artifact.
 
-## What the build does today
+## How it is enforced
 
-**There is one build script and it writes straight into `dist/`.** `npm run build` is
-`webpack --env build=dist`. `npm run watch` is `--env build=website` and is watch-mode only. There is no
-local library build and no one-shot site build.
-
-So the rule cannot be enforced by the tooling yet, and this is what it means in practice:
-
-- **Do not run `npm run build` unless you mean to inspect the output**, and revert `dist/` afterwards.
-- **`.github/workflows/ci.yml` runs `npm run build`**, so CI dirties `dist/` inside its own checkout on every
-  push. Harmless - nothing commits it - but it is not the release build and it proves nothing about the
-  committed bytes.
-- **If a `dist/` diff appears in your working tree, that is a finding, not a chore.** Do not commit it, do
-  not `git checkout` it away without saying so, and do not "just rebuild it to be safe". Say what you saw.
-
-## What it becomes
-
-[../plans/2-release-pipeline.md](../plans/2-release-pipeline.md) splits the targets so the ordinary build
-cannot reach `dist/`:
+Three build targets, and only one of them can reach `dist/`:
 
 | Command | Writes to | Who runs it |
 |---|---|---|
 | `npm run build` | `build/lib/` - gitignored | you, and every session |
 | `npm run build:website` | `website/js/` - gitignored | anyone previewing the site |
-| `npm run build:dist` | `dist/` | **CI only** |
+| `npm run build:dist` | `dist/` | **the release workflow** |
 
-**None of those three exist yet.** Until they do, the rule holds by hand.
+`npm run build` is the default target, so an absent-minded build cannot dirty `dist/`.
 
-**As of 24 Aug 2026 the committed `dist/` is stale** - defect 24, still open. It is fixed by the release
-workflow regenerating it, not by a working tree.
+Two checks in the `dist` job of `.github/workflows/ci.yml` back it up, and they catch different things:
+
+- **Freshness.** `npm run build:dist`, then `git diff --exit-code -- dist/`. Catches a `dist/` that is not
+  what the source builds. It is honest because the build is byte-reproducible - two clean builds of the same
+  tree came out identical again on 25 Aug 2026.
+- **The commit guard.** `.github/scripts/dist-guard.sh` reads the commits the push carried and fails any that
+  wrote `dist/` without being the release bot under a `release <version>` subject. Catches a `dist/` written
+  by hand that happens to be correct - which freshness cannot see, because the tree is right and only the
+  commit says who made it.
+
+## What this means in a session
+
+- **Do not run `npm run build:dist`.** `npm run build` is what you want, and it writes to `build/lib/`.
+- **If a `dist/` diff appears in your working tree, that is a finding, not a chore.** Do not commit it, do
+  not `git checkout` it away without saying so, and do not "just rebuild it to be safe". Say what you saw.
+
+## The committed `dist/` is stale right now
+
+Defect 24, still open, and **CI is red on it by design** until the first release regenerates it. That is the
+freshness check doing its job, not a break. It is fixed by
+[../plans/2-release-pipeline.md](../plans/2-release-pipeline.md)'s release workflow running, not by a working
+tree - see [../plans/8-release-readiness.md](../plans/8-release-readiness.md).

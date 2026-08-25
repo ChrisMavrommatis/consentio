@@ -16,6 +16,10 @@ src/elements/…            ->  test/elements/…
 
 `mount.mts` files next to a folder's tests are shared fixtures, not test files.
 
+`test/scripts/` is the exception: it covers the release machinery — `scripts/changelog.mjs` and
+`.github/scripts/dist-guard.sh` — by running each against a throwaway file or repository. Both would
+otherwise only ever be exercised by a real release.
+
 ## 🧩 Why the files are so small
 
 **node:test gives each test FILE its own process**, and the suite leans on that hard. `defineCustomElements`

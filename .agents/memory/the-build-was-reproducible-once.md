@@ -9,6 +9,9 @@ The TypeScript port was verified by building the ported tree and the pre-port tr
 `consentio.min.js` and `consentio-loader.min.js` came out **byte-identical**. Terser produced the same bytes
 from both trees.
 
+**Re-measured 25 Aug 2026, before wiring the freshness check to fail.** Two clean builds of the same working
+tree - all six emitted files, same sha256 each. It is still true on Node 24 with webpack 5.102.1.
+
 **Why it matters now:** the CDN serves the committed `dist/`, so a check that the build does not change
 `dist/` is the thing that stops a stale bundle shipping - and that check is only possible because the build
 is deterministic. This is the measurement that says it is.

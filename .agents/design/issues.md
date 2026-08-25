@@ -154,6 +154,10 @@ live one. Fix the shape anyway; do not document the trap.
 event object. Carries the third `@ts-expect-error` in the source.
 **20.** Version `0.0.4` hand-written in **three** places: `package.json:3`, `src/consentio.ts:23`, and the
 CDN URL in `gtm/consentio-tag/template.tpl:144`. The third is the one that ships.
+**Two of the three are closed, 25 Aug 2026.** `package.json` is the one source; webpack substitutes it into
+the bundle and the test harness does the same, so `src/` carries no literal. The release gate refuses a
+version `package.json` disagrees with. **The template's CDN URL is still by hand** and moves with the
+release - see [../rules/releases-move-two-repositories.md](../rules/releases-move-two-repositories.md).
 **21.** Adding a category without bumping `config.version` leaves stored consents missing that key - it
 reads as denied, silently. **Narrowed by the decision of 25 Aug 2026**: a site cannot add a category, so this
 is now only about Consentio itself changing the four, which is a breaking change and a version bump anyway.
@@ -173,7 +177,8 @@ the port.**
 `gtm/consentio-tag/template.tpl:144` pins
 `https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@0.0.4/dist/consentio.min.js`. So the broken loader is
 being served from a permanent, cached URL now - this is live, not a hazard the next release might introduce.
-A tag cannot be recalled, so the only remedy is a new one, which is what plan 2 builds and plan 8 hands over.
+A tag cannot be recalled, so the only remedy is a new one. Plan 2 built the pipeline that makes it - and the
+freshness check that now fails CI on this exact staleness - and plan 8 hands the dispatch over.
 
 ## In the Google Tag Manager template
 

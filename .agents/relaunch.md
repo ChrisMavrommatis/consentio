@@ -14,8 +14,8 @@ Each plan cites defect numbers from [design/issues.md](design/issues.md) and car
 | # | Plan | State | Gated by |
 |---|---|---|---|
 | 1 | [guidance truth-up](plans/1-guidance-truth-up.md) | **done** 24 Aug 2026, uncommitted | nothing |
-| 2 | [release pipeline](plans/2-release-pipeline.md) | ready | 1, now done. **Next** |
-| 3 | [lifecycle and DOM](plans/3-lifecycle-and-dom.md) | ready | 2, so the fix lands behind a green gate |
+| 2 | [release pipeline](plans/2-release-pipeline.md) | **done** 25 Aug 2026, uncommitted. Never dispatched | 1, now done |
+| 3 | [lifecycle and DOM](plans/3-lifecycle-and-dom.md) | ready | 2, now done. **Next** |
 | 4 | [accessibility](plans/4-accessibility.md) | ready | 2. Independent of 3 - either order |
 | 5 | [tag manager templates](plans/5-gtm-templates.md) | ready | 3, for defect 9 |
 | 6 | [docs site](plans/6-docs-site.md) | ready | 3 and 4, so it documents fixed behaviour |
@@ -26,10 +26,10 @@ Each plan cites defect numbers from [design/issues.md](design/issues.md) and car
 **Nothing here pushes a tag or creates a repository.** Those are the maintainer's, and plan 8 is where they
 are handed over.
 
-**Re-verified 25 Aug 2026.** Typecheck clean, `npm test` 200/160/0 fail/40 todo, `npm run test:plain`
-62/59/0 fail/3 todo, `git status --porcelain dist/` empty, defects 6-27 all still present at the symbols the
-register names. The build was **not** re-run - it writes straight into `dist/` - so the reproducibility
-claim plan 2 rests on is still unproven this side of that plan.
+**Re-verified 25 Aug 2026, after plan 2.** Typecheck clean, `npm test` 212/172/0 fail/40 todo,
+`npm run test:plain` 62/59/0 fail/3 todo, `git status --porcelain dist/` empty, `git tag -l` unchanged.
+The twelve new passes are the changelog parser and the `dist/` commit guard. The build **was** re-run, into
+`build/lib/`, twice: byte-identical, so the freshness check is honest.
 
 ## Settled by the maintainer, 25 Aug 2026
 
@@ -51,7 +51,9 @@ rule describes what the tooling actually does, and defect 27 is in the register.
 
 **2 before any fix.** A tag is permanent - the CDN caches it and sites pin it - so every check that can be
 automated before the first tag pays for itself on every release after. It also implements the rule that only
-CI writes `dist/`, which changes how every later plan is verified.
+CI writes `dist/`, which changes how every later plan is verified. It is done: `npm run build` writes to
+`build/lib/`, `ci.yml` has both `dist/` guards, `release.yml` is a `workflow_dispatch` that has never been
+dispatched, and the version has one source.
 
 **9 ran first.** It renamed `docs/` to `website/`, split the two build outputs and deleted `config/`. Nothing
 depended on it, but everything written after it names paths, so landing it late would have meant writing
@@ -92,9 +94,12 @@ and the template pins `@0.0.4` in its CDN URL. The broken loader is live on jsDe
 That is not fixed by rebuilding it in a working tree. Plan 2 adds the check that catches it and the release
 workflow that regenerates it; until then, leave it alone.
 
-**And `npm run build` writes straight into `dist/` today** - there is no local build target yet, so the rule
-is enforced by hand until plan 2 lands. `.github/workflows/ci.yml` runs it on every push, inside its own
-checkout.
+**`npm run build` can no longer reach `dist/`** - it writes to `build/lib/`. `npm run build:dist` is the
+release workflow's, and `ci.yml` fails a push whose `dist/` disagrees with `src/` or whose `dist/` was
+written by hand.
+
+**So CI is red now, and that is the check working.** The committed `dist/` is stale, so the freshness job
+fails on every push until a release regenerates it. Do not fix it in a working tree.
 
 ## Delete when
 

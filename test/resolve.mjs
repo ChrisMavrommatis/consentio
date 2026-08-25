@@ -5,11 +5,16 @@
 //   - `.html` becomes its own text, which is what html-loader hands the bundle
 //   - `.scss` becomes an empty string; the bundle gets compiled CSS there, and no test
 //     asserts on styling
+//   - `__CONSENTIO_VERSION__` is set from package.json, which is what DefinePlugin does
 import { registerHooks } from 'node:module';
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const ASSET = /\.(scss|html)$/;
+
+globalThis.__CONSENTIO_VERSION__ = JSON.parse(
+	readFileSync(new URL('../package.json', import.meta.url), 'utf8')
+).version;
 
 registerHooks({
 	resolve(specifier, context, nextResolve) {

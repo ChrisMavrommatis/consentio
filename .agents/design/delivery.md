@@ -175,6 +175,44 @@ fetched before the push.
 value, which is how a category that was granted and then revoked stays granted. Its return type is
 `Record<GoogleSignal, ConsentState>`, so leaving one out is a compile error.
 
+## How a release actually runs
+
+**Built 25 Aug 2026, never dispatched.** This lives here because
+[../plans/2-release-pipeline.md](../plans/2-release-pipeline.md) is deleted once its work is committed, and
+the procedure has to survive it. Today the only other copy is a comment inside `release.yml` itself.
+
+**The workflow does not bump the version, and it does not name the release.** Three things are the
+maintainer's, by hand on `main`, **before** dispatching:
+
+1. rename `## [Unreleased]` in `CHANGELOG.md` to the version, and open a fresh empty `## [Unreleased]` above it
+2. set the same version in `package.json`
+3. push both to `main`
+
+Then dispatch `release.yml` with that version. `dry_run` defaults to **on** - it runs every gate and the
+full verify, and skips the commit, the tag and the publish.
+
+**What the workflow then does, in order.** Nothing before `commit` is irreversible; nothing after it is
+reversible:
+
+| Job | Does |
+|---|---|
+| `gate` | the dispatch is on `main`; the version is semver with no leading `v`; `package.json` agrees; the changelog section exists and is not empty; the tag does not already exist here **or on `origin`** |
+| `release` | `npm ci`, typecheck, `build:dist`, both test suites, then prints the release body and what it would commit |
+| `release` | commits `dist/` and the changelog date to `main` as `github-actions[bot]`, subject `release <version>` |
+| `release` | tags that commit, pushes the tag, creates or edits the release with the four `dist/` files attached |
+
+**Two things this depends on that are not in the repository:**
+
+- **`main` must let `github-actions[bot]` push.** If it is protected, the bypass has to name that actor, or
+  the release stops after building and before tagging. That is a safe place to stop, but it stops.
+- **The commit subject `release <version>` and the bot's committer address are how `dist-guard.sh` tells a
+  released `dist/` from a hand-written one.** Changing either shape silently disarms the guard. It catches
+  mistakes, not someone deliberately setting that email - and that is the right bar for it.
+
+**CI is red until the first release.** The freshness job rebuilds `dist/` and diffs it, and the committed
+`dist/` is stale - defect 24. Every file differs, plus one the build emits and `dist/` does not have. That
+is the check working, and it goes green when a release regenerates `dist/`.
+
 ## What not to do
 
 **Do not rewrite the UI.** The web components work and the shadow-root isolation is the right call for a

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { globSync, readFileSync } from 'node:fs';
 
 import Consentio from '../../src/consentio.js';
 import type { ConsentCategory, ConsentCategoryOverride } from '../../src/types.js';
@@ -46,11 +46,13 @@ test('the defaults are not mutated by a merge', () => {
 
 // --- defect 20 -------------------------------------------------------------
 
-test('issue 20 - the hand-written version matches package.json', () => {
+test('issue 20 - the version comes from package.json and nowhere else', () => {
 	const pkg = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8')) as { version: string };
-	assert.equal(
-		Consentio.version,
-		pkg.version,
-		'the version is written by hand in two places; this is the only thing keeping them in step'
-	);
+	assert.equal(Consentio.version, pkg.version);
+
+	// The substitution only helps while nothing writes a literal back in. A version-shaped
+	// literal anywhere in src/ means there is a second source again.
+	const sources = globSync('src/**/*.ts');
+	const offenders = sources.filter((file) => /['"`]\d+\.\d+\.\d+/.test(readFileSync(file, 'utf8')));
+	assert.deepEqual(offenders, [], 'the version belongs in package.json only');
 });

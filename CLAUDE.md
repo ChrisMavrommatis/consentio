@@ -6,8 +6,8 @@ All guidance lives in `.agents/`, fetched on demand. This file is the door and s
 
 - **Never commit, stage or push.** Leave changes in the working tree. The maintainer commits.
 - **Never hand-edit `dist/`, and do not rebuild it either.** It is build output *and* it is the shipped
-  artifact - a CDN serves those exact files. Only the release owns it. `npm run build` writes straight into
-  it today, so run it only to inspect the output and put `dist/` back afterwards.
+  artifact - a CDN serves those exact files. Only the release owns it. `npm run build` writes to `build/lib/`
+  and cannot reach `dist/`; `npm run build:dist` can, and is the release workflow's.
 - **This repository is public.** Nothing in it - code, docs, `.agents/`, a commit message - may carry pricing,
   revenue, a competitor, a visitor number, or which other project pays for this one. Nothing outside
   `.agents/` may point a reader into it. This file is the only exception.

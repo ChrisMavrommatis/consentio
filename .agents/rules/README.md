@@ -26,4 +26,4 @@ A rule is a standing instruction that does not change per task. Why something is
 | add a **fact** to any file under `.agents/` | [one-fact-one-place](one-fact-one-place.md) |
 | add a **link** from one layer to another, or from outside `.agents/` | [who-references-whom](who-references-whom.md) |
 | change the **cookie**, its name, its version field or its shape | [the-cookie-is-a-contract](the-cookie-is-a-contract.md) |
-| change the **version**, `dist/`, or anything a published template pins | [releases-move-two-repositories](releases-move-two-repositories.md) |
+| change the **version**, `dist/`, **user-visible behaviour**, or anything a published template pins | [releases-move-two-repositories](releases-move-two-repositories.md) |
