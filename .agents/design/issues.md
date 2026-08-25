@@ -199,6 +199,10 @@ CDN URL in `gtm/consentio-tag/template.tpl:144`. The third is the one that ships
 the bundle and the test harness does the same, so `src/` carries no literal. The release gate refuses a
 version `package.json` disagrees with. **The template's CDN URL is still by hand** and moves with the
 release - see [../rules/releases-move-two-repositories.md](../rules/releases-move-two-repositories.md).
+**Closed 26 Aug 2026, as far as it can be.** `0.1.0` was released from `package.json` through the gate, and
+the template's literal was moved to it by hand the same day. That literal cannot be generated: a sandboxed
+template has no build step, and the URL has to be a pinned constant the gallery reviewer can read. So this
+entry does not reopen - it becomes a step in the release procedure, which is where it now lives.
 **21.** Adding a category without bumping `config.version` leaves stored consents missing that key - it
 reads as denied, silently. **Narrowed by the decision of 25 Aug 2026**: a site cannot add a category, so this
 is now only about Consentio itself changing the four, which is a breaking change and a version bump anyway.
@@ -224,8 +228,20 @@ the port.**
 `gtm/consentio-tag/template.tpl:144` pins
 `https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@0.0.4/dist/consentio.min.js`. So the broken loader is
 being served from a permanent, cached URL now - this is live, not a hazard the next release might introduce.
-A tag cannot be recalled, so the only remedy is a new one. The release pipeline that makes one is built, and
-so is the freshness check that now fails CI on this exact staleness. It has never been dispatched.
+A tag cannot be recalled, so the only remedy is a new one.
+
+**Fixed for the direct route on 26 Aug 2026 by tag `0.1.0`**, the first real dispatch of `release.yml`. The
+tagged `dist/` was rebuilt in a clean tree and is byte-identical; the tagged loader reads `dataset.debug`,
+`dataset.configUrl` and `dataset.cookiesUrl` and carries no occurrence of the old names; jsDelivr serves
+`@0.1.0` byte-identical to the tag. **Still live on the tag manager route** until the published template's
+gallery review clears - `gtm/consentio-tag/template.tpl` was moved to `@0.1.0` the same day, but the version
+in the gallery is the old one and it is what a container loads today.
+
+**One gap the release exposed:** CI does not run on a release commit. A push made with `GITHUB_TOKEN` does
+not trigger other workflows, so the freshness check - written for exactly this staleness - never runs on the
+one commit where it decides what ships. It was run by hand against `0.1.0` and passes. Closing that means
+either a `workflow_call` on `ci.yml` invoked from the release job, or the freshness check inside
+`release.yml` before it tags.
 
 ## In the Google Tag Manager template
 
@@ -287,11 +303,18 @@ override, so the rule is not enforced. That is defect 28.
 Defects **1 to 5** were fixed on 24 Aug 2026, **6 to 19, 22, 23 and 28 on 25 Aug 2026**, and **25, 26, 30
 and 31 on 26 Aug 2026** - each is marked at its own entry above, and each has a test with no `todo` flag.
 
-**Open: 20, 21, 24, 29.** The last two `todo` flags in the suite are defect 21's. 20 is single-sourced by
-the release pipeline and only the template's CDN URL still carries a literal. 21 survives as a documentation
-item, its documentation half done. 29 is latent: no site-supplied string reaches an attribute today. **25,
-26, 30 and 31 closed on 26 Aug 2026**, and the four are the template's - none of them has been run in a
-container, which is checks 2 and 3 in [../plans/8-release-readiness.md](../plans/8-release-readiness.md).
+**Open: 21, 24 (half), 29.**
+
+- **21** survives as a documentation item, its documentation half done. Its two `todo` flags are the last
+  two in the suite.
+- **24** is fixed on the direct route by `0.1.0` and **still live on the tag manager route**, because the
+  published template is the old one until the gallery review clears. See its entry.
+- **29** is latent: no site-supplied string reaches an attribute today.
+
+**20 closed on 26 Aug 2026, as far as it can be** - the one remaining literal is the template's CDN URL,
+which cannot be generated and is a release step instead. **25, 26, 30 and 31 closed on 26 Aug 2026**, and
+the four are the template's - none of them has been run in a container, which is checks 2 and 3 in
+[../plans/8-release-readiness.md](../plans/8-release-readiness.md).
 
 **Defect 24 is not fixed.** `dist/` is untouched: `git status --porcelain dist/` is empty and no commit since
 `35a8b31` has written it, so the committed bundle is still the stale one. Rebuilding it in a working tree

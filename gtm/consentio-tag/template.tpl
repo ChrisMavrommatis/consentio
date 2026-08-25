@@ -610,7 +610,10 @@ ___TEMPLATE_PARAMETERS___
 
 ___SANDBOXED_JS_FOR_WEB_TEMPLATE___
 
-const url = 'https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@0.0.4/dist/consentio.min.js';
+// Pinned, never floating: the CDN serves the git tree at this exact tag, so a range would
+// let the bytes under a site change with no edit here and nothing to review. Moving it is
+// a gallery review, so it moves only when a release requires it. Tag first, then this.
+const url = 'https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@0.1.0/dist/consentio.min.js';
 
 const log = require('logToConsole');
 const injectScript = require('injectScript');

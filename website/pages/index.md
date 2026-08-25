@@ -27,9 +27,10 @@ anywhere but the visitor's browser. It suits a static site, or any site whose HT
 CDN at a version you pin. Apache-2.0, no dependencies.
 
 <div class="callout callout--warn" markdown="1">
-**This site documents version {{ site.docs_version }}, which is not released yet.** Everything described here
-is what the code does today. The published `0.0.4` files and the published Tag Manager template are older and
-behave differently.
+**This site documents version {{ site.docs_version }}, which is released.** If you install by putting the
+script in your HTML, everything here describes what you get. **The Tag Manager template in Google's gallery
+is still the older one** — it loads the previous banner until its update clears review, so that route lags
+this page for now.
 </div>
 
 <ul class="cards">
@@ -106,11 +107,14 @@ Start at the top. The last six are reference — read them when you need them, n
 
 ## 🏁 Versions {#release-note}
 
-**This site describes {{ site.docs_version }}.** The newest published files are `0.0.4`, and they behave
-differently — in `0.0.4` the script could be marked `async`, and doing that stopped the banner working
-without any warning. That is fixed, and fixing it is why the next version is a new minor rather than a patch.
+**This site describes {{ site.docs_version }}, and it is the newest published version.**
 
-**If you are upgrading from `0.0.4`:** remove `async` or `defer` from the tag. Nothing else changes for you.
+**If you are upgrading from `0.0.4`:** remove `async` or `defer` from the script tag. In `0.0.4` marking it
+`async` stopped the banner working with no warning at all; the script has to block, and now it says so.
+Nothing else changes for you.
+
+**If you use the Tag Manager template**, update it in your container when its new version appears in the
+gallery. The published template still loads the older banner until then.
 
 Pin an exact version wherever you load the files from. A URL that follows the newest release will change what
 your site runs without you touching anything.

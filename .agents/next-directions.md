@@ -23,8 +23,8 @@ a browser, a container or the template editor: those three boxes are checks 2, 3
 
 - `npm run typecheck` clean. `npm test` 256 tests, 254 pass, 0 fail, 2 todo. `npm run test:plain` 78, 76,
   0 fail, 2 todo. Both exit 0.
-- `git status --porcelain dist/` empty. `git diff --stat src/ package.json` empty. `git tag -l` unchanged -
-  `0.0.1` to `0.0.4`.
+- `git status --porcelain dist/` empty. `git tag -l` is now `0.0.1` to `0.0.4` **and `0.1.0`**, released
+  26 Aug 2026 by the first real dispatch of `release.yml`.
 - The register is at thirty-one defects. **Open: 20, 21, 24, 29.** Everything else is fixed or closed by
   decision. Plan 5 closed 25 and 26 and added 30 and 31, both fixed the same day.
 - The two todos left are defect 21's, and they are now the whole of what is open on 21 - its documentation
@@ -52,8 +52,11 @@ strings are fields on the tag, chosen by one **Text source** field. `gtm/consent
 `gtm/consentio-tag-cookies/` each hold a complete copy of what its published repository needs.
 [design/delivery.md](design/delivery.md) carries the reasoning.
 
-**The templates cannot be published yet.** The tag's CDN URL still pins `@0.0.4`, which is the stale bundle.
-A template must never ship ahead of the tag it points at: tag `0.1.0`, then move the URL, then submit.
+**The templates are ready to publish, and publishing them is the most urgent thing left.** `0.1.0` is tagged
+and on jsDelivr, and the tag's CDN URL was moved to it on 26 Aug 2026 - checked, the pinned URL returns 200
+and its bytes match the tag. **Until the gallery review clears, the tag manager route still serves the
+`0.0.4` banner**, so that half of the product is still on the stale bundle even though the direct route is
+fixed. The order is: two repositories, each a copy of its `gtm/` folder, main branch, then submit.
 `metadata.yaml` records a version as a commit SHA in the published repository, so the `versions` list can
 only be filled after that commit exists.
 
