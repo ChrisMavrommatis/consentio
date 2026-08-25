@@ -13,13 +13,13 @@ Each plan cites defect numbers from [design/issues.md](design/issues.md) and car
 
 | # | Plan | State | Gated by |
 |---|---|---|---|
-| 5 | [tag manager templates](plans/5-gtm-templates.md) | **written** 26 Aug 2026. Cannot be finished here | its remaining checks need the site published and a container on it |
-| 7 | [repo furnishing](plans/7-repo-furnishing.md) | ready. **Next** | nothing. Fill a gap whenever there is a spare sitting |
-| 8 | [release readiness](plans/8-release-readiness.md) | blocked | 5 and 7 |
+| 7 | [repo furnishing](plans/7-repo-furnishing.md) | **done** 26 Aug 2026, uncommitted. Delete once committed | - |
+| 8 | [release readiness](plans/8-release-readiness.md) | **Next**, and it is the maintainer's | a browser, a container, a runner and a published site |
 
-**Plans 1, 2, 3, 4, 6 and 9 are gone**, deleted once their work was committed - all on 25 Aug 2026 except 6,
-deleted on 26 Aug 2026 once the site commit landed. They were the guidance truth-up, the release pipeline,
-lifecycle and DOM, accessibility, the repository restructure and the documentation site. What was still true
+**Plans 1, 2, 3, 4, 5, 6 and 9 are gone**, deleted once their work was committed - all on 25 Aug 2026
+except 6 and 5, deleted on 26 Aug 2026. They were the guidance truth-up, the release pipeline,
+lifecycle and DOM, accessibility, the repository restructure, the documentation site and the tag manager
+templates. What was still true
 in them moved out first: the release procedure into
 [design/delivery.md](design/delivery.md), the untested parts of the workflow into
 [plans/8-release-readiness.md](plans/8-release-readiness.md), the layout decisions into
@@ -27,12 +27,16 @@ in them moved out first: the release procedure into
 [rules/never-commit.md](rules/never-commit.md). **Plan 6's four durable facts became four memory files** -
 the site owning its stylesheet, kramdown eating indented HTML, the two `/try-it/` pages being test equipment,
 and the site being written for a self-installer. Its `{:toc}` finding went into the icon rule.
+**Plan 5's durable half is in [design/delivery.md](design/delivery.md)** - the gallery's file list, the
+sandbox API names it checked against Google rather than remembered, why the strings are on the tag, where
+the wording comes from, and why translations are copied rather than served. Its three unfinished boxes are
+checks 2, 3 and 10 in [plans/8-release-readiness.md](plans/8-release-readiness.md).
 Plan 3's two browser checks it could not run - defect 12 on
 plain http, and a second `Consentio.Create()` - are checks 4 and 6 in
 [plans/8-release-readiness.md](plans/8-release-readiness.md); everything else it recorded is in the register.
 Plan 4's two it could not run - the accessible names in the tree, and keyboard-only operation - are checks 7
 and 5 there, and what it fixed, compromised and found is defects 14, 15 and 29 in the register.
-**The numbering does not shift** - 5 is still 5.
+**The numbering does not shift** - 7 is still 7, and the gaps are deliberate.
 
 **Nothing here pushes a tag, creates a repository or publishes the site.** Those are the maintainer's, and
 plan 8 is where they are handed over. `site.yml` deploys only when dispatched with `publish` on, and Pages
@@ -50,10 +54,10 @@ fields on the tag, because a third published template costs a repository and a g
 bought nothing back. And the strings are chosen by one **Text source** field: built-in English, custom
 fields pre-filled with that English, or any Tag Manager variable. **Runtime language packs were proposed and
 refused** - a translation is text to download and paste, not a service to keep running.
-[design/delivery.md](design/delivery.md) holds both, and what was checked against Google rather than
-remembered is in the plan.
+[design/delivery.md](design/delivery.md) holds both, and the sandbox API names checked against Google
+rather than remembered are there too.
 
-**Re-verified 26 Aug 2026, after plan 5.** Typecheck clean, `npm test` 256/254/0 fail/**2** todo,
+**Re-verified 26 Aug 2026, after plan 5.** Plan 7 changed no source, so this still stands. Typecheck clean, `npm test` 256/254/0 fail/**2** todo,
 `npm run test:plain` 78/76/0 fail/2 todo, `git status --porcelain dist/` empty, `git diff --stat src/
 package.json` empty, `git tag -l` unchanged. Plan 5 touched no source; the extra tests are the cookie
 contract fixture and the check that the template has not drifted from it.
@@ -112,10 +116,9 @@ default, the two routes agreeing about one visitor, and both templates saved in 
 checks in [plans/8-release-readiness.md](plans/8-release-readiness.md). **Publishing the site turns most of
 them from proxies into checks**; the last one needs the template editor, which no repository can reach.
 
-So: **7, then 8.** Plan 5 is written and its remaining boxes are all somebody standing in front of a
-browser: `/try-it/tag-manager/` is the one page on the site with no loader, and `gtm_container_id` in
-`website/_config.yml` is where a container ID goes. They are checks 2, 3 and 10 in
-[plans/8-release-readiness.md](plans/8-release-readiness.md).
+**7 is done, so 8 is all that is left, and nothing in it can be worked here.** Every remaining box is
+somebody standing in front of a browser, a container or a runner: `/try-it/tag-manager/` is the one page on
+the site with no loader, and `gtm_container_id` in `website/_config.yml` is where a container ID goes.
 
 **8 last, and it decides nothing on its own.** It assembles the evidence; the maintainer decides the version
 and pushes the tag.

@@ -137,6 +137,10 @@ publishes. Notes come from **[`CHANGELOG.md`](CHANGELOG.md)**; add to its `Unrel
 it; it publishes only when dispatched with `publish` on, and only once Pages is set to the GitHub Actions
 source. There is no push trigger.
 
+**Contributing:** [`CONTRIBUTING.md`](CONTRIBUTING.md) has the whole loop — build, test, house style, and
+what must never be in a pull request. **[`SECURITY.md`](SECURITY.md)** says how to report a vulnerability
+and why a published tag is never patched in place.
+
 **Some tests are marked `todo` on purpose.** They describe behaviour the code does not have yet, so the run
 exits 0 with those listed. That is the correct state. See **[`test/README.md`](test/README.md)**.
 

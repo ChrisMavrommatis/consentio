@@ -4,15 +4,20 @@ description: What to do next and what the maintainer has to decide. The board ow
 
 # Next directions
 
-Written 25 Aug 2026. Updated at the end of the session that deleted plan 6 and landed plan 5.
+Written 25 Aug 2026. Updated at the end of the session that landed plan 7 and deleted plan 5.
 
 **[relaunch.md](relaunch.md) owns plan order and state.** This file does not repeat it. It holds what the
 next sitting should actually do, and what is waiting on the maintainer.
 
 ## Where things stand
 
-Plans 1, 2, 3, 4, 6 and 9 are committed and deleted. **Plan 5 is done and uncommitted** - it is written and
-cannot be finished here, because every box left needs a browser, a container or the template editor.
+Plans 1, 2, 3, 4, 5, 6 and 9 are committed and deleted. **Plan 5's work is in `main`** - commit `5cdeff7`
+carries both templates, the contract fixture and its two new test files. What it could not finish here needs
+a browser, a container or the template editor: those three boxes are checks 2, 3 and 10 in
+[plans/8-release-readiness.md](plans/8-release-readiness.md), and its durable half moved into
+[design/delivery.md](design/delivery.md) before the plan went.
+
+**Plan 7 is done and uncommitted.** It is still on the board, marked for deletion once the commit lands.
 
 **Measured at the end of this session, by running the commands:**
 
@@ -26,14 +31,19 @@ cannot be finished here, because every box left needs a browser, a container or 
   half is done. **They describe something the code refuses**: one adds a fifth category, which
   `mergeConsents` drops since defect 28 was fixed. Deleting the flag would not make them pass.
 
-## The next sitting: plan 7
+## The next sitting: there is not one here
 
-[plans/7-repo-furnishing.md](plans/7-repo-furnishing.md) is the last plan that can be worked without a
-browser, a container or a runner. It waits on nothing, and `SECURITY.md` is the file a visitor checks before
-putting a third-party script in their `<head>`.
+Plan 7 was the last plan a session could work without a browser, a container or a runner. It is done:
+`SECURITY.md`, `CONTRIBUTING.md`, `src/README.md`, `.nvmrc`, `.gitattributes`, `CODEOWNERS`,
+`dependabot.yml`, the issue forms and the pull request template all exist, and the Node floor now agrees
+across `package.json`, `.nvmrc` and every workflow.
 
-**After it, nothing is left that a session can finish.** Plan 8 assembles evidence from checks only the
-maintainer can run.
+**Nothing is left that a session can finish.** [plans/8-release-readiness.md](plans/8-release-readiness.md)
+assembles evidence from checks only the maintainer can run - a dry-run dispatch, a published site, a
+container, and the template editor.
+
+**The next commit should carry plans 5 and 7 together.** Once it lands, delete
+[plans/7-repo-furnishing.md](plans/7-repo-furnishing.md) and take its row off the board.
 
 ## Two things the maintainer has to know before the next commit
 
@@ -57,7 +67,7 @@ attributes back - plan 4 had to set the switch's accessible name from `render()`
 - **Publishing the site.** `site.yml` is `workflow_dispatch` only and `publish` defaults to off. Before a
   real publish, **Pages has to be set to the GitHub Actions source in the repository settings** - nothing in
   a repository can set that. A dispatch with `publish` off is free and settles most of the rest.
-- **A tag manager container for the site.** Four of plan 8's ten by-hand checks need one, and so does every
+- **A tag manager container for the site.** Four of plan 8's ten by-hand checks need one, and so did every
   unticked box in plan 5. `gtm_container_id` in `website/_config.yml` is the one key to fill in.
 - **Two repositories for the templates**, one per published template, each with `template.tpl`,
   `metadata.yaml`, `LICENSE` and `README.md` at its root and a main branch. The folders in `gtm/` are
@@ -70,3 +80,18 @@ attributes back - plan 4 had to set the switch's accessible name from `render()`
 - **The first dispatch of `release.yml`.** It has never run, not even dry. Five things about it cannot be
   tested off a runner - [plans/8-release-readiness.md](plans/8-release-readiness.md) lists them.
 - **`1.0.0`.** `0.1.0` is settled. The second number is taken after `0.1.0` has been on a real site.
+
+## Two things found verifying plan 7, and fixed
+
+**`webpack.config.js` pointed at a file under `.agents/` from a comment.** Plan 7 found it, fixed the same
+pointer in `.github/scripts/dist-guard.sh` and left this one as out of scope. It is gone now, and no file
+outside `.agents/` points into it any more - `CLAUDE.md` excepted, which is the declared exception.
+
+**`SECURITY.md` claimed the bundle carries no third-party code.** It carries one adapted file: the cookie
+reader is derived from js-cookie v3.0.1, and the emitted `.LICENSE.txt` says so. "No runtime dependencies"
+is true; "no third-party code" was not, and `SECURITY.md` is the worst file to be wrong in - an auditor
+greps the bundle, finds the banner, and stops believing the page. Corrected to say both.
+
+**Still open for the maintainer:** the vendored file carries `/*! based on js-cookie v3.0.1 */` and nothing
+else. js-cookie is MIT, which asks that its copyright notice travel with the code. Whether that means a
+`NOTICE` file, a line in `LICENSE`, or the banner as it stands is a call nobody here has made.

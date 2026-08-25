@@ -4,7 +4,7 @@
 # The freshness check next to this one catches a *stale* dist/. This catches one that is
 # hand-written and happens to be fresh, which freshness cannot see: the tree is correct,
 # so only the commit that made it tells the two apart. dist/ is the shipped product and
-# one process owns it - see .agents/rules/only-ci-builds-dist.md.
+# one process owns it.
 #
 # Called by ci.yml with BEFORE, HEAD_SHA and BASE_SHA from the event, and by
 # test/scripts/dist-guard.test.mts against a throwaway repository.

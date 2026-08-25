@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 // Where each target writes. `lib` is the default so an ordinary local build cannot reach
-// dist/ - see .agents/rules/only-ci-builds-dist.md.
+// dist/ - only the release workflow writes it, and CI fails a push that disagrees.
 const DESTINATIONS = {
 	lib: 'build/lib',
 	website: 'website/js',

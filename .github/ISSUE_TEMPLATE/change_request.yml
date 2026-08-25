@@ -1,0 +1,50 @@
+name: Change request
+description: Something Consentio should do differently, or should do at all.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Consentio is small on purpose and it ships as a script rather than a package, so the bar for a
+        new option is high. Say what you are trying to get done rather than which option you want, and
+        the answer may be that it already works.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What you are trying to do
+      description: The situation on your site, and where Consentio gets in the way.
+    validations:
+      required: true
+
+  - type: textarea
+    id: today
+    attributes:
+      label: What you do today
+      description: The workaround, if you have one, and what it costs you.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: route
+    attributes:
+      label: Which route this is about
+      options:
+        - Directly in the site - a blocking script tag
+        - Google Tag Manager custom template
+        - Both
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: cost
+    attributes:
+      label: What it would touch
+      description: >
+        Tick anything that applies. Each one costs more than it looks like - a template change goes
+        through Google's gallery review, and a cookie change has to be made twice by hand.
+      options:
+        - label: The cookie - its name, its version field or its shape
+        - label: The four consent categories, which are fixed
+        - label: A published tag manager template
+        - label: The size of the blocking loader

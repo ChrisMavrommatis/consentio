@@ -88,13 +88,31 @@ commits there - the template, then the metadata naming it.
 `categories` takes one or more of ADVERTISING, AFFILIATE_MARKETING, ANALYTICS, ATTRIBUTION, CHAT,
 CONVERSIONS, DATA_WAREHOUSING, EMAIL_MARKETING, EXPERIMENTATION, HEAT_MAP, LEAD_GENERATION, MARKETING,
 PERSONALIZATION, REMARKETING, SALES, SESSION_RECORDING, SOCIAL, SURVEY, TAG_MANAGEMENT, UTILITY. **There is
-no consent category**, so all three use `UTILITY` and `TAG_MANAGEMENT`.
+no consent category**, so both use `UTILITY` and `TAG_MANAGEMENT`.
 
 So two published repositories, neither of which can be a folder inside this one. They are developed here and
 copied out on publish; each `gtm/<name>/` folder holds all four files.
 
 **Only `consentio-tag` pins the banner's version**, in the CDN URL it injects. The MACRO template supplies
 data and pins nothing, so a version bump does not move it.
+
+### The sandbox API, checked rather than remembered
+
+**Read from Google's own documentation on 26 Aug 2026**, because a sandboxed API drops a wrong key silently
+and a plausible-looking name is how that kind of fault survives. Do not re-derive these from a template that
+looks similar:
+
+| API | What is true |
+|---|---|
+| `getCookieValues(name[, decode])` | returns an **array**, and decodes by default. A single cookie is `[0]`; the reader guards an empty array **and** a falsy return, because which one a missing cookie gives was not confirmed |
+| `JSON.parse` | in the sandbox it returns **`undefined` on malformed input** rather than throwing, so a reader needs no `try` |
+| `setDefaultConsentState` | needs `access_consent` with **write on all seven** consent types, listed one per entry |
+| `gtagSet(object)` | needs `write_data_layer`, whose parameter is `keyPatterns` |
+
+**A web template cannot fetch anything and read the answer.** There is no XHR and no `fetch`; `sendPixel`
+and `injectHiddenIframe` send a request but cannot read a response. The only way data comes back in is
+`injectScript` plus `copyFromWindow`, which is why a settings fetch and a language pack were both decisions
+about whether to, never about whether it was possible.
 
 ### Why the strings are in the tag and the cookie table is not
 

@@ -1,0 +1,79 @@
+name: Bug report
+description: Something Consentio does that it should not, or does not do that it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not report a security problem here. Use private vulnerability reporting instead - the
+        Report a vulnerability button under the Security tab.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The tag you installed, or the version in the CDN URL. "main" if you built it yourself.
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: route
+    attributes:
+      label: Install route
+      description: The two routes push the consent default in completely different places.
+      options:
+        - Directly in the site - a blocking script tag
+        - Google Tag Manager custom template
+        - Both, on the same site
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happens
+    attributes:
+      label: What happens
+      description: What you see, and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: How to reproduce it
+      description: >
+        The smallest page that shows it. Say whether the visitor had already answered the banner, and
+        whether the page was served over https - some behaviour differs on plain http.
+      placeholder: |
+        1. Load the page with no consentio cookie
+        2. Click Accept
+        3. Reload
+    validations:
+      required: true
+
+  - type: textarea
+    id: cookie
+    attributes:
+      label: The stored cookie, if there is one
+      description: >
+        The value of the consentio cookie when it goes wrong, URI-decoded. It is the visitor's own answer
+        and holds nothing that identifies anybody.
+      render: json
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Console output
+      description: >
+        Anything Consentio logged. Set data-debug on the loader tag, or turn on the template's Debug
+        field, to get the full trace.
+      render: text
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: "Firefox 142, Safari 18.2 on iOS"
+    validations:
+      required: true

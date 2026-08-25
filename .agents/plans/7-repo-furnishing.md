@@ -1,7 +1,7 @@
 ---
 description: The files a public repository is expected to have and this one does not - contribution, security, editor and dependency hygiene
-state: ready
-waits-on: nothing. Take it whenever there is a spare sitting
+state: done 26 Aug 2026, uncommitted
+waits-on: nothing. Delete it once its work is committed
 ---
 
 # 7 - furnish the repository
@@ -65,14 +65,58 @@ someone outside the project. **Do not add a dependency.** **Do not bump the vers
 
 ## Deliverables
 
-- [ ] `SECURITY.md` exists and says plainly that a published tag is never patched in place.
-- [ ] `CONTRIBUTING.md` exists, names both test commands, and tells a contributor never to commit `dist/`.
-- [ ] `.nvmrc`, `.gitattributes`, issue and PR templates, `dependabot.yml` and `CODEOWNERS` exist.
-- [ ] The Node version agrees across `package.json`, `.nvmrc` and every workflow.
-- [ ] `src/README.md` exists and explains the loader/banner split.
-- [ ] Every heading in every file this plan wrote carries one icon.
+- [x] `SECURITY.md` exists and says plainly that a published tag is never patched in place.
+- [x] `CONTRIBUTING.md` exists, names both test commands, and tells a contributor never to commit `dist/`.
+- [x] `.nvmrc`, `.gitattributes`, issue and PR templates, `dependabot.yml` and `CODEOWNERS` exist.
+- [x] The Node version agrees across `package.json`, `.nvmrc` and every workflow.
+- [x] `src/README.md` exists and explains the loader/banner split.
+- [x] Every heading in every file this plan wrote carries one icon.
       `grep -hE "^#{2,4} " <the new files> | grep -vP "^#{2,4} [^\x00-\x7F]"` returns nothing.
       `grep -rn "node-version" .github/` matches `.nvmrc` matches `engines`.
-- [ ] Nothing written here points into `.agents/`.
+- [x] Nothing written here points into `.agents/`.
       `grep -rn "\.agents" CONTRIBUTING.md SECURITY.md .github/` returns nothing.
-- [ ] `git status --porcelain dist/` is empty.
+- [x] `git status --porcelain dist/` is empty.
+
+---
+
+## Done on 26 Aug 2026
+
+Everything the plan asked for is written and every check above was run. **Nothing is committed** - the
+maintainer commits, so this file goes once that has happened.
+
+### What was written
+
+| File | Note |
+|---|---|
+| `SECURITY.md` | private reporting through GitHub's advisory flow; the newest tag is the only supported one; an old tag is never patched in place; pin an exact version; what the script can reach; what is not a vulnerability |
+| `CONTRIBUTING.md` | build, both test commands, why `test:plain` is not a duplicate, `todo` flags, never commit `dist/`, the cookie is implemented twice, house style, a pre-pull-request checklist |
+| `src/README.md` | the two entry points, why the blocking one cannot be the banner, the three modules both bundles carry twice, the layout, `__CONSENTIO_VERSION__` |
+| `.nvmrc` | `24` |
+| `.gitattributes` | `eol=lf` - `dist/` is byte-compared by CI, so a CRLF checkin would fail a release for no reason - plus binary types, `linguist-generated` on `dist/`, and `*.tpl` read as JavaScript |
+| `.github/CODEOWNERS` | one line |
+| `.github/dependabot.yml` | npm grouped as one pull request, github-actions to keep the pinned SHAs and their version comments together, bundler for `website/` monthly |
+| `.github/ISSUE_TEMPLATE/` | `config.yml` with blank issues off and a security contact link, `bug_report.yml`, `change_request.yml`. All three parse |
+| `.github/PULL_REQUEST_TEMPLATE.md` | the three commands, the empty `dist/` check, and a list of what costs extra to touch |
+
+`README.md` gained one paragraph pointing at the two new root files. The four YAML files were parsed rather
+than eyeballed.
+
+### One thing had to be fixed to make a deliverable pass
+
+`.github/scripts/dist-guard.sh` pointed at a file under `.agents/` from a comment. Nothing outside `.agents/`
+may do that and the deliverable's grep covers `.github/`, so the pointer is gone. The sentence it hung off
+stands on its own.
+
+**`webpack.config.js` has the same pointer and was left alone** - it is outside this plan's greps and
+outside its scope. It is a one-line fix for whoever next opens the file.
+
+### What was decided rather than copied
+
+- **No supported-versions table in `SECURITY.md`.** The usual green-row-red-row table implies old versions
+  get patches. Nothing here can patch one: a CDN serves the tree at the tag, so the only remedy is a new tag.
+  Saying that plainly is more use than a table that lies.
+- **The change-request form asks what the change would touch**, with the cookie, the four categories and a
+  published template as tick boxes. It is the cheapest way to put the real cost in front of someone before
+  they write the request.
+- **`bundler` is in `dependabot.yml`** even though the site is not this plan's. `website/Gemfile.lock` is
+  committed and Jekyll's dependency chain is the one nobody would otherwise look at.

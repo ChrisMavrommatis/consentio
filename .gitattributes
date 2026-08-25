@@ -1,0 +1,17 @@
+# Normalise to LF in the repository. dist/ is byte-compared by CI against a fresh build,
+# so a CRLF checkin would fail the release for no reason.
+* text=auto eol=lf
+
+*.png binary
+*.ico binary
+*.jpg binary
+*.woff binary
+*.woff2 binary
+
+# Build output that is committed on purpose. Collapsed in diffs and kept out of the
+# language stats.
+dist/** linguist-generated=true
+package-lock.json linguist-generated=true
+
+# Google's sandboxed template format. GitHub has no parser for it; treat it as source.
+*.tpl linguist-language=JavaScript

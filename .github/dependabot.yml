@@ -1,0 +1,27 @@
+version: 2
+updates:
+  # Dev dependencies only - the shipped bundle has none.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      dev-dependencies:
+        patterns:
+          - "*"
+
+  # The workflows pin every action by commit SHA. This is what keeps the SHA and the
+  # version comment beside it moving together.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  # The documentation site's Jekyll gems.
+  - package-ecosystem: bundler
+    directory: /website
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
