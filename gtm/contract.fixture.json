@@ -1,0 +1,156 @@
+{
+  "what": "Worked consent cookie values. The banner's tests assert against this file; each template's tests carry the same values by hand. A mismatch between the two readers of the cookie shows up as a diff here.",
+  "cookieName": "consentio",
+  "version": 1,
+  "baseline": {
+    "strictly_necessary": "granted"
+  },
+  "signalMap": {
+    "strictly_necessary": [
+      "security_storage"
+    ],
+    "preferences_functionality": [
+      "functionality_storage",
+      "personalization_storage"
+    ],
+    "statistics_performance": [
+      "analytics_storage"
+    ],
+    "marketing_advertising": [
+      "ad_storage",
+      "ad_user_data",
+      "ad_personalization"
+    ]
+  },
+  "cases": [
+    {
+      "name": "first-time visitor",
+      "note": "no cookie at all",
+      "cookie": null,
+      "consents": null,
+      "signals": {
+        "ad_storage": "denied",
+        "ad_user_data": "denied",
+        "ad_personalization": "denied",
+        "analytics_storage": "denied",
+        "functionality_storage": "denied",
+        "personalization_storage": "denied",
+        "security_storage": "granted"
+      },
+      "waitForUpdate": 500,
+      "adsDataRedaction": true
+    },
+    {
+      "name": "returning visitor, accepted everything",
+      "note": "every category granted",
+      "cookie": "{\"version\":1,\"consents\":{\"strictly_necessary\":\"granted\",\"preferences_functionality\":\"granted\",\"statistics_performance\":\"granted\",\"marketing_advertising\":\"granted\"}}",
+      "consents": {
+        "strictly_necessary": "granted",
+        "preferences_functionality": "granted",
+        "statistics_performance": "granted",
+        "marketing_advertising": "granted"
+      },
+      "signals": {
+        "ad_storage": "granted",
+        "ad_user_data": "granted",
+        "ad_personalization": "granted",
+        "analytics_storage": "granted",
+        "functionality_storage": "granted",
+        "personalization_storage": "granted",
+        "security_storage": "granted"
+      },
+      "waitForUpdate": null,
+      "adsDataRedaction": false
+    },
+    {
+      "name": "returning visitor, statistics only",
+      "note": "one category granted beside the necessary one",
+      "cookie": "{\"version\":1,\"consents\":{\"strictly_necessary\":\"granted\",\"preferences_functionality\":\"denied\",\"statistics_performance\":\"granted\",\"marketing_advertising\":\"denied\"}}",
+      "consents": {
+        "strictly_necessary": "granted",
+        "preferences_functionality": "denied",
+        "statistics_performance": "granted",
+        "marketing_advertising": "denied"
+      },
+      "signals": {
+        "ad_storage": "denied",
+        "ad_user_data": "denied",
+        "ad_personalization": "denied",
+        "analytics_storage": "granted",
+        "functionality_storage": "denied",
+        "personalization_storage": "denied",
+        "security_storage": "granted"
+      },
+      "waitForUpdate": null,
+      "adsDataRedaction": true
+    },
+    {
+      "name": "version mismatch",
+      "note": "stored at another version, so the whole value is discarded",
+      "cookie": "{\"version\":2,\"consents\":{\"strictly_necessary\":\"granted\",\"preferences_functionality\":\"granted\",\"statistics_performance\":\"granted\",\"marketing_advertising\":\"granted\"}}",
+      "consents": null,
+      "signals": {
+        "ad_storage": "denied",
+        "ad_user_data": "denied",
+        "ad_personalization": "denied",
+        "analytics_storage": "denied",
+        "functionality_storage": "denied",
+        "personalization_storage": "denied",
+        "security_storage": "granted"
+      },
+      "waitForUpdate": 500,
+      "adsDataRedaction": true
+    },
+    {
+      "name": "the flat shape",
+      "note": "written before the categories were nested, so there is no consents key",
+      "cookie": "{\"version\":1,\"strictly_necessary\":\"granted\",\"preferences_functionality\":\"granted\",\"statistics_performance\":\"granted\",\"marketing_advertising\":\"granted\"}",
+      "consents": null,
+      "signals": {
+        "ad_storage": "denied",
+        "ad_user_data": "denied",
+        "ad_personalization": "denied",
+        "analytics_storage": "denied",
+        "functionality_storage": "denied",
+        "personalization_storage": "denied",
+        "security_storage": "granted"
+      },
+      "waitForUpdate": 500,
+      "adsDataRedaction": true
+    },
+    {
+      "name": "malformed value",
+      "note": "not JSON at all",
+      "cookie": "not json",
+      "consents": null,
+      "signals": {
+        "ad_storage": "denied",
+        "ad_user_data": "denied",
+        "ad_personalization": "denied",
+        "analytics_storage": "denied",
+        "functionality_storage": "denied",
+        "personalization_storage": "denied",
+        "security_storage": "granted"
+      },
+      "waitForUpdate": 500,
+      "adsDataRedaction": true
+    },
+    {
+      "name": "valid JSON that is not an object",
+      "note": "a bare string parses and is still no answer",
+      "cookie": "\"granted\"",
+      "consents": null,
+      "signals": {
+        "ad_storage": "denied",
+        "ad_user_data": "denied",
+        "ad_personalization": "denied",
+        "analytics_storage": "denied",
+        "functionality_storage": "denied",
+        "personalization_storage": "denied",
+        "security_storage": "granted"
+      },
+      "waitForUpdate": 500,
+      "adsDataRedaction": true
+    }
+  ]
+}

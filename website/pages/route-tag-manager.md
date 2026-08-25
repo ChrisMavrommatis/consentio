@@ -6,7 +6,7 @@ description: Add Consentio as a Tag Manager custom template. Four steps, then wh
 ---
 
 You are adding **one template to your container**, on one trigger. Nothing is pasted into your HTML and
-nothing is hosted by you.
+nothing is hosted by you. There is a second, optional template for your cookie table.
 
 <div class="callout callout--warn" markdown="1">
 **Check one thing before you start.** This route can only stop things Tag Manager loads. If anything on your
@@ -26,9 +26,15 @@ Use the built-in **Consent Initialization - All Pages**. Not *All Pages* — *Co
 Manager guarantees that trigger runs before every other trigger in the container, and that guarantee is the
 only reason the answer arrives in time.
 
-**3. Fill in the fields**: cookie name, version, your wording for each category, and the rows of your cookie
-table. Same options as the settings file in the other route — [Settings]({{ '/configuration/' | relative_url }}#configuration)
-lists them all.
+**3. Fill in the fields.** Everything has a working default, so you can publish first and come back.
+
+The one that matters is **Text source**. Leave it at *Built-in English* and the banner uses its own wording.
+Set it to *Custom* and every string appears in a box, already filled in with that English — change what you
+want, or paste a translation over it. Set it to *From a variable* and the whole set comes from a Tag Manager
+variable, which is how you switch wording by language.
+
+For the cookie table, add the **Consentio Tag - Cookies** template as well, make a variable from it, and
+pick it here. [Settings]({{ '/configuration/' | relative_url }}#configuration) lists every option.
 
 **4. Publish, then move everything else into the container.** Anything still pasted into a page is not
 covered by the banner. On this route that clean-up is most of the work.
@@ -39,7 +45,7 @@ Two things, in this order, every time a page loads:
 
 1. **It reads the cookie and tells Tag Manager what the visitor allows** — before anything else in your
    container runs.
-2. **It loads the banner** and fills it in from the fields you filled in.
+2. **It loads the banner** and hands it whatever wording you chose.
 
 **It does not use `consentio-loader.min.js` and it does not fetch settings files.** There are none on this
 route; the fields are your settings.
@@ -54,9 +60,12 @@ Consentio stores the answer in one cookie, and the template reads and writes tha
 rules. So a visitor who answers on a page using the HTML route is remembered on a page using this one, and
 the other way round.
 
-**Two things have to match for that to hold**: the **cookie name** and the **version**. Both are fields on
-the template, and both have equivalents on the other route. Set them differently in the two places and the
-same visitor gets asked twice.
+**One thing has to match for that to hold: the version.** It is a field on the template and an attribute on
+the script tag in the other route. Set them differently and the same visitor gets asked twice.
+
+The cookie's name is always `consentio` on this route — a Tag Manager template has to name the cookie it
+reads when it is published, so it cannot be a field. If you changed the name on the other route, change it
+back before you run both.
 
 [The cookie]({{ '/cookie/' | relative_url }}#the-cookie-contract) is the full description — what is in it,
 how long it lasts, and what it looks like when nobody has answered yet.

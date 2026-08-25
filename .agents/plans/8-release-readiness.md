@@ -1,7 +1,7 @@
 ---
 description: Assemble the evidence that the next tag is safe, run the checks no unit test can reach, and hand the version decision to the maintainer
 state: blocked
-waits-on: 1 through 7
+waits-on: 5 and 7. Everything before them has landed
 ---
 
 # 8 - release readiness
@@ -56,7 +56,7 @@ save a run.**
 **The checks nothing automated reaches.** `test/README.md` is honest about where the suite cannot go; this
 is that list, executed.
 
-**The fixture for all of them is the published documentation site**, built by plan 6. `/try-it/` carries the
+**The fixture for all of them is the published documentation site**, built on 25 Aug 2026. `/try-it/` carries the
 live banner and a control that clears the cookie; `/try-it/tag-manager/` is the one page with no loader, for
 the route-2 half; and `gtm_container_id` in `website/_config.yml` emits the container snippet on every page
 once it is filled in. **Checks 1, 2 and 3 need a real container ID in that key, and 8 and 9 need the site
@@ -78,13 +78,18 @@ deployed** - so the site is published before this list is worked, not after.
    one included, and the modal reads as a dialog with a name. Plan 4 asserted both as unit tests; the tree is
    the thing they stand in for.
 8. **The cookie reset control on `/try-it/`.** Click it: the cookie goes, the page reloads, the banner is
-   back. It is the only JavaScript plan 6 wrote and it has never run in a browser. The readout beside it
+   back. It is the only JavaScript the site wrote and it has never run in a browser. The readout beside it
    should show the stored value before and nothing after.
 9. **The first dispatch of `site.yml`, with `publish` off.** Same reasoning as `release.yml` above and the
    same five unknowns in miniature: that the YAML parses, that `upload-pages-artifact` and `deploy-pages`
    behave as read, that `if: ${{ !inputs.publish }}` gates the deploy the way it reads. Its build steps were
    run by hand and pass; nothing above them was. **Pages also has to be set to the GitHub Actions source in
    the repository settings first, and nothing in a repository can set that.**
+10. **The templates saved in the editor.** Paste each `template.tpl` into a Tag Manager custom template,
+    save it, and run its `___TESTS___` scenarios. **The editor is the only thing that checks a permission is
+    declared, previews the fields and runs those tests** - none of it can happen off a container. Two things
+    to watch specifically: no permission warning on save, and the twenty-one text fields hiding when *Text
+    source* is not *Custom*, which rests on `enablingConditions` behaving on a `GROUP` as well as on a field.
 
 **The version, decided 25 Aug 2026: `0.1.0` now, `1.0.0` once it has proven itself.** Moving the consent
 default into the loader is a breaking change - the loader tag has to stop being `async`, and the loader now
@@ -107,7 +112,7 @@ Have the release print the hashes so they can be pasted in.
 
 **Do not enable the site deploy without being asked.** `site.yml` publishes only when dispatched with
 `publish` on; that dispatch is the maintainer's, like the tag. **Do not push a tag.** **Do not trigger the
-release workflow for real.** **Do not create the three template repositories.** **Do not publish anything to
+release workflow for real.** **Do not create the template repositories.** **Do not publish anything to
 the gallery.** **Do not bump the version.** **Do not commit, stage or push.**
 
 ## Deliverables
@@ -115,7 +120,7 @@ the gallery.** **Do not bump the version.** **Do not commit, stage or push.**
 - [ ] Every automated gate is green on one commit, and which commit is written down.
 - [ ] `release.yml` has been dispatched at least once with `dry_run` on, **on a real runner**, and what it
       proved and did not prove is written down.
-- [ ] All nine by-hand checks are done and their results recorded - including the ones that failed, if any.
+- [ ] All ten by-hand checks are done and their results recorded - including the ones that failed, if any.
       **A check nobody ran is reported as not run, never as passed.**
 - [ ] The two routes are confirmed to agree about the same visitor, by hand, on a real page.
 - [ ] `0.1.0` is confirmed as still the right number, with its reasoning, and not applied.

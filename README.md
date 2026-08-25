@@ -69,8 +69,9 @@ relative to its own `src` — then:
 
 ## 🏷️ Tag manager template
 
-Three templates, published one per repository because the gallery requires it. They are developed in
-**[`gtm/`](gtm/)**, which explains what each one is and how they are edited.
+Two templates, published one per repository because the gallery requires it: the tag itself, and an optional
+variable holding your cookie table. They are developed in **[`gtm/`](gtm/)**, which explains what each one is
+and how they are edited.
 
 ## 🍪 The cookie
 
@@ -101,7 +102,7 @@ reading rules and the traps.
 ├── /src         # TypeScript source — the banner, the loader, the web components
 ├── /test        # node:test suites, one scenario per file
 ├── /dist        # the shipped bundles. Build output, and what the CDN serves
-├── /gtm         # the three Google Tag Manager templates
+├── /gtm         # the Google Tag Manager templates
 └── /website     # the Jekyll documentation site
 ```
 
@@ -143,7 +144,7 @@ exits 0 with those listed. That is the correct state. See **[`test/README.md`](t
 
 Moving the consent default into the loader is a **breaking change** — the loader tag has to stop being
 `async` — and the version needs to go to **0.1.0**. It is a two-repository release: `consentio-tag` pins the
-version in its CDN URL, so it moves with the tag. The two MACRO templates pin nothing and stay put.
+version in its CDN URL, so it moves with the tag. The cookie table variable pins nothing and stays put.
 
 ## 📄 Licence
 

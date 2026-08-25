@@ -6,9 +6,10 @@ paths: ["package.json", "dist/**", "gtm/**", "CHANGELOG.md"]
 
 # A release moves two repositories
 
-The banner ships from a tagged CDN URL. **One template pins that version in its own source** -
-`gtm/consentio-tag/template.tpl:144`. The two MACRO templates supply strings and the cookie table and pin
-nothing, so a version bump does not touch them.
+The banner ships from a tagged CDN URL. **One template pins that version in its own source** - the `url`
+constant at the top of `gtm/consentio-tag/template.tpl`'s sandboxed JavaScript. The `consentio-tag-cookies`
+MACRO supplies the cookie table and pins nothing, so a version bump does not touch it. No line number here:
+it has already drifted twice, and [one-fact-one-place](one-fact-one-place.md) puts lines in the register.
 
 Each published template lives in its own repository because the gallery requires it. So a Consentio release
 is:
@@ -27,9 +28,9 @@ What follows:
 - **Batch breaking changes.** Two releases a week apart cost two review cycles and leave sites split across
   versions for as long as the second one takes.
 
-**A change to the cookie contract will move `consentio-tag` too**, whatever the version does, once that
-template sets the consent default itself - defect 26. It reads no cookie today, so today it does not - see
-[the-cookie-is-a-contract](the-cookie-is-a-contract.md).
+**A change to the cookie contract moves `consentio-tag` too**, whatever the version does. It has set its own
+consent default from the cookie since 26 Aug 2026, so it is now the second implementation of that contract -
+see [the-cookie-is-a-contract](the-cookie-is-a-contract.md).
 
 The version is the maintainer's decision. **Say a bump is needed and leave it alone** - see
 [never-commit](never-commit.md).

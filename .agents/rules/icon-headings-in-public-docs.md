@@ -23,6 +23,9 @@ for without reading every heading. Dropping them makes a page harder to scan, no
 - **Reuse the icon that already means that thing.** Grep the existing files before inventing one. The same
   section wearing two different icons across two files is the failure this rule exists to prevent.
 - **One icon, never two.** Never inside a sentence, a list item, a table cell or a link.
+- **No generated contents list.** kramdown's `{:toc}` copies the heading text, so every icon would land
+  inside a link and a list item - forbidden twice over by the line above. The docs site has none for that
+  reason; its sidebar and previous/next links are the navigation.
 - **A heading must still work with the icon stripped.** Terminals, `grep` output and some readers drop it.
   The words carry the meaning; the icon only speeds up finding them.
 

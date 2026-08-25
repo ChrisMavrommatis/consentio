@@ -1,4 +1,4 @@
-﻿﻿___INFO___
+﻿___INFO___
 
 {
   "type": "MACRO",
@@ -6,7 +6,11 @@
   "version": 1,
   "securityGroups": [],
   "displayName": "Consentio Tag - Cookies",
-  "description": "Variable for inputting the cookies for Consentio Tag",
+  "categories": [
+    "UTILITY",
+    "TAG_MANAGEMENT"
+  ],
+  "description": "The cookie table the Consentio banner shows in its settings. Select it in the Consentio Tag's Cookies Variable field.",
   "containerContexts": [
     "WEB"
   ]
@@ -27,7 +31,9 @@ ___TEMPLATE_PARAMETERS___
           "name": "name",
           "displayName": "Name",
           "simpleValueType": true,
-          "lineCount": 2
+          "lineCount": 2,
+          "help": "The cookie's name as it appears in the browser.",
+          "valueHint": "_ga"
         },
         "isUnique": true
       },
@@ -37,7 +43,9 @@ ___TEMPLATE_PARAMETERS___
           "name": "purpose",
           "displayName": "Purpose",
           "simpleValueType": true,
-          "lineCount": 3
+          "lineCount": 3,
+          "help": "What it is for, in words a visitor can read. This is the column they actually stop on.",
+          "valueHint": "Tells Google Analytics one visitor's page views apart from another's"
         },
         "isUnique": false
       },
@@ -47,7 +55,9 @@ ___TEMPLATE_PARAMETERS___
           "name": "provenance",
           "displayName": "Provenance",
           "simpleValueType": true,
-          "lineCount": 2
+          "lineCount": 2,
+          "help": "Who sets it - your site, or the name of the third party that does.",
+          "valueHint": "Google"
         },
         "isUnique": false
       },
@@ -57,7 +67,9 @@ ___TEMPLATE_PARAMETERS___
           "name": "duration",
           "displayName": "Duration",
           "simpleValueType": true,
-          "lineCount": 2
+          "lineCount": 2,
+          "help": "How long it lasts. \"Session\" if it goes when the browser closes.",
+          "valueHint": "2 years"
         },
         "isUnique": false
       },
@@ -85,20 +97,21 @@ ___TEMPLATE_PARAMETERS___
               "displayValue": "Marketing - Advertising"
             }
           ],
-          "simpleValueType": true
+          "simpleValueType": true,
+          "help": "Which of the four consent categories it belongs to. Getting this wrong is what makes the table misleading rather than useful."
         },
         "isUnique": false
       }
-    ]
+    ],
+    "help": "One row per cookie your site sets, including Consentio's own: name consentio, purpose \"Stores the answer you give to this banner\", provenance this site, duration 90 days, category Strictly Necessary."
   }
 ]
 
 
 ___SANDBOXED_JS_FOR_WEB_TEMPLATE___
 
-// Enter your template code here.
 const log = require('logToConsole');
-log('Contentio Tag: Cookies =', data);
+log('Consentio Tag: Cookies =', data);
 
 // Variables must return a value.
 return data.cookies;
@@ -130,7 +143,27 @@ ___WEB_PERMISSIONS___
 
 ___TESTS___
 
-scenarios: []
+scenarios:
+- name: the table is returned as entered
+  code: |-
+    const rows = [
+      {
+        name: 'consentio',
+        purpose: 'Stores the answer to this banner',
+        provenance: 'First party',
+        duration: '90 days',
+        category: 'strictly_necessary'
+      }
+    ];
+
+    const variableResult = runCode({ cookies: rows });
+
+    assertThat(variableResult).isEqualTo(rows);
+- name: an empty table returns an empty list
+  code: |-
+    const variableResult = runCode({ cookies: [] });
+
+    assertThat(variableResult).isEqualTo([]);
 
 
 ___NOTES___

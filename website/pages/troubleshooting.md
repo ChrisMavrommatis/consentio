@@ -42,8 +42,8 @@ If a choice does not stick on `http://localhost`, that is a fault, not the desig
 is what it is for. See [Versioning stored consent]({{ '/versioning/' | relative_url }}#versioning-stored-consent).
 
 **The two halves are reading different cookie names.** On the HTML route, `data-cookie-name` on the tag wins
-over `cookieName` in the settings file. On the Tag Manager route there is no tag, so the template's own field
-is the one that counts. If you are running the same site through both — do not — they will disagree.
+over `cookieName` in the settings file. The Tag Manager route always uses `consentio` and cannot be changed.
+If you are running the same site through both — do not — and you renamed the cookie, they will disagree.
 
 **Something else is clearing cookies.** A consent tool, a privacy extension, or a `Clear-Site-Data` header
 will take this cookie with the rest.

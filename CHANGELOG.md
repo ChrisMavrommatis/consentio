@@ -20,6 +20,15 @@ release body, so write these entries for the people using Consentio, not for the
   bundle published at `0.0.4` read three different names and so ignored every one of them.
 - The source is TypeScript and has a test suite. The published files are unchanged in shape: the same UMD
   bundle, the same loader, at the same paths under `dist/`.
+- **Tag Manager route:** the template now sets the consent default itself, read from the cookie, before it
+  loads the banner. It used to set none at all, so on that route the container had already read consent by
+  the time the banner arrived. **Install the new version of the template alongside this release.**
+- **Tag Manager route:** the banner's wording is now chosen with one *Text source* field - built-in English,
+  your own text in fields that arrive already filled in, or any Tag Manager variable. The separate
+  *Consentio Tag - Texts* variable template is gone; its strings are on the tag.
+- Your stored answer is now kept as `{"version":1,"consents":{...}}` rather than with the categories beside
+  the version. **Everyone who has already answered is asked once more**, because a value in the old shape
+  reads as no answer.
 
 ### 🛠️ Fixed
 

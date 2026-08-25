@@ -1,0 +1,7 @@
+homepage: "https://github.com/ChrisMavrommatis/consentio"
+documentation: "https://chrismavrommatis.github.io/consentio/configuration/"
+versions: []
+# A version is a commit SHA in the published repository, so the first entry can only be
+# written once this file has been committed there. Newest first.
+#  - sha: 0000000000000000000000000000000000000000
+#    changeNotes: Initial release.

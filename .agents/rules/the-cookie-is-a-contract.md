@@ -6,13 +6,14 @@ paths: ["src/lib/consent-store.ts", "src/lib/cookies.ts", "gtm/**"]
 
 # The cookie is a contract
 
-`src/lib/consent-store.ts` is the only reader today. **`gtm/consentio-tag/template.tpl` reads no cookie at
-all** - it injects `consentio.min.js` and calls `Consentio.Create`, so the bundle does the reading for it.
+**There are two readers, since 26 Aug 2026.** `src/lib/consent-store.ts`, and the sandboxed reader in
+`gtm/consentio-tag/template.tpl`. The template cannot wait for `injectScript` to push a consent default, so
+it reads the cookie itself, in the tag manager's sandbox, in a different language, in its own repository.
+There is no shared code path and no test that can span them.
 
-**That is defect 26, and fixing it creates the second implementation.** The template cannot wait for
-`injectScript` to push a consent default, so it has to read the cookie itself, in the tag manager's sandbox,
-in a different language, in its own repository. There is then no shared code path and no test that can span
-them.
+**`gtm/contract.fixture.json` is what stands in for one.** Worked cookie values, asserted by the banner's
+suite and pasted into the template's own tests. Change the contract and change that file in the same
+sitting, or the two readers drift with nothing failing.
 
 Disagree on the name, the `version` field, the JSON shape, or what "no stored answer" means, and a returning
 visitor is asked again - or worse, is treated as having consented when they have not. Nothing fails loudly.
@@ -24,8 +25,8 @@ example, the attributes, the four reading rules and the two traps. Do not re-der
 
 1. Say plainly that it is a breaking change for the template route, whatever it does to the version number.
 2. Check [releases-move-two-repositories](releases-move-two-repositories.md) for what that costs.
-3. Update `../design/delivery.md`, the docs page, and - once it exists - the template's reader, in the same
-   session.
+3. Update `../design/delivery.md`, the docs page, the template's reader and `gtm/contract.fixture.json`, in
+   the same session.
 
 Two things that are easy to skim past and are the usual cause of a mismatch:
 

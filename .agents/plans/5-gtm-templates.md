@@ -1,15 +1,20 @@
 ---
-description: Fix the three tag manager templates - the missing consent default, the ConsentioIntance typo - and lay each one out the way the gallery requires
-state: ready
-waits-on: 3, which fixes defect 9 and shrinks this job. Writing it needs nothing more; finishing it needs plan 6 published
+description: Fix the tag manager templates - the missing consent default, the ConsentioIntance typo - and lay each one out the way the gallery requires
+state: written, not finishable here - 26 Aug 2026
+waits-on: nothing to write. Finishing it needs the documentation site published and a container on it
 ---
 
 # 5 - the tag manager templates
 
+> **Written 26 Aug 2026, and not finishable here.** Read `## Done on` at the bottom first - the brief below
+> is what was asked for, and two decisions taken during the work changed it: there are **two** templates now,
+> not three, and the strings moved onto the tag. Every box still unticked needs a browser, a container or the
+> template editor.
+
 Read [../design/delivery.md](../design/delivery.md) for why this route does not share the loader's
 deny-by-default, and [../design/issues.md](../design/issues.md) for defects 25 and 26.
 
-The three templates are in `gtm/`. **This plan changes nothing in `src/`.**
+The templates are in `gtm/`. **This plan changes nothing in `src/`.**
 
 **[`../../gtm/README.md`](../../gtm/README.md) has already been corrected** - it no longer claims every
 template pins a version, and it lists both open template defects under a Known problems heading. Delete that
@@ -104,8 +109,8 @@ Rewrite it to say what the tag does.
 
 **Where these get tested, decided 25 Aug 2026: the published documentation site.** Every deliverable below
 that says "by eye" or "on a real page" needs a live page with a tag manager container on it, and the site is
-that page once plan 6 publishes it. So **this plan can be written before plan 6 and cannot be finished
-before it.** Write the templates, then verify them against the published site.
+that page once it is published. So **this plan can be written before the site is published and cannot be
+finished before it.** Write the templates, then verify them against the published site.
 
 Two things follow. The site needs a container of its own, which is the maintainer's to create. And the site
 already carries the direct route, so it can serve the check nothing else can: **one visitor, both routes,
@@ -122,22 +127,97 @@ bump the version.** **Do not commit, stage or push.**
 
 - [ ] The tag pushes a consent default before it injects anything.
       **By eye, in Tag Assistant.** The `consent default` is on the dataLayer before the container loads.
-- [ ] Defect 25 is fixed and the double-initialisation guard actually works.
-      `ConsentioInstance` is spelled correctly; firing the tag on two triggers does not throw.
+      **Written, never run in a container** - it is check 2 in
+      [8-release-readiness.md](8-release-readiness.md).
+- [x] Defect 25 is fixed and the double-initialisation guard actually works.
+      `ConsentioInstance` is spelled correctly; a second firing is stopped by the window key or by the
+      template's own page-lifetime flag, whichever is set. Covered by a template test; **not run on two real
+      triggers.**
 - [ ] The template's cookie reader matches the contract exactly.
       A visitor who accepts, then reloads, is not asked again - checked by hand on a real page in **both**
-      routes, and the two routes report the same `security_storage`.
-- [ ] `gtm/contract.fixture.json` exists, the TypeScript tests assert against it, and each template's
+      routes, and the two routes report the same `security_storage`. **Check 3 in plan 8.**
+- [x] `gtm/contract.fixture.json` exists, the TypeScript tests assert against it, and each template's
       `___TESTS___` block uses the same values.
+      `test/lib/consent-store/contract-fixture.test.mts` asserts the banner against it,
+      `test/gtm/template-contract.test.mts` fails when the template drifts from it. The MACRO reads no
+      cookie, so the fixture does not reach it.
 - [ ] Every declared permission is used and nothing used is undeclared.
-      The template saves in the editor with no permission warning.
-- [ ] Each folder holds what the gallery requires, checked against Google's documentation **in this
+      The template saves in the editor with no permission warning. **Nothing here can open the editor** -
+      it is check 10 in plan 8.
+- [x] Each folder holds what the gallery requires, checked against Google's documentation **in this
       sitting**, and what it requires is written into [../design/delivery.md](../design/delivery.md).
-- [ ] Each template has a public README that points at the docs site.
+- [x] Each template has a public README that points at the docs site.
       `grep -rn "\.agents" gtm/` returns nothing.
-- [ ] No `Contentio` anywhere.
+- [x] No `Contentio` anywhere.
       `grep -rni "contentio" gtm/` returns nothing.
-- [ ] The gallery description says what the tag does and does not sell.
+- [x] The gallery description says what the tag does and does not sell.
       `grep -rn "seamless" gtm/` returns nothing.
-- [ ] `src/` is untouched and the version was not bumped.
+- [x] `src/` is untouched and the version was not bumped.
       `git diff --stat src/ package.json` is empty.
+
+---
+
+## Done on 26 Aug 2026
+
+**Written, and it cannot be finished here.** Every remaining box needs a browser, a container or the
+template editor. The board says the same, and plan 8 holds the checks.
+
+### Three templates became two, then the strings changed shape
+
+The maintainer read the setup cost and made two calls that the brief did not anticipate. Both are recorded
+in [../design/delivery.md](../design/delivery.md); the short version:
+
+**`consentio-tag-texts` is gone.** Its twenty-one strings are fields on the tag. A published template costs
+a repository, a `metadata.yaml` SHA list and a gallery review cycle, and the strings bought none of it back -
+they are set once per container. The cookie table stays a variable because it is data.
+
+**One `textSource` field replaced "blank means default".** `builtin` sends no strings and lets the banner
+keep its own; `custom` shows the twenty-one fields **already filled in with the English text**; `variable`
+takes the whole set from any Tag Manager variable. `enablingConditions` hides the fields unless they are
+asked for, which is the only reason they can be pre-filled at all - a filled field submits a real value, so
+it would beat anything else that tried to supply one.
+
+**Runtime language packs were proposed and refused.** They work: a web template cannot fetch, but
+`injectScript` plus `copyFromWindow` is the same thing and the declared permission already covers the CDN
+path. The maintainer refused to make a translation a service. Translations are downloaded and pasted
+instead, into the fields or into a variable, and nothing can then fail at run time.
+
+### What was checked against Google rather than remembered
+
+Every API name, every permission id and the gallery's file list were read from Google's documentation in
+this sitting, and the permission JSON shapes were taken from templates published in the gallery rather than
+written from memory:
+
+| Checked | Result |
+|---|---|
+| `getCookieValues(name[, decode])` | returns an **array**, decodes by default |
+| `setDefaultConsentState` | needs `access_consent` with **write** on all seven types |
+| `gtagSet(object)` | needs `write_data_layer`, whose param is `keyPatterns` |
+| `JSON.parse` in the sandbox | returns `undefined` on malformed input rather than throwing, so no `try` is needed |
+| `enablingConditions` | `[{paramName, paramValue, type: "EQUALS"}]`, from a gallery template |
+| the gallery's files | `template.tpl` with `categories`, `metadata.yaml`, `LICENSE`, `README.md`, main branch, one template per repository |
+| a template version | **a commit SHA in the published repository**, so the `versions` entry can only be written after the commit it names exists |
+| a web template fetching | **there is none.** No XHR; `sendPixel` and `injectHiddenIframe` cannot read a response |
+
+**There is no consent category in the gallery's list**, so both templates use `UTILITY` and `TAG_MANAGEMENT`.
+
+### Two defects found while writing it
+
+Both are in the register, at 30 and 31, and both were fixed the same day. The Version field reached the
+config as a **string**, which nothing noticed until a second reader compared it against the cookie; and the
+Texts variable read `strictlyNecessarydescription`, so one category's description in four was silently
+dropped.
+
+### The cookie name is fixed at `consentio` on this route
+
+`get_cookies` can only name a cookie known at publish time, so a configurable name would mean declaring
+"reads any cookie". The direct route keeps `data-cookie-name`. This is the one place the two routes differ
+in what they offer, and it is a constraint rather than a choice.
+
+### What is not done, and is not this plan's
+
+**The templates cannot be published yet.** The tag's CDN URL still pins `@0.0.4`, which is the stale bundle -
+a template must never ship ahead of the tag it points at. Tag `0.1.0`, then move the URL, then submit.
+
+**`LICENSE` is a copy of the repository's** in each folder, so each folder is a complete copy of its
+published repository. `metadata.yaml`'s `versions` list is empty in both and cannot be filled from here.

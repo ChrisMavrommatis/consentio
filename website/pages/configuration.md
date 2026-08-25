@@ -43,7 +43,7 @@ two categories not named, every default — is untouched and keeps working.
 
 | Key | Type | Default | What it does |
 |---|---|---|---|
-| `cookieName` | string | `consentio` | Name of the cookie the answer is stored in. **Ignored if you also set `data-cookie-name` on the tag** — the tag wins. This is the one the Tag Manager route uses |
+| `cookieName` | string | `consentio` | Name of the cookie the answer is stored in. **Ignored if you also set `data-cookie-name` on the tag** — the tag wins. **The Tag Manager route always uses `consentio`**: a template has to name the cookie it reads when it is published, so it cannot be a field |
 | `debug` | boolean | `false` | Turns on the banner's informational logging |
 | `version` | number | `1` | Raise it to throw away every stored answer and ask everyone again. **Ignored if you also set `data-version` on the tag.** See [Asking everyone again]({{ '/versioning/' | relative_url }}#versioning-stored-consent) |
 | `consentRequired` | boolean | `false` | Shows a full-screen blocking overlay behind the bar and modal until the visitor answers |

@@ -4,12 +4,12 @@ description: Consentio's twenty-nine numbered defects, found by reading the sour
 
 # Consentio - the issue register
 
-**The diagnosis of record.** Twenty-nine numbered defects, found by reading the source. **The numbering is
+**The diagnosis of record.** Thirty-one numbered defects, found by reading the source. **The numbering is
 stable** - every plan cites a number here instead of restating the problem.
 
-**Defects 6 to 29 cite the source as it was when each was found**, re-checked line by line on 25 Aug 2026.
-A defect carrying a **Fixed** line has moved on from the lines it cites; the still-open ones are 21, 24, 25,
-26 and 29. 14 and 15 were fixed on 25 Aug 2026 by plan 4.
+**Defects 6 to 31 cite the source as it was when each was found**, re-checked line by line on 25 Aug 2026.
+A defect carrying a **Fixed** line has moved on from the lines it cites; the still-open ones are 21, 24 and
+29. 14 and 15 were fixed on 25 Aug 2026 by plan 4, and 25, 26, 30 and 31 on 26 Aug 2026 by plan 5.
 Defects 1 to 5 are fixed and are left citing the pre-port layout - `src/js/*.js`, as the source was on 23 Aug
 2026. The port moved every file and TypeScript renamed several.
 
@@ -46,7 +46,7 @@ documentation page exist.
 ## The defects
 
 Found by reading the source on 23 Aug 2026, extended from ten items to twenty-one, to twenty-seven on
-24 Aug 2026, and to twenty-nine on 25 Aug 2026. **Numbering is stable - every plan cites these numbers.**
+24 Aug 2026, to twenty-nine on 25 Aug 2026 and to thirty-one on 26 Aug 2026. **Numbering is stable - every plan cites these numbers.**
 Ranked: defect 1 is what this work
 exists for; the rest are cleanup.
 
@@ -239,6 +239,11 @@ permission at `:411`. **So it is not a write to the wrong key - it is a write to
 the sandbox rejects. That `setInWindow` call is there to cover for defect 9, and it covers for nothing. In
 the tag manager route the double-initialisation guard is dead, and defect 8 turns a second trigger firing
 into a thrown error. **Found on 24 Aug 2026, reading the template source.**
+**Fixed 26 Aug 2026.** The key is spelled correctly and the guard it feeds is now a real guard: the tag
+returns early when `ConsentioInstance` is on `window` **or** when the template's own page-lifetime storage
+says it has already run. The window key only appears once the injected script has executed, so the storage
+flag is what covers the async gap between two triggers firing. **Not run in a container** - it is check 2 in
+[../plans/8-release-readiness.md](../plans/8-release-readiness.md).
 
 **26. The template sets no consent default at all.** Nothing in it calls the tag manager's consent API. The
 only default is the one inside the banner, which arrives after `injectScript` - and `injectScript` is always
@@ -246,6 +251,14 @@ async. This is defect 1 in the route where it is worst, and the fix is not the o
 template has to push the default itself, in sandboxed code, before it injects anything. That means it also
 has to read the consent cookie itself, which is the second implementation of the contract - see
 [delivery.md](delivery.md). **Found on 24 Aug 2026.**
+
+**Fixed 26 Aug 2026.** The template reads the cookie with `getCookieValues`, maps it through its own copy of
+the four-category signal map, and calls `setDefaultConsentState` and `gtagSet('ads_data_redaction')` before
+`injectScript`. `wait_for_update` is sent to a first-time visitor only. Its reader and the banner's are
+pointed at `gtm/contract.fixture.json`, and `test/gtm/template-contract.test.mts` fails when they drift.
+**Not run in a container** - Tag Assistant showing the default before the container loads is check 2 in
+[../plans/8-release-readiness.md](../plans/8-release-readiness.md), and the two routes agreeing about one
+visitor is check 3.
 
 ## Found after the register was written
 
@@ -271,13 +284,14 @@ override, so the rule is not enforced. That is defect 28.
 
 ### Fixed since
 
-Defects **1 to 5** were fixed on 24 Aug 2026 and **6 to 19, 22, 23 and 28 on 25 Aug 2026** - each is marked
-at its own entry above, and each has a test with no `todo` flag.
+Defects **1 to 5** were fixed on 24 Aug 2026, **6 to 19, 22, 23 and 28 on 25 Aug 2026**, and **25, 26, 30
+and 31 on 26 Aug 2026** - each is marked at its own entry above, and each has a test with no `todo` flag.
 
-**Open: 20, 21, 24, 25, 26, 29.** The last two `todo` flags in the suite are defect 21's. 20 is
-single-sourced by the release pipeline and only the template's CDN URL still carries a literal. 21 survives
-as a documentation item for plan 6. 25 and 26 are the template's and are plan 5's. 29 is latent: no
-site-supplied string reaches an attribute today.
+**Open: 20, 21, 24, 29.** The last two `todo` flags in the suite are defect 21's. 20 is single-sourced by
+the release pipeline and only the template's CDN URL still carries a literal. 21 survives as a documentation
+item, its documentation half done. 29 is latent: no site-supplied string reaches an attribute today. **25,
+26, 30 and 31 closed on 26 Aug 2026**, and the four are the template's - none of them has been run in a
+container, which is checks 2 and 3 in [../plans/8-release-readiness.md](../plans/8-release-readiness.md).
 
 **Defect 24 is not fixed.** `dist/` is untouched: `git status --porcelain dist/` is empty and no commit since
 `35a8b31` has written it, so the committed bundle is still the stale one. Rebuilding it in a working tree
@@ -307,3 +321,19 @@ category key, and the four keys are fixed by defect 28. A site-supplied string -
 label - would escape the attribute. **Found on 25 Aug 2026, while giving the switches an accessible name**,
 which is why that name is set from `render()` instead of from the template. Escape `"` and `'` in
 `domSanitize`, and the templates get their attributes back.
+
+**30. The template's Version field reaches the config as a string.**
+`gtm/consentio-tag/template.tpl` - `version` is a TEXT field, so a site that edits it hands back `"2"` and
+not `2`. It was harmless while nothing compared it: the banner wrote the same string it was given and read it
+back. **Defect 26's fix makes it live**, because the template's own reader compares the cookie's `version`
+against the field, and `2 !== "2"` - so the template would treat a returning visitor as new while the banner
+treated them as returning, and the two routes would disagree about the same visitor. **Found on 26 Aug 2026,
+writing the second reader.** **Fixed the same day:** `makeNumber` on the way into both the reader and the
+config, so the cookie only ever holds a number.
+
+**31. The Texts variable drops the strictly necessary description.**
+`gtm/consentio-tag-texts/template.tpl` read `data.strictlyNecessarydescription` where the field is
+`strictlyNecessaryDescription`. One category out of four, and the banner falls back to its built-in English
+text with nothing logged, so a site that translated all four saw three translated. **Found on 26 Aug 2026,
+writing the template's tests.** **Fixed the same day**, and the template's own tests now assert that title
+and description both come through.

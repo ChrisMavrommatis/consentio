@@ -39,33 +39,113 @@ template loads is already behind the tag manager's read of consent - which is de
 The template does not load the loader at all. It injects `consentio.min.js` and calls
 `Consentio.Create(config, cookies)` - which is what `Create` exists for, and why defect 9 matters.
 
-**The cookie is the contract between them - once the template implements it.** It does not yet:
-`gtm/consentio-tag/template.tpl` reads no cookie at all, so the injected bundle does the reading and there is
-only one implementation today. Fixing defect 26 creates the second, because a template that pushes its own
-consent default has to know the stored answer before `injectScript` returns. From that point the name, the
-version field and what "no answer yet" means are implemented twice, in two languages, in two repositories,
-with no shared code path. `src/lib/consent-store.ts` is the reference; the template has to match it by hand.
+**The cookie is the contract between them, and since 26 Aug 2026 there are two implementations.**
+`gtm/consentio-tag/template.tpl` read no cookie at all until then - the injected bundle did the reading, and
+a default pushed that late is defect 26. It now reads the cookie itself, in the sandbox, before
+`injectScript`. So the name, the version field, the JSON shape and what "no answer yet" means are written
+out twice, in two languages, in two repositories, with no shared code path.
+`src/lib/consent-store.ts` is the reference; the template matches it by hand.
+
+**What stands in for the test that cannot exist:** `gtm/contract.fixture.json` holds worked cookie values -
+a first-time visitor, a returning one, a version mismatch, a value in the pre-nesting flat shape, a malformed
+value, and for each the consents it reads as and the seven signals that follow. `test/lib/consent-store/`
+asserts the banner against the file, the template's own `___TESTS___` block carries the same values by hand,
+and `test/gtm/template-contract.test.mts` fails when the template's cookie name, baseline, signal map,
+`wait_for_update` or test values stop matching the file. It cannot execute the sandboxed reader. It can
+prove the two readers were written against the same numbers.
+
+**The cookie name is fixed at `consentio` in the template route.** The direct route still takes
+`data-cookie-name`. Reading a cookie in the sandbox needs a `get_cookies` permission that names it, and a
+permission cannot name a value a site types into a field - so a configurable name would mean declaring
+"reads any cookie", and one more way the two readers can disagree. One knob fewer was the better trade.
 
 ## The templates need their own repositories
 
-There are **three** templates, developed in `gtm/` in this repository:
+There are **two** templates, developed in `gtm/` in this repository:
 
 | Template | Type | What it is |
 |---|---|---|
-| `consentio-tag` | TAG | the banner itself. Injects `consentio.min.js` and calls `Consentio.Create` |
-| `consentio-tag-texts` | MACRO | a variable supplying every string the banner renders |
+| `consentio-tag` | TAG | the banner itself. Sets the consent default, injects `consentio.min.js`, calls `Consentio.Create`, and holds every string it renders |
 | `consentio-tag-cookies` | MACRO | a variable supplying the cookie table shown in the settings modal |
 
-Google's community gallery requires `template.tpl`, `metadata.yaml`, `LICENSE` and `README.md` at the **root
-of a dedicated public repository**, one per template. So three published repositories, none of which can be a
-folder inside this one. They are developed here and copied out on publish.
+### What the gallery requires
 
-**Only `consentio-tag` pins the banner's version**, in the CDN URL it injects. The two MACRO templates supply
-data and pin nothing, so a version bump does not move them.
+**Checked against Google's own documentation on 26 Aug 2026.** At the **root of a dedicated public
+repository**, one per template, on the **main branch**, one `template.tpl` per repository:
 
-**Splitting the strings and the cookie table into MACRO templates is deliberate.** A container can then hold
-one banner tag and several text variables, and the tag's own settings stay short. It also means a copy change
-is a variable edit rather than a tag edit, which is a smaller thing to get wrong.
+| File | Must hold |
+|---|---|
+| `template.tpl` | the exported template, with a `categories` list added to its `___INFO___` block |
+| `metadata.yaml` | `homepage`, `documentation`, and `versions` - a list of `sha` + `changeNotes`, newest first |
+| `LICENSE` | the Apache 2.0 text, nothing else. The filename is capitalised |
+| `README.md` | optional, recommended |
+
+**A version is a commit SHA in the published repository**, which is what decides how much of a publish can
+be automated: not the last step. The template can be prepared here in full, but the `versions` entry can
+only be written after the commit it names exists in the other repository, so a publish is always two
+commits there - the template, then the metadata naming it.
+
+`categories` takes one or more of ADVERTISING, AFFILIATE_MARKETING, ANALYTICS, ATTRIBUTION, CHAT,
+CONVERSIONS, DATA_WAREHOUSING, EMAIL_MARKETING, EXPERIMENTATION, HEAT_MAP, LEAD_GENERATION, MARKETING,
+PERSONALIZATION, REMARKETING, SALES, SESSION_RECORDING, SOCIAL, SURVEY, TAG_MANAGEMENT, UTILITY. **There is
+no consent category**, so all three use `UTILITY` and `TAG_MANAGEMENT`.
+
+So two published repositories, neither of which can be a folder inside this one. They are developed here and
+copied out on publish; each `gtm/<name>/` folder holds all four files.
+
+**Only `consentio-tag` pins the banner's version**, in the CDN URL it injects. The MACRO template supplies
+data and pins nothing, so a version bump does not move it.
+
+### Why the strings are in the tag and the cookie table is not
+
+**Decided 26 Aug 2026 by the maintainer, reversing the split of 24 Aug 2026.** The strings were a third
+template, `consentio-tag-texts`. They are now twenty-one fields on the tag itself.
+
+**What the split actually cost.** Each published template is a repository, a `metadata.yaml` SHA list, and a
+gallery review cycle that is neither instant nor yours to schedule. The strings bought none of that back:
+they are set once per container and never touched again, so the reuse a variable exists for was reuse nobody
+was doing. **The cookie table stays a variable** because it is data - a table, plausibly shared, edited on a
+different rhythm from the tag.
+
+**What made the settings page bearable.** The twenty-one fields are hidden unless the tag is asked for them -
+see the next section - and when they appear they are already filled in.
+
+### Where the banner's wording comes from
+
+**Decided 26 Aug 2026.** One `textSource` field with three values and no blending:
+
+| Value | The tag sends | Why |
+|---|---|---|
+| `builtin`, the default | nothing | the banner keeps its own English, so a later correction to a string reaches every container that never overrode it |
+| `custom` | the twenty-one fields, which are **pre-filled with the English text** and shown only for this value | the person editing sees real words to change, not blanks with a hidden "empty means default" rule |
+| `variable` | one Tag Manager variable holding the whole set | a Custom JavaScript variable, or a Lookup Table keyed on the page's language - the user's own language switching, with no permission and nothing to ship |
+
+**Pre-filled English and a language pack cannot both work.** A filled field submits a real value, so it would
+always beat a pack. Making the fields visible only for `custom` is what lets them be pre-filled at all.
+`enablingConditions` is the key that does it - `[{paramName, paramValue, type: "EQUALS"}]`, confirmed against
+a template published in the gallery rather than from memory. It is set on the fields **and** on their group:
+its behaviour on a `GROUP` is unconfirmed, and an ignored key there costs a stray heading, not a fault.
+
+**What `builtin` buys and `custom` gives up.** A container on `builtin` inherits every later fix to the copy.
+A container on `custom` has frozen it - which is what choosing to own the wording means.
+
+### Translations are copied, not served
+
+**Decided 26 Aug 2026 by the maintainer, rejecting a runtime language pack.** A published pack would have
+been a file on the CDN, injected by the tag and read off a global. It works - a web template cannot fetch,
+but `injectScript` plus `copyFromWindow` is the same thing in practice, and the `inject_script` permission
+the tag already declares covers the path.
+
+**It was refused because it makes a translation a service.** A pack is then a release-coupled artifact: a
+pinned URL, a second request on every page, version skew between pack and bundle, and a new failure where a
+pack that does not load costs someone their language. A translation is text. It is downloaded, pasted into
+the `custom` fields or into a variable, and changed to taste - and then nothing can fail at runtime.
+
+**Pointing the same trick at a site-hosted settings file is not clean**, and was rejected the same day:
+`inject_script` would have to declare a pattern broad enough for a domain unknown at publish time, and the
+template would execute whatever that URL returned in page context. Nothing pre-approvable exists for a
+customer's own domain, so a settings *fetch* is closed. `copyFromDataLayer` under a static `read_data_layer`
+key pattern is the one door that stays open, and the variable slot covers the same ground without it.
 
 ## The four categories are fixed
 
@@ -112,8 +192,8 @@ The rest of it is still good, and a blank page is a worse answer.
 are the source of truth; each template implements this a second time by hand. Anything below that changes is
 a breaking change for the templates, whatever it does to Consentio's own version number.
 
-**Name.** `consentio` by default. The direct route overrides it with `data-cookie-name` on the loader tag;
-the template has its own field.
+**Name.** `consentio` by default. The direct route overrides it with `data-cookie-name` on the loader tag.
+**The template route cannot override it** - see above.
 
 **One identity, not two.** `data-cookie-name` and `data-version` on the tag, and `cookieName` and `version`
 in the config JSON, used to be two sources for one fact - set them differently and the loader and the banner
