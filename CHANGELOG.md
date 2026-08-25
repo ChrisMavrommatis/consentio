@@ -13,7 +13,7 @@ release body, so write these entries for the people using Consentio, not for the
 
 Nothing yet.
 
-## [0.1.0]
+## [0.1.0] - 2026-08-25
 
 ### 🔀 Changed
 
