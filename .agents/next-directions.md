@@ -81,6 +81,28 @@ attributes back - plan 4 had to set the switch's accessible name from `render()`
   tested off a runner - [plans/8-release-readiness.md](plans/8-release-readiness.md) lists them.
 - **`1.0.0`.** `0.1.0` is settled. The second number is taken after `0.1.0` has been on a real site.
 
+## CI is red, and 13 of the 14 failures are the expected one
+
+Checked against the Actions API on 26 Aug 2026, run by run.
+
+**The `dist is fresh` job fails on every push, at one step: `dist/ matches what src/ builds`.** The committed
+`dist/` is the pre-port bundle - defect 24 - so a fresh `build:dist` disagrees with it, and the build now
+also emits `dist/consentio-loader.min.js.LICENSE.txt`, which the committed tree does not have at all. **This
+is the check working and it is not fixed in a working tree.** It clears when the first release regenerates
+`dist/`. The `typecheck, build and test` job is green on the runner.
+
+**Dependabot opened seven pull requests the moment its config landed**, and CI has no branch filter, so each
+fires twice. That is where the volume comes from, not from anything new breaking.
+
+**One of the seven is a real break: the grouped npm one.** It carries TypeScript **5.9 to 7.0.2** and
+sass-loader **16 to 17**, both majors, mixed in with six patch bumps. `npm run typecheck` and
+`npm run build:dist` both fail on it. `ts-loader` declares its TypeScript peer as `*`, so nothing stops the
+install - it breaks at run time instead. **Do not merge it.**
+
+**`dependabot.yml` was the cause and is fixed in the working tree**: all three ecosystems now group minor and
+patch only, so a major arrives alone and can be judged on its own. The grouped pull request as it stands
+cannot be taken apart, so close it and let the new config re-open the safe half.
+
 ## Two things found verifying plan 7, and fixed
 
 **`webpack.config.js` pointed at a file under `.agents/` from a comment.** Plan 7 found it, fixed the same

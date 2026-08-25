@@ -1,6 +1,11 @@
 version: 2
 updates:
   # Dev dependencies only - the shipped bundle has none.
+  #
+  # Minor and patch travel together as one pull request. **Majors come one at a time and
+  # ungrouped**, because a grouped major cannot be taken apart: the first run of this
+  # config put TypeScript 7 and sass-loader 17 in the same pull request as six harmless
+  # patches, and the whole thing had to be refused.
   - package-ecosystem: npm
     directory: /
     schedule:
@@ -10,14 +15,28 @@ updates:
       dev-dependencies:
         patterns:
           - "*"
+        update-types:
+          - minor
+          - patch
 
   # The workflows pin every action by commit SHA. This is what keeps the SHA and the
-  # version comment beside it moving together.
+  # version comment beside it moving together - the comment is the only human-readable
+  # record of which version a SHA is, and it has already drifted once.
+  #
+  # Grouped the same way, for the same reason: an action major can change the runner's
+  # Node or the artifact format.
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      actions:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
 
   # The documentation site's Jekyll gems.
   - package-ecosystem: bundler
@@ -25,3 +44,10 @@ updates:
     schedule:
       interval: monthly
     open-pull-requests-limit: 3
+    groups:
+      jekyll:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
