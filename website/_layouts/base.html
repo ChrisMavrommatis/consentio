@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: 'en-US' }}">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>{% if page.url == "/" %}{{ site.title }}{% else %}{{ page.title }} - {{ site.title }}{% endif %}</title>
+	<meta name="description" content="{{ page.description | default: site.description | strip_newlines | strip }}" />
+	<link rel="canonical" href="{{ page.url | absolute_url }}" />
+
+	<link href="{{ '/css/pygments.css' | relative_url }}" rel="stylesheet" />
+	<link href="{{ '/css/main.css' | relative_url }}" rel="stylesheet" />
+	<link rel="icon" href="{{ '/favicon.ico' | relative_url }}" />
+	<link rel="apple-touch-icon" href="{{ '/apple-touch-icon.png' | relative_url }}" />
+
+	{%- comment %}
+	Blocking, and first. The loader pushes the deny-by-default on its first pass, and that has
+	to reach the dataLayer before any tag reads it. `async` or `defer` here puts it back behind
+	the tag and gates nothing - the loader warns if you add one.
+
+	`loader: false` in a page's front matter leaves it out. That page is then driven by a tag
+	manager container instead, which is the only way to see both install routes answer for one
+	visitor on one site.
+	{% endcomment -%}
+	{%- unless page.loader == false %}
+	<script src="{{ '/js/consentio-loader.min.js' | relative_url }}" data-consentio-loader
+		data-debug="{{ site.consentio_debug | default: false }}"
+		data-config-url="{{ '/data/consentio-config.json' | relative_url }}"
+		data-cookies-url="{{ '/data/consentio-cookies.json' | relative_url }}"></script>
+	{%- endunless %}
+
+	{%- comment %}
+	Google's container snippet, unchanged and after the loader. Empty in the repository: the
+	container is the maintainer's, and an ID nobody owns would be worse than none.
+	{% endcomment -%}
+	{%- if site.gtm_container_id and site.gtm_container_id != "" %}
+	<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+	new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+	j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+	'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+	})(window,document,'script','dataLayer','{{ site.gtm_container_id }}');</script>
+	{%- endif %}
+</head>
+
+<body class="{{ site.default_theme }}">
+	<a class="skip-link" href="#content">Skip to content</a>
+
+	<header class="site-header">
+		<a class="site-header__brand" href="{{ '/' | relative_url }}">
+			<img src="{{ '/media/logo/consentio-logo-128x128.png' | relative_url }}" alt="" width="26" height="26">
+			<span>{{ site.title }}</span>
+		</a>
+		{%- if site.docs_version %}
+		<span class="site-header__version">v{{ site.docs_version }}</span>
+		{%- endif %}
+		<div class="site-header__links">
+			<a href="{{ '/install/direct/' | relative_url }}">Install</a>
+			<a href="{{ site.repository_url }}">Source</a>
+		</div>
+	</header>
+
+	{{ content }}
+
+	<footer class="site-footer">
+		<div class="site-footer__inner">
+			<span>{{ site.title }} - a frontend-only consent banner. Apache-2.0.</span>
+			<a href="{{ site.repository_url }}">Source and issues</a>
+			<a href="{{ '/cookie/' | relative_url }}">The cookie it sets</a>
+		</div>
+	</footer>
+</body>
+
+</html>

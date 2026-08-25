@@ -18,8 +18,8 @@ copy two built files into your site, or serve them from a CDN mirror of a tagged
 | 🍪 **[The cookie](#-the-cookie)** | one JSON object, and the two rules that are easy to get wrong |
 | 🛠️ **[Development](#-development)** | build, typecheck, test, serve |
 
-Full documentation: **[`website/pages/home.md`](website/pages/home.md)**, or `npm run serve` to read it as
-the Jekyll site.
+Full documentation: **[`website/pages/`](website/pages/)**, or `npm run serve` to read it as the Jekyll site
+it is written for.
 
 ## 🧩 Two install routes, and they are not equivalent
 
@@ -29,7 +29,7 @@ the Jekyll site.
 | What pushes the consent default | the loader, on its first pass, before it fetches or injects anything | the template's own sandboxed code, before it calls `injectScript` |
 | Where settings come from | two JSON files, fetched by URL | the template's own fields |
 | Uses the loader | yes | **no — never** |
-| The cost | it blocks. 4.3 KB has to download before the page paints | **it only covers tags in that container** |
+| The cost | it blocks. 4.6 KB has to download before the page paints | **it only covers tags in that container** |
 
 **The tag manager route's catch belongs in the open.** A template can only gate what the tag manager loads.
 Take that route and *every* tag and cookie-setting script on the site has to be managed from the container —
@@ -65,7 +65,7 @@ relative to its own `src` — then:
 > read consent, which leaves you with a banner that gates nothing. The loader warns on the console when it
 > sees one, whatever `data-debug` says.
 
-[`website/_layouts/page.html`](website/_layouts/page.html) is a live working example of this route.
+[`website/_layouts/base.html`](website/_layouts/base.html) is a live working example of this route.
 
 ## 🏷️ Tag manager template
 
@@ -91,8 +91,8 @@ Two things that are easy to get wrong, and that a tag manager template has to ma
 - **The categories nest under `consents`.** A value written flat, beside `version`, reads as no stored
   answer and the banner asks again.
 
-The [documentation](website/pages/home.md#the-cookie-contract) states the contract in full — name, value,
-attributes, the four reading rules and the traps.
+The [documentation](website/pages/cookie.md) states the contract in full — name, value, attributes, the five
+reading rules and the traps.
 
 ## 📂 Repository structure
 
@@ -116,8 +116,12 @@ npm test              # node --test over test/**/*.test.mts
 npm run test:plain    # the same page-free tests again, with no jsdom at all
 npm run build         # the bundles, into build/lib/
 npm run build:website # the same bundles, into website/js/, for the documentation site
-npm run serve         # Jekyll documentation site on 127.0.0.1:4001
+npm run build:site    # the above, then the Jekyll site into website/_site/
+npm run serve         # the bundles, then the site on 127.0.0.1:4001
 ```
+
+> **`npm run serve` builds the JavaScript first, on purpose.** `website/js/` is gitignored, so a fresh clone
+> has none, and Jekyll will happily serve a site whose loader is a 404.
 
 > **`dist/` is the shipped product, not a convenience copy.** A CDN serves those exact bytes out of the git
 > tag, so it is written by the release and by nothing else. No local build can reach it — `npm run build`
@@ -127,6 +131,10 @@ npm run serve         # Jekyll documentation site on 127.0.0.1:4001
 **Releases are one dispatch.** `.github/workflows/release.yml` takes a version, checks the changelog section
 and that the version is not already tagged, builds and tests, then commits `dist/`, tags that commit and
 publishes. Notes come from **[`CHANGELOG.md`](CHANGELOG.md)**; add to its `Unreleased` section as you go.
+
+**The documentation site is deployed by hand.** `.github/workflows/site.yml` builds `website/` and uploads
+it; it publishes only when dispatched with `publish` on, and only once Pages is set to the GitHub Actions
+source. There is no push trigger.
 
 **Some tests are marked `todo` on purpose.** They describe behaviour the code does not have yet, so the run
 exits 0 with those listed. That is the correct state. See **[`test/README.md`](test/README.md)**.

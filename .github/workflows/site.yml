@@ -1,0 +1,94 @@
+name: Documentation site
+
+# Written, provable, and switched off.
+#
+# `publish` defaults to false, so a dispatch builds the site and uploads the artifact and
+# stops there. Nothing reaches Pages until the maintainer dispatches with it on, and Pages
+# also has to be switched to the "GitHub Actions" source in the repository settings first -
+# until that is done the deploy step cannot work whatever this file says.
+#
+# There is no push trigger on purpose. The site is the fixture the by-hand release checks
+# run on; it should move when someone decides it moves.
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Deploy the built site to GitHub Pages. Off builds and uploads only.'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: '24'
+          cache: npm
+
+      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          ruby-version-file: website/.ruby-version
+          bundler-cache: true
+          working-directory: website
+
+      # The bundles first: website/js/ is gitignored, so a checkout has no JavaScript in it
+      # and Jekyll would happily build a site whose loader is a 404.
+      - run: npm ci
+      - run: npm run build:website
+
+      # GitHub Pages cannot build this itself - jekyll-tidy is not on its plugin allowlist -
+      # so the site is built here and only the output is handed over.
+      - name: Build the site
+        env:
+          JEKYLL_ENV: production
+        working-directory: website
+        run: bundle exec jekyll build
+
+      # The address lives in website/_config.yml and nowhere else. If it is ever wrong,
+      # every link on the site is wrong, so it is worth one line of output per run.
+      - name: What it was built for
+        run: |
+          echo "url + baseurl, from website/_config.yml:"
+          grep -E '^(url|baseurl)' website/_config.yml
+
+      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
+        with:
+          path: website/_site
+
+  # Everything above is reversible. This is not: it replaces what is on the live site.
+  deploy:
+    name: deploy
+    needs: build
+    if: ${{ inputs.publish }}
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+
+  not-published:
+    name: not published
+    needs: build
+    if: ${{ !inputs.publish }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Built and uploaded. Nothing was deployed."
+          echo "Dispatch again with publish on, once Pages is set to the GitHub Actions source."

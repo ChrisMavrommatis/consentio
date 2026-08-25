@@ -1,0 +1,260 @@
+// ---- navigation -------------------------------------------------------------------
+
+.nav__group {
+	margin: 0 0 1.5rem;
+}
+
+.nav__title {
+	margin: 0 0 .5rem;
+	color: var(--fg-muted);
+	font-size: .72rem;
+	font-weight: 700;
+	letter-spacing: .09em;
+	text-transform: uppercase;
+}
+
+.nav__list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.nav__list li + li {
+	margin-top: 0;
+}
+
+.nav__link {
+	display: block;
+	padding: .35rem .6rem;
+	border-radius: 6px;
+	color: var(--fg-muted);
+	font-size: .93rem;
+	text-decoration: none;
+}
+
+.nav__link:hover {
+	background: var(--bg-soft);
+	color: var(--fg);
+}
+
+.nav__link[aria-current="page"] {
+	background: var(--bg-sunken);
+	color: var(--fg);
+	font-weight: 600;
+	box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.nav-toggle {
+	display: none;
+}
+
+@media (max-width: 60rem) {
+	// Exactly one of the two is displayed at a time, so only one reaches the accessibility
+	// tree - display:none takes the other out of it entirely.
+	.nav-desktop {
+		display: none;
+	}
+
+	.nav-toggle {
+		display: block;
+		border: 1px solid var(--rule);
+		border-radius: var(--radius);
+		background: var(--bg-soft);
+	}
+
+	.nav-toggle > summary {
+		padding: .6rem .9rem;
+		cursor: pointer;
+		font-weight: 600;
+		font-size: .93rem;
+	}
+
+	.nav-toggle .nav {
+		padding: 0 .6rem .6rem;
+	}
+
+	.nav-toggle .nav__group {
+		margin-bottom: .75rem;
+	}
+}
+
+// ---- page footer navigation --------------------------------------------------------
+
+.page-nav {
+	display: flex;
+	gap: 1rem;
+	margin-top: 3rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--rule);
+}
+
+.page-nav__link {
+	flex: 1 1 0;
+	padding: .8rem 1rem;
+	border: 1px solid var(--rule);
+	border-radius: var(--radius);
+	text-decoration: none;
+	color: var(--fg);
+}
+
+.page-nav__link:hover {
+	border-color: var(--rule-strong);
+	background: var(--bg-soft);
+}
+
+.page-nav__link--next {
+	text-align: right;
+}
+
+.page-nav__dir {
+	display: block;
+	color: var(--fg-muted);
+	font-size: .75rem;
+	letter-spacing: .06em;
+	text-transform: uppercase;
+}
+
+// ---- landing page ------------------------------------------------------------------
+
+.hero {
+	padding: 3rem 0 1rem;
+}
+
+.hero h1 {
+	font-size: clamp(2.2rem, 5vw, 3rem);
+	margin-bottom: .75rem;
+}
+
+.hero__lead {
+	max-width: 42rem;
+	color: var(--fg-muted);
+	font-size: 1.15rem;
+}
+
+.hero__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: .75rem;
+	margin-top: 1.5rem;
+}
+
+.button {
+	display: inline-block;
+	padding: .6rem 1.15rem;
+	border: 1px solid var(--accent);
+	border-radius: var(--radius);
+	background: var(--accent);
+	color: var(--accent-contrast);
+	font: inherit;
+	font-size: .95rem;
+	font-weight: 600;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.button:hover {
+	background: var(--accent-hover);
+	border-color: var(--accent-hover);
+}
+
+.button--quiet {
+	background: transparent;
+	color: var(--fg);
+	border-color: var(--rule-strong);
+}
+
+.button--quiet:hover {
+	background: var(--bg-soft);
+	border-color: var(--rule-strong);
+}
+
+.cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+	gap: 1rem;
+	margin: 1.5rem 0 2rem;
+	padding: 0;
+	list-style: none;
+}
+
+.card {
+	display: flex;
+	flex-direction: column;
+	padding: 1.1rem 1.25rem;
+	background: var(--bg);
+	border: 1px solid var(--rule);
+	border-radius: var(--radius);
+	box-shadow: var(--shadow);
+}
+
+.card h3 {
+	margin: 0 0 .4rem;
+	font-size: 1.05rem;
+}
+
+.card p {
+	margin: 0 0 .9rem;
+	color: var(--fg-muted);
+	font-size: .93rem;
+}
+
+.card > :last-child {
+	margin-top: auto;
+	margin-bottom: 0;
+}
+
+// ---- callouts -----------------------------------------------------------------------
+
+.callout {
+	margin: 0 0 1.5rem;
+	padding: .9rem 1.1rem;
+	border-left: 4px solid var(--note-rule);
+	border-radius: 0 var(--radius) var(--radius) 0;
+	background: var(--note-bg);
+}
+
+.callout > :last-child {
+	margin-bottom: 0;
+}
+
+.callout--warn {
+	background: var(--warn-bg);
+	border-left-color: var(--warn-rule);
+}
+
+// ---- the live banner controls --------------------------------------------------------
+
+.fixture {
+	margin: 0 0 1.5rem;
+	padding: 1.1rem 1.25rem;
+	border: 1px solid var(--rule-strong);
+	border-radius: var(--radius);
+	background: var(--bg-soft);
+}
+
+.fixture h2,
+.fixture h3 {
+	margin-top: 0;
+	padding-top: 0;
+	border-top: 0;
+}
+
+.fixture__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: .6rem;
+	margin-top: 1rem;
+}
+
+.fixture__state {
+	margin: 1rem 0 0;
+	padding: .7rem .9rem;
+	background: var(--bg);
+	border: 1px solid var(--rule);
+	border-radius: 6px;
+	font-family: var(--font-mono);
+	font-size: .82rem;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}

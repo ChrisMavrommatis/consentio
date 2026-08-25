@@ -9,8 +9,9 @@
     "typecheck": "npx tsc --noEmit",
     "test": "node --import ./test/register.mjs --test \"test/**/*.test.mts\"",
     "test:plain": "node --import ./test/register-plain.mjs --test \"test/lib/logger.test.mts\" \"test/lib/cookies/attributes.test.mts\" \"test/lib/cookies/read-write.test.mts\" \"test/lib/state/*.test.mts\" \"test/lib/gtm/*.test.mts\" \"test/lib/consent-signals/completeness.test.mts\" \"test/lib/consent-signals/signal-map.test.mts\" \"test/lib/consent-store/*.test.mts\"",
+    "build:site": "npm run build:website && cd ./website && bundle exec jekyll build",
     "watch": "npx webpack --watch --env build=website",
-    "serve": "cd ./website && bundle exec jekyll serve"
+    "serve": "npm run build:website && cd ./website && bundle exec jekyll serve"
   },
   "keywords": [
     "consent",

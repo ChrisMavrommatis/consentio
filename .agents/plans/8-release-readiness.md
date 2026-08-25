@@ -54,7 +54,13 @@ verify, notes and the commit preview all passed. These five were not exercised a
 save a run.**
 
 **The checks nothing automated reaches.** `test/README.md` is honest about where the suite cannot go; this
-is that list, executed:
+is that list, executed.
+
+**The fixture for all of them is the published documentation site**, built by plan 6. `/try-it/` carries the
+live banner and a control that clears the cookie; `/try-it/tag-manager/` is the one page with no loader, for
+the route-2 half; and `gtm_container_id` in `website/_config.yml` emits the container snippet on every page
+once it is filled in. **Checks 1, 2 and 3 need a real container ID in that key, and 8 and 9 need the site
+deployed** - so the site is published before this list is worked, not after.
 
 1. **Defect 1, properly, for the first time.** A real page with the loader as a blocking `<script>` above a
    real container snippet, and Tag Assistant showing `consent default` on the dataLayer **before** the
@@ -71,6 +77,14 @@ is that list, executed:
 7. **The accessibility tree**, in the browser's own inspector. No checkbox reads as unnamed, the `alwaysOn`
    one included, and the modal reads as a dialog with a name. Plan 4 asserted both as unit tests; the tree is
    the thing they stand in for.
+8. **The cookie reset control on `/try-it/`.** Click it: the cookie goes, the page reloads, the banner is
+   back. It is the only JavaScript plan 6 wrote and it has never run in a browser. The readout beside it
+   should show the stored value before and nothing after.
+9. **The first dispatch of `site.yml`, with `publish` off.** Same reasoning as `release.yml` above and the
+   same five unknowns in miniature: that the YAML parses, that `upload-pages-artifact` and `deploy-pages`
+   behave as read, that `if: ${{ !inputs.publish }}` gates the deploy the way it reads. Its build steps were
+   run by hand and pass; nothing above them was. **Pages also has to be set to the GitHub Actions source in
+   the repository settings first, and nothing in a repository can set that.**
 
 **The version, decided 25 Aug 2026: `0.1.0` now, `1.0.0` once it has proven itself.** Moving the consent
 default into the loader is a breaking change - the loader tag has to stop being `async`, and the loader now
@@ -85,21 +99,23 @@ published template pins a banner version, so **a template must never ship ahead 
 Tag first, then update the templates, then submit them for review.
 
 **Subresource integrity.** Once the first tag exists, the docs should carry an `integrity` hash for the
-direct-route script tag. Only ever against an exact version - an SRI hash on a floating URL is a broken page
-waiting for the next release. Have the release print the hashes so they can be pasted in.
+direct-route script tag. The place for it is the markup sample on the site's `/install/direct/` page. Only
+ever against an exact version - an SRI hash on a floating URL is a broken page waiting for the next release.
+Have the release print the hashes so they can be pasted in.
 
 ## Do not
 
-**Do not push a tag.** **Do not trigger the release workflow for real.** **Do not create the three template
-repositories.** **Do not publish anything to the gallery.** **Do not bump the version.** **Do not commit,
-stage or push.**
+**Do not enable the site deploy without being asked.** `site.yml` publishes only when dispatched with
+`publish` on; that dispatch is the maintainer's, like the tag. **Do not push a tag.** **Do not trigger the
+release workflow for real.** **Do not create the three template repositories.** **Do not publish anything to
+the gallery.** **Do not bump the version.** **Do not commit, stage or push.**
 
 ## Deliverables
 
 - [ ] Every automated gate is green on one commit, and which commit is written down.
 - [ ] `release.yml` has been dispatched at least once with `dry_run` on, **on a real runner**, and what it
       proved and did not prove is written down.
-- [ ] All seven by-hand checks are done and their results recorded - including the ones that failed, if any.
+- [ ] All nine by-hand checks are done and their results recorded - including the ones that failed, if any.
       **A check nobody ran is reported as not run, never as passed.**
 - [ ] The two routes are confirmed to agree about the same visitor, by hand, on a real page.
 - [ ] `0.1.0` is confirmed as still the right number, with its reasoning, and not applied.

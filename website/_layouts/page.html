@@ -1,28 +1,48 @@
-<!DOCTYPE html>
-<html lang="{{ site.lang | default: 'en-US' }}">
+---
+layout: base
+---
 
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<div class="shell">
+	<aside class="sidebar">
+		<div class="sidebar__inner">
+			<details class="nav-toggle">
+				<summary>Documentation</summary>
+				{% include nav.html %}
+			</details>
+			<div class="nav-desktop">{% include nav.html %}</div>
+		</div>
+	</aside>
 
-	<link type="text/css" rel="stylesheet" href="{{ '/css/beercss/beer.min.css' | relative_url }}">
-	<link href="{{ '/css/main.css' | relative_url }}" rel="stylesheet" />
-	<link href="{{ '/css/pygments.css' | relative_url }}" rel="stylesheet" />
-	<link rel="icon" href="{{ '/favicon.ico' | relative_url }}" />
-	<!-- Blocking, and first. The loader pushes the deny-by-default on its first pass, and
-	     that has to reach the dataLayer before any tag reads it. `async` or `defer` here
-	     puts it back behind the tag and gates nothing - the loader warns if you add one. -->
-	<script src="{{ '/js/consentio-loader.min.js' | relative_url }}" data-consentio-loader
-		data-debug="false" data-config-url="{{ '/data/consentio-config.json' | relative_url }}"
-		data-cookies-url="{{ '/data/consentio-cookies.json' | relative_url }}">
-		</script>
+	<main class="content" id="content">
+		<article class="prose">
+			<h1{% if page.anchor %} id="{{ page.anchor }}"{% endif %}>{{ page.title }}</h1>
+			{{ content }}
+		</article>
 
-</head>
-
-<body class="{{ site.default_theme }}">
-	{{ content }}
-	<script type="module" src="{{ '/css/beercss/beer.min.js' | relative_url }}"></script>
-</body>
-
-</html>
+		{%- comment %}
+		Previous and next walk _data/nav.yml in order, so the sidebar and these can never
+		disagree about what comes after what.
+		{% endcomment -%}
+		{%- assign flat = "" | split: "" -%}
+		{%- for group in site.data.nav -%}{%- assign flat = flat | concat: group.items -%}{%- endfor -%}
+		{%- for item in flat -%}
+			{%- if item.url == page.url -%}
+				{%- assign here = forloop.index0 -%}
+			{%- endif -%}
+		{%- endfor -%}
+		{%- if here -%}
+			{%- assign prev_i = here | minus: 1 -%}
+			{%- assign next_i = here | plus: 1 -%}
+		{%- endif %}
+		<nav class="page-nav" aria-label="Previous and next page">
+			{%- if here and here > 0 %}
+			<a class="page-nav__link" href="{{ flat[prev_i].url | relative_url }}">
+				<span class="page-nav__dir">Previous</span>{{ flat[prev_i].title }}</a>
+			{%- endif %}
+			{%- if here and next_i < flat.size %}
+			<a class="page-nav__link page-nav__link--next" href="{{ flat[next_i].url | relative_url }}">
+				<span class="page-nav__dir">Next</span>{{ flat[next_i].title }}</a>
+			{%- endif %}
+		</nav>
+	</main>
+</div>

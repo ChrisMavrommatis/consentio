@@ -13,14 +13,13 @@ Each plan cites defect numbers from [design/issues.md](design/issues.md) and car
 
 | # | Plan | State | Gated by |
 |---|---|---|---|
-| 4 | [accessibility](plans/4-accessibility.md) | **done** 25 Aug 2026, uncommitted | nothing |
-| 5 | [tag manager templates](plans/5-gtm-templates.md) | ready. **Next** | nothing. Plan 3 fixed defect 9 |
-| 6 | [docs site](plans/6-docs-site.md) | ready | nothing. 4 has run, so it documents fixed behaviour |
+| 5 | [tag manager templates](plans/5-gtm-templates.md) | ready to write, not to finish. **Next** | plan 3 shrank it. Its checks need 6 published |
+| 6 | [docs site](plans/6-docs-site.md) | **done** 25 Aug 2026, uncommitted, three passes | nothing |
 | 7 | [repo furnishing](plans/7-repo-furnishing.md) | ready | nothing. Fill a gap whenever there is a spare sitting |
 | 8 | [release readiness](plans/8-release-readiness.md) | blocked | everything above |
 
-**Plans 1, 2, 3 and 9 are gone**, deleted once their work was committed - 1, 2 and 9 on 25 Aug 2026, 3
-right after. They were the guidance truth-up, the release pipeline, lifecycle and DOM, and the repository
+**Plans 1, 2, 3, 4 and 9 are gone**, deleted once their work was committed, all on 25 Aug 2026. They were
+the guidance truth-up, the release pipeline, lifecycle and DOM, accessibility, and the repository
 restructure. What was still true in them moved out first: the release procedure into
 [design/delivery.md](design/delivery.md), the untested parts of the workflow into
 [plans/8-release-readiness.md](plans/8-release-readiness.md), the layout decisions into
@@ -28,18 +27,32 @@ restructure. What was still true in them moved out first: the release procedure 
 [rules/never-commit.md](rules/never-commit.md). Plan 3's two browser checks it could not run - defect 12 on
 plain http, and a second `Consentio.Create()` - are checks 4 and 6 in
 [plans/8-release-readiness.md](plans/8-release-readiness.md); everything else it recorded is in the register.
-**The numbering does not shift** - 4 is still 4.
+Plan 4's two it could not run - the accessible names in the tree, and keyboard-only operation - are checks 7
+and 5 there, and what it fixed, compromised and found is defects 14, 15 and 29 in the register.
+**The numbering does not shift** - 5 is still 5.
 
-**Nothing here pushes a tag or creates a repository.** Those are the maintainer's, and plan 8 is where they
-are handed over.
+**Nothing here pushes a tag, creates a repository or publishes the site.** Those are the maintainer's, and
+plan 8 is where they are handed over. `site.yml` deploys only when dispatched with `publish` on, and Pages
+has to be switched to the GitHub Actions source by hand before that can work at all.
 
-**Re-verified 25 Aug 2026, after plan 4.** Typecheck clean, `npm test` 230/228/0 fail/**2** todo,
+**The docs site is twelve pages, and every page of it is written for someone installing it themselves** -
+four steps first, explanation under them, and the technical weight moved to `/how-it-works/` and
+`/troubleshooting/` rather than cut. A third pass took the maintainer's voice out of five more reader-facing
+pages - the release note, the tag manager install page, the cookie page, the dataLayer page and versioning.
+**`/how-it-works/` is the one page where jargon is allowed**, and it is where anything cut from a reader page
+went. Plan 6's second and third passes record both. **It also corrected two published
+figures that had gone stale since the port**: the blocking loader is 4.6 KB, not 4.3, and `consentio.min.js`
+is 36.3 KB, not 32. [design/delivery.md](design/delivery.md) carries the re-measurement.
+
+**Re-verified 25 Aug 2026, after plan 6.** Typecheck clean, `npm test` 230/228/0 fail/**2** todo,
 `npm run test:plain` 62/60/0 fail/2 todo, `git status --porcelain dist/` empty, `git tag -l` unchanged.
-**The two todos left are defect 21's**, and they are a documentation item for plan 6.
+Plan 6 touched no source, so the numbers are plan 4's, unmoved.
 
-**The register is at twenty-nine.** Plan 4 added **29**: `TemplateRenderer.domSanitize` does not escape `"`,
-so a placeholder inside an attribute value can break out of it. Latent - every attribute placeholder holds a
-category key and the four keys are fixed.
+**The register is still at twenty-nine, and defect 21 is half closed.** Its documentation half is done - the
+site's versioning page carries it. **Its two `todo` flags are what is left**, and they now describe something
+the code refuses: one of them adds a fifth category, which `mergeConsents` has warned on and dropped since
+defect 28 was fixed. Deleting the flag would not make them pass. Retiring or rewriting them is a change to
+the suite that nobody has scoped. Defect 29 is plan 4's and is still latent.
 
 ## Settled by the maintainer, 25 Aug 2026
 
@@ -48,7 +61,7 @@ category key and the four keys are fixed.
 | Node floor | **24.** `package.json` moves to `>=24`, `.nvmrc` and every workflow say 24 |
 | First version off this work | **`0.1.0`**, then `1.0.0` once it has run on a real site |
 | Where the by-hand checks happen | **the published documentation site.** It is the fixture, not a demo |
-| Site address | **still open.** Project-pages defaults are in `_config.yml`; a custom domain is likely |
+| Site address | **still open, and no longer blocking.** `https://chrismavrommatis.github.io/consentio/` is confirmed correct for project pages and is in `website/_config.yml` alone. A custom domain is a one-line change there |
 | Who commits `dist/` | **the release workflow, to `main`, and nothing else** |
 | Release trigger | **`workflow_dispatch` with a version.** It builds, commits `dist/` to `main`, then tags and releases. It also refuses a version that is already tagged |
 | Consent categories | **the four are fixed.** A site cannot add, remove or re-point one |
@@ -60,10 +73,23 @@ cheap. The rules everything else is worked under are true now; a tag is permanen
 be automated before the first one was; and the paths every later plan names were settled before those plans
 were written rather than after.
 
-**3 and 4 before 6.** Documentation written against broken behaviour has to be written twice. Both have run.
+**3 and 4 before 6.** Documentation written against broken behaviour has to be written twice. All three have
+run.
 
-**5 after 3, which has run.** The template's `setInWindow` call exists to cover for **defect** 9 in the
-register. Plan 3 fixed that defect, so the template's job is smaller than it was written to be.
+**6 before 5 reversed the original order, and it was right.** Plan 3 shrank plan 5 by fixing defect 9, so 5
+became writable - but not finishable. Every one of its checks is "by eye, on a real page in both routes", and
+the page is the published site. That page now exists in the tree.
+
+**Six deliverables are stuck on the same thing, and it is one dispatch away.** Plans 3, 4 and 6 each left
+work honestly marked *not run - there is no browser here*: defect 12 on plain `http`, a second
+`Consentio.Create()` in a console, the accessible names in the accessibility tree, keyboard-only operation
+with `consentRequired: true`, the cookie reset control, and `site.yml` itself. They are checks 4 to 9 in
+[plans/8-release-readiness.md](plans/8-release-readiness.md). **Publishing the site turns all of them from
+proxies into checks.**
+
+So: **5, then 7.** Plan 5's `setInWindow` note still holds - the template's job is smaller than it was
+written to be. Plan 5 also has somewhere to be checked now: `/try-it/tag-manager/` is the one page on the
+site with no loader, and `gtm_container_id` in `website/_config.yml` is where a container ID goes.
 
 **8 last, and it decides nothing on its own.** It assembles the evidence; the maintainer decides the version
 and pushes the tag.

@@ -3,22 +3,30 @@
 ############################################################
 title                   : "Consentio"
 description             : >-
-  Consentio is a minimalist, lightweight consent modal designed to simplify privacy compliance
+  A small, frontend-only consent banner for static sites. Two install routes, one cookie,
+  Google Consent Mode signals on the dataLayer.
 
 author:
   name                  : "Chris Mavrommatis"
   url                   : "https://github.com/ChrisMavrommatis"
-  
-# The base hostname and protocol. Absolute links and any sitemap are built from this plus baseurl.
-url                     : "https://chrismavrommatis.github.io"
 
-remote_theme            : just-the-docs/just-the-docs
+# The base hostname and protocol. Absolute links and any sitemap are built from this plus baseurl.
+# This and baseurl below are the only place the address is written down.
+url                     : "https://chrismavrommatis.github.io"
+repository_url          : "https://github.com/ChrisMavrommatis/consentio"
+
+# The version this documentation describes. Shown in the header and in the release note.
+docs_version            : "0.1.0"
+
+# Google's container snippet, emitted after the loader when this is filled in. Empty on
+# purpose - the container is the maintainer's, and a stranger's ID is worse than none.
+gtm_container_id        : ""
+
 ############################################################
 # Where things are
 ############################################################
 source              : ./
 destination         : ./_site
-collections_dir     : collections
 plugins_dir         : _plugins       # takes an array of strings and loads plugins in that order
 layouts_dir         : _layouts
 includes_dir        : _includes
@@ -27,14 +35,7 @@ sass:
   sass_dir          : _sass
   cache             : false
   # style             : compressed
-collections:
-  posts:
-    output          : false
-    # permalink       : /post/:slug
-  sitemaps:
-    output          : true
-    permalink       : /sitemap/:name:output_ext
-    
+
 ############################################################
 # Handling Reading
 ############################################################
@@ -124,21 +125,7 @@ defaults:
       path           : "pages/**"
       type           : "pages"
     values:
-      layout          : "default"
-      title           : "NOTITLE"
-      nav_exclude    : false
-      search_exclude : false
-      sitemap:
-        lastmod		 : "current"
-        changefreq	 : "monthly"
-        priority	 : 1.0
-        exclude      : false
-  -
-    scope:
-      path           : "sitemaps/**"
-      type           : "sitemaps"
-    values:
-      title           : "Sitemap"   
+      layout         : "page"
 
 
 ############################################################

@@ -203,6 +203,12 @@ release - see [../rules/releases-move-two-repositories.md](../rules/releases-mov
 reads as denied, silently. **Narrowed by the decision of 25 Aug 2026**: a site cannot add a category, so this
 is now only about Consentio itself changing the four, which is a breaking change and a version bump anyway.
 It stays open as a documentation item.
+**The documentation half is done, 25 Aug 2026** - the docs site's versioning page says a bump discards every
+stored answer and that a site cannot reach this by adding a category. **The two `todo` flags in
+`test/lib/state/versioning.test.mts` are the half that is left**, and they now describe something the code
+refuses: one of them adds a fifth category, which `mergeConsents` warns on and drops since 28 was fixed.
+Deleting the flag would not make them pass. Retiring or rewriting them is a change to the suite that nobody
+has scoped.
 
 **24. The committed `dist/` is stale - it is not what the source builds.** All five files differ from a
 clean `npm run build` at `35a8b31`. `dist/consentio-loader.js` still reads

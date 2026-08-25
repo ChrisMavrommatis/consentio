@@ -1,0 +1,139 @@
+.skip-link {
+	position: absolute;
+	left: -9999px;
+	top: 0;
+	z-index: 100;
+	padding: .6rem 1rem;
+	background: var(--accent);
+	color: var(--accent-contrast);
+	border-radius: 0 0 var(--radius) 0;
+}
+
+.skip-link:focus {
+	left: 0;
+}
+
+.site-header {
+	position: sticky;
+	top: 0;
+	z-index: 30;
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+	padding: .7rem 1.25rem;
+	background: var(--bg);
+	border-bottom: 1px solid var(--rule);
+}
+
+.site-header__brand {
+	display: flex;
+	gap: .55rem;
+	align-items: center;
+	font-weight: 650;
+	font-size: 1.05rem;
+	color: var(--fg);
+	text-decoration: none;
+}
+
+.site-header__brand img {
+	width: 26px;
+	height: 26px;
+	border-radius: 6px;
+}
+
+.site-header__version {
+	padding: .1rem .45rem;
+	background: var(--bg-sunken);
+	border-radius: 999px;
+	color: var(--fg-muted);
+	font-size: .72rem;
+	font-weight: 600;
+	letter-spacing: .02em;
+}
+
+.site-header__links {
+	margin-left: auto;
+	display: flex;
+	gap: 1rem;
+	font-size: .9rem;
+}
+
+.shell {
+	display: grid;
+	grid-template-columns: var(--sidebar) minmax(0, 1fr);
+	gap: 2.5rem;
+	max-width: 78rem;
+	margin: 0 auto;
+	padding: 0 1.25rem;
+}
+
+.shell--wide {
+	grid-template-columns: minmax(0, 1fr);
+	max-width: 62rem;
+}
+
+.sidebar {
+	padding: 2rem 0;
+}
+
+.sidebar__inner {
+	position: sticky;
+	top: 4.5rem;
+	max-height: calc(100vh - 6rem);
+	overflow-y: auto;
+}
+
+.content {
+	min-width: 0;
+	padding: 2rem 0 4rem;
+}
+
+.prose {
+	max-width: var(--measure);
+}
+
+.site-footer {
+	border-top: 1px solid var(--rule);
+	padding: 1.5rem 1.25rem 3rem;
+	color: var(--fg-muted);
+	font-size: .88rem;
+}
+
+.site-footer__inner {
+	max-width: 78rem;
+	margin: 0 auto;
+	display: flex;
+	flex-wrap: wrap;
+	gap: .5rem 1.5rem;
+	align-items: center;
+}
+
+.site-footer__inner > :last-child {
+	margin-left: auto;
+}
+
+// One breakpoint. Below it the sidebar becomes a disclosure above the content, which is the
+// only layout change worth having on a seven-page site.
+@media (max-width: 60rem) {
+	.shell {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0;
+	}
+
+	.sidebar {
+		padding: 1rem 0 0;
+	}
+
+	.sidebar__inner {
+		position: static;
+		max-height: none;
+	}
+
+	.content {
+		padding-top: 1.25rem;
+	}
+
+	.site-footer__inner > :last-child {
+		margin-left: 0;
+	}
+}

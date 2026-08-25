@@ -19,7 +19,7 @@ Two delivery routes, and the choice between them is a real decision the docs mus
 
 | Route | How | The catch |
 |---|---|---|
-| **Directly in the site** | `consentio-loader.min.js` as a plain **blocking** `<script>` in `<head>`, above the tag manager snippet | it blocks. 4.3 KB has to download before the page paints |
+| **Directly in the site** | `consentio-loader.min.js` as a plain **blocking** `<script>` in `<head>`, above the tag manager snippet | it blocks. 4.6 KB has to download before the page paints |
 | **Google Tag Manager custom template** | the published template, on the **Consent Initialization - All Pages** trigger, which the tag manager guarantees runs before every other trigger in that container | **only covers tags in that container.** Take this route and *every* tag and cookie-setting script on the site has to be managed from the tag manager. Anything pasted straight into the page sits outside consent control |
 
 ## The two routes do not share the deny-by-default
@@ -167,6 +167,9 @@ categories were fixed only Consentio itself can trigger it, which is a breaking 
 A separate `consentio-core.min.js` was built on 24 Aug 2026 and **deleted the same day**, on the maintainer's
 call. It was 2.8 KB and correct, but it meant a second blocking request and a second version to keep pinned.
 Folding it into the loader costs the loader 2.8 KB - 1.5 KB to 4.3 KB minified - and removes an artifact.
+**Those are the sizes as measured then.** Re-measured 25 Aug 2026 from a clean build: the loader is 4.6 KB
+minified and 2.0 KB gzipped, and `consentio.min.js` is 36.3 KB and 11.3 KB. Plan 4's focus module is most of
+the growth in the second.
 
 The consequence to keep in view: **the loader is a blocking script.** `async` or `defer` on its tag puts the
 default back behind the tag manager, so the loader warns when it sees either.

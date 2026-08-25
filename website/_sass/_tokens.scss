@@ -1,0 +1,64 @@
+// The palette follows the banner's own blue-grey, so the demo does not clash with the page
+// it sits on. src/scss/_variables.scss is the other half of it.
+@mixin site-light {
+	--bg: #ffffff;
+	--bg-soft: #f5f7f8;
+	--bg-sunken: #eceff1;
+	--fg: #22292d;
+	--fg-muted: #566067;
+	--rule: #dfe4e7;
+	--rule-strong: #c3ccd1;
+	--accent: #37474f;
+	--accent-hover: #22303a;
+	--accent-contrast: #ffffff;
+	--link: #2f5d75;
+	--note-bg: #eef3f6;
+	--note-rule: #7d9db0;
+	--warn-bg: #fdf3e6;
+	--warn-rule: #c8873a;
+	--focus: #1a73e8;
+	--shadow: 0 1px 2px rgba(15, 30, 40, .06), 0 6px 20px rgba(15, 30, 40, .07);
+}
+
+@mixin site-dark {
+	--bg: #14191c;
+	--bg-soft: #1b2226;
+	--bg-sunken: #222b30;
+	--fg: #e3e8ea;
+	--fg-muted: #9fadb4;
+	--rule: #2c363b;
+	--rule-strong: #3d4a51;
+	--accent: #90a4ae;
+	--accent-hover: #b0c1c9;
+	--accent-contrast: #14191c;
+	--link: #8fc0d8;
+	--note-bg: #1b262c;
+	--note-rule: #5b7f92;
+	--warn-bg: #2a2117;
+	--warn-rule: #c8873a;
+	--focus: #7cb0ff;
+	--shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 6px 20px rgba(0, 0, 0, .35);
+}
+
+:root,
+body.light {
+	@include site-light;
+}
+
+body.dark {
+	@include site-dark;
+}
+
+@media (prefers-color-scheme: dark) {
+	body:not(.light) {
+		@include site-dark;
+	}
+}
+
+:root {
+	--font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	--font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+	--measure: 46rem;
+	--sidebar: 16rem;
+	--radius: 8px;
+}
