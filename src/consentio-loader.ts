@@ -99,15 +99,13 @@ import { BASELINE_CONSENTS, readConsents } from './lib/consent-store.js';
 		debug && logger.info('[Consentio Loader] Consent default pushed:', consents);
 	}
 
-	// The consent default above is the job that cannot be missed, so a tag pasted inline
-	// rather than linked loses the banner and keeps the default. Issue 22.
+	// A tag pasted inline rather than linked loses the banner and keeps the default. Issue 22.
 	if (loaderSrc === null) {
 		logger.error('[Consentio Loader] the loader tag has no src, so the banner cannot be located');
 		return;
 	}
 
-	// The bundle sits beside the loader, and `.min.js` in the loader's own filename is what
-	// selects the minified build.
+	// `.min.js` in the loader's own filename is what selects the minified build.
 	const basePath = loaderSrc.substring(0, loaderSrc.lastIndexOf('/') + 1);
 	const isMinified = loaderSrc.includes('.min.js');
 

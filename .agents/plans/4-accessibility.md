@@ -1,7 +1,7 @@
 ---
 description: Make the banner usable from a keyboard and a screen reader - roles, names, focus and Escape. Defects 14 and 15
 state: ready
-waits-on: 2. Independent of plan 3 - either order
+waits-on: nothing. Plan 3 has run, which changes two things below
 ---
 
 # 4 - accessibility
@@ -48,8 +48,8 @@ and focus sits on `<body>` behind an overlay the keyboard cannot reach. Whicheve
 hold focus, and Escape from the modal should return to the bar rather than doing nothing.
 
 **Defect 23 overlaps.** `render()` clears the switch label to write the "Always On" text, which is also where
-the accessible name has to go. If plan 3 has already run, the input is no longer detached and this is
-simpler. If it has not, do not fix 23 here - name it and leave it.
+the accessible name has to go. **Defect 23 is fixed**: `render()` now keeps the input and replaces the rest
+of the label, so the name has somewhere to go that survives. Do not undo that while adding it.
 
 ## Do not
 

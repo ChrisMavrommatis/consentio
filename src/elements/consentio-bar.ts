@@ -8,13 +8,11 @@ class ConsentioBarElement extends HTMLElement {
 	constructor() {
 		super();
 		this._logger = null;
-		// Bound once and kept. `this.fn.bind(this)` builds a new function object every call,
-		// so a removeEventListener handed a fresh one never matches what was added.
+		// Bound once: a fresh bind() never matches what addEventListener was given. Issue 7.
 		this._onClick = this.onClick.bind(this);
 	}
 
-	// Queried on access rather than cached in the constructor: an element upgraded in
-	// place runs its constructor before its children exist.
+	// Queried on access: a constructor runs before its children exist. Issue 11.
 	get settingsBtn(): HTMLButtonElement | null {
 		return this.querySelector<HTMLButtonElement>('button[data-role="settings"]');
 	}

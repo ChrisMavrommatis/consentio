@@ -38,8 +38,7 @@ class ConsentioAppElement extends HTMLElement {
 	constructor() {
 		super();
 		this._shadow = this.attachShadow({ mode: 'closed' });
-		// Bound once and kept. `this.fn.bind(this)` builds a new function object every call,
-		// so a removeEventListener handed a fresh one never matches what was added.
+		// Bound once: a fresh bind() never matches what addEventListener was given. Issue 7.
 		this._handlers = [
 			['consentio:open-settings', this.openSettings.bind(this)],
 			['consentio:accept-all-consents', this.acceptAll.bind(this)],
@@ -69,8 +68,7 @@ class ConsentioAppElement extends HTMLElement {
 		this._config = { ...this._config, ...value };
 		if (this.isRendered) {
 			this.render();
-			// render() builds fresh nodes with no inline display, and initState only runs
-			// from connectedCallback, so without this the bar and the modal show at once.
+			// The fresh nodes carry no inline display, so without this both show at once. Issue 13.
 			this.initState();
 		}
 	}
@@ -108,9 +106,7 @@ class ConsentioAppElement extends HTMLElement {
 		this.gtm = new ConsentioGTM(this.logger);
 		this.isRendered = true;
 		this.emit('consentio:initialized', this.state.consents);
-		// No `consent default` from here. It runs after two fetches and a DOM insert, long
-		// after the tag manager read consent. The loader pushes the default on its first pass.
-
+		// No `consent default` from here - it would be two fetches too late. The loader has it.
 	}
 
 	disconnectedCallback(): void {

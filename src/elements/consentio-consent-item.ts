@@ -19,8 +19,7 @@ class ConsentioConsentItemElement extends HTMLElement {
 		this._onClick = this.toggleBody.bind(this);
 	}
 
-	// Queried on access rather than cached in the constructor: an element upgraded in
-	// place runs its constructor before its children exist.
+	// Queried on access: a constructor runs before its children exist. Issue 11.
 	get consentBody(): HTMLElement | null {
 		return this.querySelector<HTMLElement>('.consent-body');
 	}
@@ -93,9 +92,8 @@ class ConsentioConsentItemElement extends HTMLElement {
 
 	render(): void {
 		if (this.alwaysOn !== null) {
-			// The lever goes and the text arrives, but the checkbox stays. Clearing the label
-			// wholesale detached the input that updateState writes to. Issue 23. An <input>
-			// contributes no text, so the label still reads as the alwaysOn label alone.
+			// The checkbox stays: clearing the label detached the node updateState writes to.
+			// An <input> contributes no text, so the label reads as the label alone. Issue 23.
 			const switchLabel = this.switch!.querySelector('label')!;
 			const input = switchLabel.querySelector('input');
 			const label = document.createTextNode(this.alwaysOn);

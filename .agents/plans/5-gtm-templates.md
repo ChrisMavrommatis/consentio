@@ -88,6 +88,13 @@ a defect against it. They need the gallery files, a README each, and two spellin
 in `consentio-tag-cookies` logs `Contentio Tag: Cookies`, and `consentio-tag-texts/template.tpl:9` describes
 itself as being for "the Contentio Tag".
 
+**The cookie shape changed on 25 Aug 2026, and this plan writes the second reader against it.**
+The categories nest under a `consents` key rather than sitting beside `version` - `{"version":1,"consents":
+{...}}`. [../design/delivery.md](../design/delivery.md) has the spec in full and
+[../rules/the-cookie-is-a-contract.md](../rules/the-cookie-is-a-contract.md) says why it costs what it costs.
+**The moment this template reads a cookie there are two implementations and no test can span them**, so read
+the spec rather than the source, and do not re-derive it.
+
 **The gallery description still sells, and this plan is the only thing that opens the file.**
 `consentio-tag/template.tpl:14` - the `description` the gallery shows - says Consentio "integrates
 seamlessly with tag manager and provides transparent consent handling". That is the sales register

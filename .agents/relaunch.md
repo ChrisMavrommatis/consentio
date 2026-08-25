@@ -13,8 +13,8 @@ Each plan cites defect numbers from [design/issues.md](design/issues.md) and car
 
 | # | Plan | State | Gated by |
 |---|---|---|---|
-| 3 | [lifecycle and DOM](plans/3-lifecycle-and-dom.md) | ready. **Next** | nothing |
-| 4 | [accessibility](plans/4-accessibility.md) | ready | nothing. Independent of 3 - either order |
+| 3 | [lifecycle and DOM](plans/3-lifecycle-and-dom.md) | **done** 25 Aug 2026, uncommitted | nothing |
+| 4 | [accessibility](plans/4-accessibility.md) | ready. **Next** | nothing |
 | 5 | [tag manager templates](plans/5-gtm-templates.md) | ready | 3, for defect 9 |
 | 6 | [docs site](plans/6-docs-site.md) | ready | 3 and 4, so it documents fixed behaviour |
 | 7 | [repo furnishing](plans/7-repo-furnishing.md) | ready | nothing. Fill a gap whenever there is a spare sitting |
@@ -30,10 +30,10 @@ the release procedure into [design/delivery.md](design/delivery.md), the unteste
 **Nothing here pushes a tag or creates a repository.** Those are the maintainer's, and plan 8 is where they
 are handed over.
 
-**Re-verified 25 Aug 2026, after the release pipeline landed.** Typecheck clean, `npm test` 212/172/0 fail/40 todo,
-`npm run test:plain` 62/59/0 fail/3 todo, `git status --porcelain dist/` empty, `git tag -l` unchanged.
-The twelve new passes are the changelog parser and the `dist/` commit guard. The build **was** re-run, into
-`build/lib/`, twice: byte-identical, so the freshness check is honest.
+**Re-verified 25 Aug 2026, after plan 3.** Typecheck clean, `npm test` 213/199/0 fail/**14** todo,
+`npm run test:plain` 62/60/0 fail/2 todo, `git status --porcelain dist/` empty, `git tag -l` unchanged.
+**The fourteen todos left are defect 14 (ten), defect 15 (two) and defect 21 (two).** The first two are
+plan 4's; 21 is a documentation item for plan 6.
 
 ## Settled by the maintainer, 25 Aug 2026
 
@@ -56,8 +56,8 @@ were written rather than after.
 
 **3 and 4 before 6.** Documentation written against broken behaviour has to be written twice.
 
-**5 after 3.** The template's `setInWindow` call exists to cover for **defect** 9 in the register - not plan
-9; the collision is unfortunate. Plan 3 fixes that defect, and the template's job gets smaller for it.
+**5 after 3.** The template's `setInWindow` call exists to cover for **defect** 9 in the register. Plan 3
+fixed that defect, so the template's job is smaller than it was written to be.
 
 **8 last, and it decides nothing on its own.** It assembles the evidence; the maintainer decides the version
 and pushes the tag.
@@ -76,6 +76,21 @@ string but no key and no signal routing. That **closes defect 27 with no code in
 map is correct by definition - and opens **defect 28**, because nothing in the config layer enforces the
 rule yet. Plan 3 now carries 28 instead of 27. The reasoning is in
 [design/delivery.md](design/delivery.md).
+
+## The cookie contract changed on 25 Aug 2026
+
+Plan 3 closed defect 18 by **nesting the categories under a `consents` key** instead of leaving them as
+siblings of `version`. There is no flat shape in which a category keyed `version` and the version itself both
+survive.
+
+`{"version":1,"consents":{...}}`. The full spec is in [design/delivery.md](design/delivery.md).
+
+**Why now:** `gtm/consentio-tag/template.tpl` reads no cookie at all yet - that is defect 26 and plan 5's
+job. Until it does there is one implementation. Change the shape after plan 5 and it costs two, in two
+languages, plus a gallery review. **Plan 5 must write its reader against the nested shape.**
+
+A value stored in the old flat shape reads as no stored answer, so the visitor is asked again - the same
+outcome the contract already gives a version mismatch.
 
 ## The thing most likely to be got wrong
 

@@ -14,8 +14,7 @@ class ConsentioModalElement extends HTMLElement {
 		this._onClick = this.onClick.bind(this);
 	}
 
-	// Queried on access rather than cached in the constructor: an element upgraded in
-	// place runs its constructor before its children exist.
+	// Queried on access: a constructor runs before its children exist. Issue 11.
 	get cancelBtn(): HTMLAnchorElement | null {
 		return this.querySelector<HTMLAnchorElement>('[data-role="cancel"]');
 	}

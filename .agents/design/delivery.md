@@ -95,12 +95,16 @@ Fixing the set is what makes that possible without a data attribute or a fetch. 
 **What a site may still change:** every string, the cookie name, the version, whether consent is required,
 and the cookie table. Copy and behaviour, not taxonomy.
 
-**What has to be enforced in code, and is not yet:**
+**Enforced in code since 25 Aug 2026**, which closes defect 28:
 
-- `ConsentCategory.signals` exists and lets a site re-route a category. **Remove it.**
-- `mergeConsents` merges any key it is given, so an unknown key becomes a fifth category. **It must merge
-  into the four and warn on anything else, never add.**
-- `signalMapFrom()` then has one possible answer and stops earning its place.
+- `ConsentCategory.signals` is gone, so a site cannot re-route a category.
+- `mergeConsents` merges into the four known keys and **warns on anything else rather than adding it**. It
+  copies field by field rather than spreading the override, because a spread carries through whatever else
+  the site wrote.
+- `signalMapFrom()` is gone - it had one possible answer. `DEFAULT_SIGNAL_MAP` is the only map there is.
+
+**Warned, not thrown.** A config with a stray fifth category gets a console warning and a working banner.
+The rest of it is still good, and a blank page is a worse answer.
 
 ## The cookie contract
 
@@ -111,25 +115,40 @@ a breaking change for the templates, whatever it does to Consentio's own version
 **Name.** `consentio` by default. The direct route overrides it with `data-cookie-name` on the loader tag;
 the template has its own field.
 
-**Value.** One JSON object, URI-encoded on the way in and out. The `version` field first, then one key per
-consent category:
+**One identity, not two.** `data-cookie-name` and `data-version` on the tag, and `cookieName` and `version`
+in the config JSON, used to be two sources for one fact - set them differently and the loader and the banner
+read different cookies, or the same cookie at two versions, and the banner appeared for someone who had
+already answered. Since 25 Aug 2026 the loader publishes what it resolved on `window.ConsentioDefault` and
+**the banner's constructor prefers those values**, falling back to the config JSON when no loader ran. The
+tag manager route never runs the loader, so the fallback is the path it keeps taking, and the footgun stops
+existing rather than being documented.
+
+**Value.** One JSON object, URI-encoded on the way in and out. Two keys: `version`, and `consents` holding
+one key per category.
 
 ```json
-{"version":1,"strictly_necessary":"granted","preferences_functionality":"denied","statistics_performance":"denied","marketing_advertising":"denied"}
+{"version":1,"consents":{"strictly_necessary":"granted","preferences_functionality":"denied","statistics_performance":"denied","marketing_advertising":"denied"}}
 ```
 
-Every value is the string `granted` or `denied` - never a boolean, never absent.
+Every consent value is the string `granted` or `denied` - never a boolean, never absent.
 
-**Attributes**, from `Cookies.defaultAttributes`: `path=/`, `expires` 90 days, `SameSite=Lax`, and `Secure`
-**unconditionally** - which is defect 12, and why nothing persists on plain `http`.
+**The categories nest rather than sitting beside `version`.** They were siblings until 25 Aug 2026, which
+meant a category keyed `version` overwrote it - defect 18. Nesting removes the collision rather than
+documenting it. **This changed the contract**, so a reader written against the flat shape finds no
+`consents` and must treat that as no stored answer, which is what `readConsents` does.
+
+**Attributes**, from `Cookies.defaultAttributes` plus one computed at write time: `path=/`, `expires` 90
+days, `SameSite=Lax`, and `Secure` **over `https` only**. It was unconditional until 25 Aug 2026, which is
+why nothing persisted on plain `http` - defect 12.
 
 **Reading it, and this is the part that is easy to get wrong:**
 
 1. no cookie at all -> **no stored answer**
-2. cookie will not parse as JSON -> **no stored answer**
+2. cookie will not parse as JSON, or parses as something other than an object -> **no stored answer**
 3. `version` does not equal the configured version -> **no stored answer.** Not "partially valid", not
    "merge what is there". The whole thing is discarded and the banner shows again
-4. otherwise: drop the `version` key and the rest is the answer
+4. there is no `consents` object -> **no stored answer.** This is also how a flat, pre-25 Aug 2026 value reads
+5. otherwise: `consents` is the answer
 
 **"No stored answer" is not the same as "everything denied".** It means fall back to `BASELINE_CONSENTS`,
 which is a single key - `{"strictly_necessary":"granted"}` - and nothing else. Fed through
@@ -138,12 +157,10 @@ granted, that yields `security_storage` granted and the other six denied. **A te
 out four categories all denied will produce the same six denials but a different `security_storage`, and the
 two routes will disagree.**
 
-**The trap in the shape:** the version is stored as a sibling of the categories, not above them, so a
-category whose key is literally `version` overwrites it. That is defect 18 and it is unfixed.
-
 **The trap in the version:** adding a category without bumping `config.version` leaves every returning
 visitor's stored value missing that key, and a missing key reads as denied. Bumping it instead discards
-their answer and shows the banner again. There is no third option today - that is defect 21.
+their answer and shows the banner again. There is no third option - that is defect 21, and since the four
+categories were fixed only Consentio itself can trigger it, which is a breaking change and a bump anyway.
 
 ## Why the loader carries the default, rather than a second file
 
@@ -162,10 +179,8 @@ Three shared modules make it work, and the banner imports them too:
 | `src/lib/consent-store.ts` | `readConsents` / `writeConsents` / `clearConsents`, and `BASELINE_CONSENTS`. No DOM beyond `document.cookie` |
 | `src/lib/cookies.ts` | as today, with defect 12 still open |
 
-**The loader does not use the configured signal map**, because it has no config when it pushes. That was
-defect 27, and it is closed: there is no configured map any more. The four categories are fixed, so the
-built-in map is the only map - see above. What is left is making the config refuse anything else, which is
-defect 28.
+**The loader does not use a configured signal map**, because there is no such thing any more and because it
+has no config when it pushes. That was defect 27, and closing it is what defect 28's enforcement finished.
 
 **The deny-by-default needs no config file, and that is what keeps it small.** Config only ever affected the
 UI. The only defensible default is denied for everything except strictly necessary, so nothing has to be

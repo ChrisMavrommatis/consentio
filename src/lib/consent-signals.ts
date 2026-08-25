@@ -1,10 +1,6 @@
 import type { ConsentRecord, ConsentState } from '../types.js';
 
-/**
- * The seven signals Google Consent Mode reads. **This is the only file in which a Google
- * signal name appears.** Anything else pushed under `consent` is dropped silently, which
- * is why a wrong name looks like it works.
- */
+// Google drops an unknown key silently, which is why a wrong name looks like it works.
 export const GOOGLE_SIGNALS = [
 	'ad_storage',
 	'ad_user_data',
@@ -22,11 +18,7 @@ export type ConsentSignals = Record<GoogleSignal, ConsentState>;
 /** Consent category key -> the signals that category drives. */
 export type SignalMap = Record<string, readonly GoogleSignal[]>;
 
-/**
- * What the four categories map to. The four are fixed and a site cannot re-point one, so
- * this is the only map there is - which is what lets the loader push a correct default
- * before it has read any config.
- */
+// The four are fixed, so this is the only map there is.
 export const DEFAULT_SIGNAL_MAP: SignalMap = {
 	strictly_necessary: ['security_storage'],
 	preferences_functionality: ['functionality_storage', 'personalization_storage'],
@@ -35,17 +27,13 @@ export const DEFAULT_SIGNAL_MAP: SignalMap = {
 };
 
 export function toGoogleSignals(consents: ConsentRecord, map: SignalMap = DEFAULT_SIGNAL_MAP): ConsentSignals {
-	// Deny wins. A signal is granted only when every category routed to it is granted,
-	// which is the safe reading when a site points two categories at one signal, and the
-	// only reading that keeps an unmapped signal denied.
+	// Deny wins, so a signal nothing is routed to stays denied.
 	const state = (signal: GoogleSignal): ConsentState => {
 		const sources = Object.keys(map).filter((key) => map[key].includes(signal));
 		return sources.length > 0 && sources.every((key) => consents[key] === 'granted') ? 'granted' : 'denied';
 	};
 
-	// Every signal is named on purpose: one left out of a `consent update` keeps its
-	// previous value. The Record<GoogleSignal, ConsentState> return type makes a missing
-	// line a build error.
+	// A signal left out of a `consent update` keeps its previous value.
 	return {
 		ad_storage: state('ad_storage'),
 		ad_user_data: state('ad_user_data'),
@@ -66,11 +54,8 @@ export function needsAdsDataRedaction(signals: ConsentSignals): boolean {
 
 export type ConsentDefault = ConsentSignals & { wait_for_update?: number };
 
-/**
- * The payload for a `consent default` push. Pass `null` for `waitForUpdate` when there is
- * a stored choice: `wait_for_update` only helps a first-time visitor, and making the tag
- * wait for a banner that will never appear only delays it.
- */
+// `null` for waitForUpdate when there is a stored choice: waiting for a banner that will
+// never appear only delays the tag.
 export function toConsentDefault(signals: ConsentSignals, waitForUpdate: number | null): ConsentDefault {
 	return waitForUpdate === null ? { ...signals } : { ...signals, wait_for_update: waitForUpdate };
 }

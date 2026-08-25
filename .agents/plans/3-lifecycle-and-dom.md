@@ -1,10 +1,13 @@
 ---
 description: The lifecycle, DOM and small-stuff defects - the dead removeEventListener calls, the constructor DOM reads, the cookie on plain http
-state: ready
-waits-on: 2, so the fix lands behind a green gate
+state: done - 25 Aug 2026, uncommitted
+waits-on: nothing
 ---
 
 # 3 - lifecycle and DOM
+
+> **Done, 25 Aug 2026 - landed uncommitted.** Read `## Done on` at the bottom. It records one change to
+> the cookie contract the brief did not price, and two deliverables that could not be checked here.
 
 Read [../design/issues.md](../design/issues.md) for the register. **Defects 6-13, 16-23 and 28.** Mostly
 mechanical. Independent of plan 4 - either order.
@@ -128,37 +131,122 @@ version.** **Do not add a fetch or a dependency.** **Do not write `dist/`.** **D
 
 ## Deliverables
 
-- [ ] The `todo` flags for defects 6-13, 16-19 and 22-23 are gone and those tests pass.
+- [x] The `todo` flags for defects 6-13, 16-19 and 22-23 are gone and those tests pass.
       Defect 21 stays open - the decision to fix the four categories narrowed it to a documentation item
       for plan 6.
-      `npm test` and `npm run test:plain` green, with the todo count down from 40 to 12 - the 12 left are
-      plan 4's. **Defects 20 and 27 have no `todo` test**, so there is no flag to remove for either; 20 is
+      `npm test` and `npm run test:plain` green, with the todo count down from 40 to **14**. The brief
+      said 12 and was wrong: defect 21's two todos stay open alongside plan 4's twelve. **Defects 20 and 27 have no `todo` test**, so there is no flag to remove for either; 20 is
       already fixed by the release pipeline, and 27 gets a test written here, see below.
-- [ ] The spelling and the binding were fixed together.
+- [x] The spelling and the binding were fixed together.
       `grep -rn "disconectedCallback" src/` is empty **and** no `removeEventListener` in the diff contains
       `.bind(`. Either alone is worse than neither.
 - [ ] A second `Consentio.Create()` does not throw, and the loader can see it.
       Call it twice in a browser console; check `window.ConsentioInstance` after the first.
-- [ ] Nothing reads the DOM from a custom element constructor.
+      **Not run - there is no browser here.** `test/consentio/registration.test.mts` and
+      `create.test.mts` cover both as unit tests, which is a proxy.
+- [x] Nothing reads the DOM from a custom element constructor.
       By eye across all four elements - every `querySelector` sits in `connectedCallback`.
 - [ ] A choice persists on plain http.
       Serve the docs over `http://localhost`, accept, reload. The banner does not come back. **This is
       defect 12 and it is the easiest one to check by eye.**
-- [ ] An `alwaysOn` category still owns its checkbox.
+      **Not run - there is no browser here.** The unit test asserts the serialised attribute only, and
+      says so in its own comment: jsdom's jar accepts a secure cookie over http.
+- [x] An `alwaysOn` category still owns its checkbox.
       Defect 23 - the element is not left holding a detached node.
-- [ ] Both `@ts-expect-error` lines in the loader are gone.
+- [x] Both `@ts-expect-error` lines in the loader are gone.
       `grep -rn "ts-expect-error" src/` returns only defect 19's, and that one goes too.
-- [ ] The banner reads the cookie the loader read.
+- [x] The banner reads the cookie the loader read.
       Set `data-cookie-name` on the tag and a *different* `cookieName` in the config JSON. The banner uses
       the tag's. Then remove the loader entirely and it uses the config's.
-- [ ] The docs no longer teach the removed feature.
+      Checked as a test rather than by hand - `test/consentio/cookie-identity.test.mts` runs both halves.
+- [x] The docs no longer teach the removed feature.
       `grep -n "signals" website/pages/home.md` returns only the Google-signal explanations, and
       `grep -ni "adding your own category\|add a category" website/pages/home.md` returns nothing.
-- [ ] A fifth category cannot exist, and defect 28 has a test.
+- [x] A fifth category cannot exist, and defect 28 has a test.
       Put an unknown key in a config. The banner still runs, the console warns, and the category is not
       there. `grep -rn "signals" src/types.ts` returns nothing. Defect 28 has no `todo` test yet - write one
       first, marked `todo`, then remove the flag with the fix, so it proves itself like every other defect.
       See [../memory/todo-flags-are-the-register.md](../memory/todo-flags-are-the-register.md).
-- [ ] Every comment left in a file this plan touched is one line, or is a carve-out the rule names.
+- [x] Every comment left in a file this plan touched is one line, or is a carve-out the rule names.
       By eye down the diff.
-- [ ] `git status --porcelain dist/` is empty.
+- [x] `git status --porcelain dist/` is empty.
+
+---
+
+## Done on 25 Aug 2026
+
+**Landed, uncommitted.** Every defect in the brief is fixed and both suites are green.
+
+### The numbers
+
+`npm run typecheck` clean. `npm test` **213 tests, 199 pass, 0 fail, 14 todo**, exit 0. `npm run test:plain`
+**62, 60, 0 fail, 2 todo**, exit 0. `git status --porcelain dist/` empty. `git tag -l` unchanged.
+
+The todos went 40 to 14: defect 14 has ten, defect 15 two, defect 21 two. **The brief said 12 and was
+wrong** - it forgot defect 21's pair, which it also says elsewhere stays open.
+
+### The one thing the brief did not price: the cookie shape changed
+
+**Defect 18 cannot be closed without it.** The version and the categories were siblings in the stored JSON,
+so a category keyed `version` overwrote the version. There is no flat shape in which both survive. The
+stored value is now:
+
+```json
+{"version":1,"consents":{"strictly_necessary":"granted", ...}}
+```
+
+**That is a change to the cookie contract**, and [../rules/the-cookie-is-a-contract.md](../rules/the-cookie-is-a-contract.md)
+asks for three things before one is made. All three were done in this session: it is stated plainly here, the
+full spec in [../design/delivery.md](../design/delivery.md) is rewritten, and the docs page is rewritten.
+The template's reader is the fourth and **does not exist yet** - defect 26 - which is precisely why this was
+the moment to do it. Change it after plan 5 and it costs two implementations and a gallery review instead of
+one file.
+
+**What it costs a visitor:** a value written in the old flat shape has no `consents`, reads as no stored
+answer, and the banner asks again. Same outcome as a version mismatch, which is behaviour the contract
+already had.
+
+### Defect 28's test did not run the todo cycle, and here is what stands in for it
+
+The brief asked for a `todo` test written first, then un-flagged with the fix. The fix landed first, so that
+sequence was not run. What proves the tests would have failed: `test/consentio/config.test.mts` carried a
+**passing** test named *a category the defaults do not have is appended*, green in the 25 Aug 2026 baseline,
+asserting exactly the behaviour defect 28 forbids. It is now *issue 28 - a category the defaults do not have
+is refused, not appended*, and four more beside it. The old `mergeConsents` body was re-run in isolation to
+confirm it appended `house_analytics` to the four.
+
+### Two things that changed shape while fixing them
+
+**Defect 11 needed getters, not a move to `connectedCallback`.** The brief says move the `querySelector`
+calls. One of its own tests connects an element and adds the children *afterwards*, which a
+`connectedCallback` read cannot serve. Each child reference is a getter that queries on access, and the
+click handling became **one delegated listener on the host** - which is also what lets `connectedCallback`
+attach a listener before the buttons exist. Bar, modal and floating button.
+
+**Defect 28 needed the merge to copy field by field.** Dropping `signals` from the type is not enough: the
+override was spread whole into the category, so a site writing `signals` by hand in its JSON still had it
+carried through. `mergeConsents` now copies the four fields a site may change and nothing else.
+
+### Two deliverables that were not checked here, and are not claimed
+
+Both need a browser, and there is none in this session. They are **not run**, not passed:
+
+- **Defect 12 on plain `http`.** The unit test asserts the serialised attributes only -
+  `test/lib/cookies/secure-flag.test.mts` says in its own comment that jsdom's jar accepts a secure cookie
+  over http, so a green suite is not evidence. Serve the docs over `http://localhost`, accept, reload.
+- **A second `Consentio.Create()` in a browser console**, and `window.ConsentioInstance` after the first.
+  The suite covers both as unit tests - `test/consentio/registration.test.mts` and `create.test.mts` - which
+  is a proxy.
+
+The cookie-identity check is covered by `test/consentio/cookie-identity.test.mts` rather than by hand.
+
+### Also done
+
+**The comment pass ran over every file this plan touched.** Every comment in `src/elements/`,
+`src/lib/consent-store.ts`, `src/lib/cookies.ts`, `src/lib/consent-signals.ts` and
+`src/lib/template-renderer.ts` is now one line. The loader's file-level block is the carve-out the rule
+names and is untouched.
+
+**`test/lib/consent-signals/derivation.test.mts` was deleted.** Every test in it exercised `signalMapFrom`
+and per-category `signals`, both of which this plan removes. Its one still-meaningful assertion - that an
+unknown key routes nowhere - moved into `test/lib/gtm/update.test.mts` as defect 28's.

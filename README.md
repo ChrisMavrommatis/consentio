@@ -77,17 +77,19 @@ Three templates, published one per repository because the gallery requires it. T
 One JSON object, URI-encoded, named `consentio` by default:
 
 ```json
-{"version":1,"strictly_necessary":"granted","preferences_functionality":"denied","statistics_performance":"denied","marketing_advertising":"denied"}
+{"version":1,"consents":{"strictly_necessary":"granted","preferences_functionality":"denied","statistics_performance":"denied","marketing_advertising":"denied"}}
 ```
 
 Two things that are easy to get wrong, and that a tag manager template has to match by hand:
 
 - **A version mismatch discards the whole stored value.** It does not merge and it does not partially
   apply — the banner shows again from scratch.
-- **"No stored answer" is not "everything denied".** The fallback is the single key
-  `{"strictly_necessary":"granted"}`, which grants `security_storage` and denies the other six signals. A
+- **"No stored answer" is not "everything denied".** The fallback is the single category
+  `strictly_necessary: granted`, which grants `security_storage` and denies the other six signals. A
   reader that falls back to four denied categories instead denies `security_storage` too, and the two routes
   then disagree about the same visitor.
+- **The categories nest under `consents`.** A value written flat, beside `version`, reads as no stored
+  answer and the banner asks again.
 
 The [documentation](website/pages/home.md#the-cookie-contract) states the contract in full — name, value,
 attributes, the four reading rules and the traps.

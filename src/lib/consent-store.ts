@@ -9,10 +9,7 @@ export const BASELINE_CONSENTS: ConsentRecord = {
 	strictly_necessary: 'granted'
 };
 
-/**
- * What one cookie holds. The categories are nested rather than siblings of `version`, so
- * a category cannot collide with it - issue 18.
- */
+// Nested rather than siblings of `version`, so a category cannot collide with it. Issue 18.
 interface StoredConsent {
 	version?: number;
 	consents?: ConsentRecord;
@@ -26,8 +23,7 @@ export function readConsents(cookieName: string, version: number): ConsentRecord
 	}
 	try {
 		const stored = JSON.parse(cookie) as StoredConsent;
-		// A value written before the nesting has no `consents`, and reads as no answer -
-		// the same outcome as a version mismatch, which is the established behaviour.
+		// A flat value written before the nesting has no `consents`, and reads as no answer.
 		if (stored === null || typeof stored !== 'object' || stored.version !== version || !stored.consents) {
 			return null;
 		}

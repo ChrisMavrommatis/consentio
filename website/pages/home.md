@@ -130,10 +130,11 @@ These live on the tag because the loader needs them before it can fetch anything
 | `data-debug` | no | `false` | `"true"` turns on the loader's informational logging. Errors and the async/defer warning are always logged |
 | `data-wait-for-update` | no | `500` | Milliseconds passed as `wait_for_update` in the `consent default` push. Only sent to a visitor with no stored answer |
 
-**`data-cookie-name` and `data-version` are read twice, in two places.** The loader reads them off the tag;
-the banner reads `cookieName` and `version` from the config JSON. If you change one, change both — set them
-differently and the loader and the banner read different cookies, or the same cookie at different
-versions, and the banner appears for someone who already answered.
+**The tag wins over the config JSON for these two.** The loader resolves `data-cookie-name` and
+`data-version`, publishes them on `window.ConsentioDefault`, and the banner takes them back — so
+`cookieName` and `version` in the config JSON are the fallback for the tag manager route, which never runs
+the loader. Setting them differently in the two places is no longer a way to make the loader and the banner
+read different cookies.
 
 ### 🔍 What the loader leaves behind {#what-the-loader-leaves-behind}
 
@@ -228,8 +229,11 @@ Two rules that are not optional:
 | `statistics_performance` | `analytics_storage` |
 | `marketing_advertising` | `ad_storage`, `ad_user_data`, `ad_personalization` |
 
-**Deny wins.** A signal is granted only when *every* category routed to it is granted. Point two categories
-at one signal and the stricter answer decides. A signal nothing is routed to stays denied.
+**This mapping is fixed and a site cannot change it.** It is what lets the loader push a correct
+`consent default` before it has read any config at all.
+
+**Deny wins.** A signal is granted only when *every* category routed to it is granted. A signal nothing is
+routed to stays denied.
 
 ---
 
@@ -242,12 +246,12 @@ by key over the defaults, and `consents` merges entry by entry, matched on `key`
 
 | Key | Type | Default | What it does |
 |---|---|---|---|
-| `cookieName` | string | `consentio` | Name of the consent cookie. Must match the loader's `data-cookie-name` |
+| `cookieName` | string | `consentio` | Name of the consent cookie. **Ignored when the loader ran** — `data-cookie-name` wins. This is the value the tag manager route uses |
 | `debug` | boolean | `false` | Turns on the banner's informational logging |
-| `version` | number | `1` | Consent version. Must match the loader's `data-version`. See [Versioning stored consent](#versioning-stored-consent) |
+| `version` | number | `1` | Consent version. **Ignored when the loader ran** — `data-version` wins. See [Versioning stored consent](#versioning-stored-consent) |
 | `consentRequired` | boolean | `false` | Shows a full-screen blocking overlay behind the bar and modal until the visitor answers |
 | `texts` | object | see below | Every string in the UI |
-| `consents` | array | four categories | The consent categories |
+| `consents` | array | the four categories | Copy changes to the four. The set is fixed |
 
 ### 💬 `texts` {#texts}
 
@@ -273,14 +277,18 @@ Each entry describes one category and one row in the settings modal.
 
 | Key | Type | What it does |
 |---|---|---|
-| `key` | string | The identifier. It is the cookie's JSON key, the value the cookies JSON matches on, and what the signal map is keyed by. **Required in every entry** |
+| `key` | string | Which of the four categories the entry changes. It is also the cookie's JSON key and the value the cookies JSON matches on. **Required in every entry** |
 | `title` | string | Heading in the modal |
 | `description` | string | Body text under the heading |
 | `alwaysOn` | boolean | `true` replaces the switch with the `alwaysOnLabel` text and forces the category granted |
 | `defaultState` | `"granted"` \| `"denied"` | What the switch shows to a visitor with no stored answer |
-| `signals` | array of Google signal names | Optional. Which signals this category drives. Omit it and the built-in mapping for `key` is used |
 
-The four built-in categories are `strictly_necessary` (`alwaysOn: true`, `defaultState: "granted"`),
+**The four categories are fixed. You can change every string, not the set.** An entry whose `key` is not one
+of the four is ignored, with a warning on the console, and the banner still runs. You cannot add a category,
+remove one, or re-point one at a different Google signal — the loader has to push the consent default before
+it can read any config, so the set has to be one it already knows.
+
+The four categories are `strictly_necessary` (`alwaysOn: true`, `defaultState: "granted"`),
 `preferences_functionality`, `statistics_performance` and `marketing_advertising` (all `alwaysOn: false`,
 `defaultState: "denied"`).
 
@@ -295,31 +303,6 @@ The four built-in categories are `strictly_necessary` (`alwaysOn: true`, `defaul
   ]
 }
 ```
-
-**Adding your own category:** an entry with an unrecognised `key` is added rather than merged, so nothing
-backfills the fields you leave out. Supply all of them — including `signals`, because a key that is not one
-of the built-in four has no default mapping and would otherwise reach no Google signal at all.
-
-```json
-{
-  "consents": [
-    {
-      "key": "social_embeds",
-      "title": "Social embeds",
-      "description": "Lets embedded posts and videos load.",
-      "alwaysOn": false,
-      "defaultState": "denied",
-      "signals": ["functionality_storage"]
-    }
-  ]
-}
-```
-
-Adding a category is a consent change. Read [Versioning stored consent](#versioning-stored-consent) before
-you ship it.
-
-**Do not name a category `version`.** The version is stored as a sibling of the categories in the cookie,
-so a category with that key overwrites it.
 
 ### 🍪 The cookies JSON {#the-cookies-json}
 
@@ -358,28 +341,32 @@ manager template's sandboxed reader. Anything here that changes is a breaking ch
 **Name.** `consentio` by default. Override it with `data-cookie-name` on the loader tag and `cookieName` in
 the config; the template has its own field.
 
-**Value.** One JSON object, URI-encoded on the way in and out. The `version` field first, then one key per
-consent category:
+**Value.** One JSON object, URI-encoded on the way in and out. Two keys: `version`, and `consents` holding
+one key per category.
 
 ```json
-{"version":1,"strictly_necessary":"granted","preferences_functionality":"denied","statistics_performance":"denied","marketing_advertising":"denied"}
+{"version":1,"consents":{"strictly_necessary":"granted","preferences_functionality":"denied","statistics_performance":"denied","marketing_advertising":"denied"}}
 ```
 
-Every value is the string `granted` or `denied` — never a boolean, never absent.
+Every consent value is the string `granted` or `denied` — never a boolean, never absent.
 
-**Attributes.** `path=/`, `expires` 90 days from the write, `SameSite=Lax`, and `Secure`.
+**The categories are nested rather than sitting beside `version`** so that no category key can collide with
+it. A reader that expects them flat will find no `consents` and must treat that as no stored answer.
 
-`Secure` is set unconditionally, which means **nothing persists over plain `http`** — including
-`http://localhost`. The browser discards the cookie silently, so local development over `http` shows the
-banner on every reload. Serve over `https` to test the stored path.
+**Attributes.** `path=/`, `expires` 90 days from the write, `SameSite=Lax`, and `Secure` **over `https`
+only**.
 
-### 📖 Reading it — four rules, in order {#reading-it-four-rules-in-order}
+Over plain `http` the cookie is written without `Secure`, so a choice persists on `http://localhost` and
+local development behaves like the deployed site.
+
+### 📖 Reading it — five rules, in order {#reading-it-four-rules-in-order}
 
 1. **No cookie at all** → no stored answer.
 2. **The value does not parse as JSON** → no stored answer.
 3. **`version` does not equal the configured version** → no stored answer. Not "partially valid", not
    "merge what is there". **The whole stored value is discarded** and the banner shows again.
-4. **Otherwise**, drop the `version` key. What remains is the answer.
+4. **There is no `consents` object** → no stored answer. This is also what an older, flat value reads as.
+5. **Otherwise**, `consents` is the answer.
 
 ### ❗ "No stored answer" is not "everything denied" {#no-stored-answer-is-not-everything-denied}
 
@@ -407,14 +394,12 @@ now disagree about the visitor.
 on every read. **Bumping it discards every visitor's stored answer** — rule 3 above — and shows them the
 banner again from scratch. There is no migration and no merge.
 
-That matters most when you add a category:
+**You will not hit this by adding a category, because you cannot add one.** The four are fixed. Only
+Consentio itself can change the set, and doing so is a breaking change that comes with a version bump.
 
-- **Add a category and bump the version:** every returning visitor is asked again. Noisy, but correct.
-- **Add a category and do not bump the version:** every returning visitor's stored value is missing the new
-  key, and a missing key reads as denied. The new category is silently denied for everyone who has ever
-  answered, with no banner and no sign anything happened.
-
-There is no third option today. Pick one knowing what it does.
+What you will hit it with is your own `config.version`. Raise it when a change to the categories' meaning
+makes an old answer no longer the answer to the question you are now asking. Leave it alone otherwise —
+every bump costs every returning visitor their choice.
 
 ---
 

@@ -10,7 +10,7 @@ class Cookies {
 		sameSite: 'Lax'
 	};
 
-	// Read at set() time, not at module load: a page's protocol is not known before it is.
+	// Read at set() time: at module load there is no page yet.
 	static isSecureOrigin(): boolean {
 		return typeof location !== 'undefined' && location.protocol === 'https:';
 	}
@@ -40,8 +40,7 @@ class Cookies {
 	}
 
 	static set(key: string, value: string, attributes?: CookieAttributes): string {
-		// Secure over https only. Unconditionally secure is dropped by the browser on plain
-		// http, which is every local dev server, and nothing says why.
+		// Secure over https only. The browser drops a secure cookie on http, silently. Issue 12.
 		attributes = this.assign({}, Cookies.defaultAttributes, { secure: Cookies.isSecureOrigin() }, attributes);
 
 		if (typeof attributes.expires === 'number') {

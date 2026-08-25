@@ -4,41 +4,50 @@ description: What to do next and what the maintainer has to decide. The board ow
 
 # Next directions
 
-Written 24 Aug 2026, at the end of the session that landed plan 1 and the documentation restyle.
+Written 25 Aug 2026, at the end of the session that landed plan 3 and deleted plans 1, 2 and 9.
 
-**[relaunch.md](relaunch.md) owns plan order and state.** This file does not repeat it. It holds two things
-the board has no room for: what the next sitting should actually do, and the four decisions that are the
-maintainer's and are currently blocking nothing only because nobody has hit them yet.
+**[relaunch.md](relaunch.md) owns plan order and state.** This file does not repeat it. It holds what the
+next sitting should actually do, and what is waiting on the maintainer.
 
 ## Where things stand
 
-Plans 1 and 9 are done and uncommitted. Everything is in the working tree; nothing was staged or pushed.
+Plans 1, 2 and 9 are committed and deleted. Plan 3 is done and **uncommitted** - everything is in the
+working tree, nothing was staged or pushed.
 
-**Re-verified 25 Aug 2026**, by running the commands rather than citing them:
+**Measured at the end of this session, by running the commands:**
 
-- `npm run typecheck` clean. `npm test` 200 tests, 160 pass, 0 fail, 40 todo. `npm run test:plain` 62, 59,
-  0 fail, 3 todo. Both exit 0.
-- `git status --porcelain dist/` is empty and `dist/` is still the stale bundle - defect 24.
-- The register is at twenty-eight defects. Defects 1 to 5 are fixed and 27 is closed by decision; the rest
-  are open, each spot-checked at the symbol the register names.
-- **The register's `file:line` references were re-checked line by line and corrected** to the post-port
-  source. Defect 27 is at `src/consentio-loader.ts:89`, not `:97`. Plans 3 and 4 no longer carry line
-  numbers at all - they had drifted within a day, which is what
-  [rules/one-fact-one-place.md](rules/one-fact-one-place.md) exists to stop.
-- **The 40 todos are defects 6-19 and 21-23 only.** Defects 20 and 27 have no test. 20 is single-sourced by
-  plan 2; 27 needs one written, and plan 3 now says so.
+- `npm run typecheck` clean. `npm test` 213 tests, 199 pass, 0 fail, 14 todo. `npm run test:plain` 62, 60,
+  0 fail, 2 todo. Both exit 0.
+- `git status --porcelain dist/` empty. `git tag -l` unchanged - `0.0.1` to `0.0.4`.
+- `npm run build` writes `build/lib/` and leaves `dist/` alone.
+- The register is at twenty-eight defects. **Open: 14, 15, 21, 24, 25, 26.** Everything else is fixed or
+  closed by decision.
+- The fourteen todos are defect 14 (ten), 15 (two) and 21 (two).
 
-## The next sitting: plan 3
+## The next sitting: plan 4
 
-**[plans/3-lifecycle-and-dom.md](plans/3-lifecycle-and-dom.md).** Plan 2 is done, so the fixes now land
-behind a gate that can prove they reached `dist/`.
+**[plans/4-accessibility.md](plans/4-accessibility.md).** Defects 14 and 15, and it is the last code work
+before the docs site can be written against behaviour that will not move again. Plan 3 fixed defect 23, so
+the switch label now keeps its input and the accessible name has somewhere to go.
 
-**Plan 2, for the record.** `npm run build` writes to `build/lib/` and cannot reach `dist/`;
-`npm run build:dist` is the release workflow's. `ci.yml` has both guards - freshness, and a commit guard
-that fails a `dist/` written by hand however fresh it is. `release.yml` is a `workflow_dispatch` taking a
-version, with a `dry_run` input defaulted on; **it has never been dispatched, not even dry**. The version has
-one source, `package.json`, substituted into the bundle by webpack. The build was re-measured and is still
-byte-reproducible.
+**Plan 7 is the alternative** if a short sitting is what is available. It waits on nothing, and `SECURITY.md`
+is the file a visitor checks before putting a third-party script in their `<head>`.
 
-**CI is red until the first release**, because the committed `dist/` is stale - defect 24. That is the
-freshness check working. Do not fix it in a working tree.
+## Two things the maintainer has to know before the next commit
+
+**The five release-pipeline paths were not in `224043b`.** `.github/scripts/`, `.github/workflows/release.yml`,
+`CHANGELOG.md`, `scripts/` and `test/scripts/` were left untracked by that commit and are staged now.
+`ci.yml` runs `.github/scripts/dist-guard.sh` and `package.json` names `scripts/`, so a push without them is
+a red build for a reason nothing explains.
+
+**The cookie contract changed.** Plan 3 nested the categories under `consents` to close defect 18. The board
+and [design/delivery.md](design/delivery.md) both carry it. It was taken now because the tag manager template
+still reads no cookie, so there is one implementation to change rather than two.
+
+## Still open, and still the maintainer's
+
+- **The site address.** Project-pages defaults are in `website/_config.yml`; a custom domain is likely and
+  not chosen. Plan 6 needs the answer before it writes a deploy workflow.
+- **The first dispatch of `release.yml`.** It has never run, not even dry. Five things about it cannot be
+  tested off a runner - [plans/8-release-readiness.md](plans/8-release-readiness.md) lists them.
+- **`1.0.0`.** `0.1.0` is settled. The second number is taken after `0.1.0` has been on a real site.

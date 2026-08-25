@@ -7,7 +7,9 @@ description: Consentio's twenty-eight numbered defects, found by reading the sou
 **The diagnosis of record.** Twenty-eight numbered defects, found by reading the source. **The numbering is
 stable** - every plan cites a number here instead of restating the problem.
 
-**Defects 6 to 28 cite the current layout**, re-checked line by line against the source on 25 Aug 2026.
+**Defects 6 to 28 cite the source as it was when each was found**, re-checked line by line on 25 Aug 2026.
+A defect carrying a **Fixed** line has moved on from the lines it cites; the still-open ones - 14, 15, 21,
+24, 25, 26 - were re-checked again on 25 Aug 2026 after the lifecycle fixes moved several files.
 Defects 1 to 5 are fixed and are left citing the pre-port layout - `src/js/*.js`, as the source was on 23 Aug
 2026. The port moved every file and TypeScript renamed several.
 
@@ -81,41 +83,57 @@ The map only ever emits keys it knows, so `toGoogleSignals` must name **all seve
 **6. Two lifecycle callbacks are misspelled.** `disconectedCallback` - one `n` - in
 `src/elements/consentio-app.ts:107` and `src/elements/consentio-bar.ts:30`. They never fire. The other three
 elements spell it correctly, so their broken `removeEventListener` calls are live no-ops, not dead code.
+**Fixed 25 Aug 2026.** Both spell it correctly, and the binding was fixed in the same change - see 7. Fixing
+either alone turns a dead function into a live leak.
 
 **7. Every `removeEventListener` is a no-op.** `this.removeEventListener('x', this.fn.bind(this))` builds a
 **new** function object, so it never matches what was added. `src/elements/consentio-app.ts:108-111`,
 `consentio-bar.ts:31-32`, `consentio-modal.ts:37-38`, `consentio-consent-item.ts:139`,
 `consentio-floating-button.ts:14`.
 **6 and 7 interact:** fixing the spelling without fixing the bind turns a dead function into a live leak.
+**Fixed 25 Aug 2026.** Every handler is bound once in the constructor and stored, and the same reference is
+added and removed. All five elements.
 
 **8. `customElements.define` throws on a second instance.** `src/consentio.ts:140-145` defines six names
 unconditionally. Guard on `customElements.get(name)`.
+**Fixed 25 Aug 2026.** Guarded on `customElements.get`.
 
 **9. `Consentio.Create()` never sets `global.ConsentioInstance`.** `src/consentio.ts:87`. This is *why* 8
 bites - the loader's double-init guard and the public entry point cannot see each other.
+**Fixed 25 Aug 2026.** `Create` sets it.
 
 **10. The constructor writes to `document.body`.** `src/consentio.ts:135`. In `<head>`, `document.body` is
 null. The loader appends the main script with no `defer`, so this is live, not theoretical.
+**Fixed 25 Aug 2026.** `Consentio.attach()` appends when there is a body and waits for `DOMContentLoaded`
+otherwise.
 
 **11. `querySelector` in custom element constructors.** `src/elements/consentio-bar.ts:11-12`,
 `consentio-modal.ts:15-18`, `consentio-consent-item.ts:16-18`, `consentio-floating-button.ts:6`. Works
 today only because `renderNode` builds from an inert `<template>`, so upgrade is deferred until insertion.
 Breaks the moment one is upgraded in place. Belongs in `connectedCallback`.
+**Fixed 25 Aug 2026.** Each is a getter that queries on access, so an element upgraded before its children
+exist still finds them. The click handling moved to one delegated listener on the host, which is what lets
+`connectedCallback` attach it before the buttons are there.
 
 **12. The cookie is dropped on plain http.** `src/lib/cookies.ts:11` sets `secure: true` unconditionally. On
 `http://localhost` the browser silently discards it, so local dev never persists a choice and every reload
 shows the banner. Set it from `location.protocol === 'https:'`.
+**Fixed 25 Aug 2026.** `Cookies.isSecureOrigin()` is read at write time. **The unit test cannot see the
+symptom** - jsdom's jar accepts a secure cookie over http - so the browser check is still owed.
 
 **13. `render()` does not re-apply visibility.** `set config`
 (`src/elements/consentio-app.ts:60-64`) re-renders, building fresh nodes with no inline `display`, but
 `initState()` only runs from `connectedCallback` (`:92`). Bar and modal end up visible at once. Latent
 today because the loader assigns config before `appendChild`.
+**Fixed 25 Aug 2026.** `set config` calls `initState()` after the re-render.
 
 **22. A loader tag with no `src` throws and the banner never loads.** `src/consentio-loader.ts:55-58`.
 `getAttribute('src')` returns `null` for a loader tag pasted inline rather than linked, and `null` goes
 straight into `.substring()`. The `TypeError` kills the loader before the double-init guard on `:66`, so
 nothing loads and nothing says why. Both `@ts-expect-error` lines in that file belong to this defect.
 **Found on 24 Aug 2026 while writing the loader tests.**
+**Fixed 25 Aug 2026.** The `src` read moved below the consent default, so a tag with no `src` loses the banner
+and keeps the default. Both `@ts-expect-error` lines are gone.
 
 ### Accessibility
 
@@ -131,7 +149,8 @@ with no keyboard way out.
 For a compliance tool that is the wrong thing to ship, independent of any law.
 
 **15. Clicking the switch also toggles the description body.**
-`src/elements/consentio-consent-item.ts:135` binds `click` on the whole host and the switch is inside it.
+`src/elements/consentio-consent-item.ts:150` binds `click` on the whole host and the switch is inside it.
+**Still open** - plan 4's.
 
 **23. An `alwaysOn` category loses its checkbox and leaves `this.input` dangling.**
 `src/elements/consentio-consent-item.ts:85-87`. `render()` clears the switch label with `innerHTML = ''` to
@@ -140,18 +159,28 @@ holding a reference to a detached node, so `updateState()` (`:63`) writes `check
 `readState()` (`:56`) returns `'granted'` before it reads the input, which is the only reason this is
 invisible today. **Found on
 24 Aug 2026 while writing the consent-item tests.**
+**Fixed 25 Aug 2026.** `render()` replaces the label's children with the input and the text, so the checkbox
+stays. An `<input>` contributes no text, so the label still reads as the alwaysOn label alone.
 
 ### Minor
 
 **16.** `{{ consentItems }}` in `src/templates/consentio-modal.html:6` is never supplied - dead placeholder.
+**Fixed 25 Aug 2026.** Deleted from the template.
 **17.** `TemplateRenderer.render` uses `data[p1] || ''` (`src/lib/template-renderer.ts:11`) - falsy values
-silently dropped.
+silently dropped. **Fixed 25 Aug 2026.** Only `undefined` and `null` render as empty.
 **18.** `{ version, ...consents }` (`src/lib/consent-store.ts:31`) - a category keyed `version` clobbers
 the version. The port folded the two pre-port sites into this one. **Unreachable from a config as of 25 Aug
 2026** - the four categories are fixed and none is called `version` - so it is a latent shape problem, not a
 live one. Fix the shape anyway; do not document the trap.
+**Fixed 25 Aug 2026.** **The stored shape changed:** `{ version, consents: { ... } }`, nested rather than
+sibling. That is a change to the cookie contract - see
+[../rules/the-cookie-is-a-contract.md](../rules/the-cookie-is-a-contract.md) and the full spec in
+[delivery.md](delivery.md). It was taken now because the template implements no reader yet - defect 26 - so
+this is the last moment it costs one implementation instead of two. A flat value written before the change
+reads as no stored answer, and the visitor is asked again.
 **19.** `this.logger.log(event, 'info')` (`src/elements/consentio-app.ts:259`) - unguarded, and logs a whole
-event object. Carries the third `@ts-expect-error` in the source.
+event object. Carries the third `@ts-expect-error` in the source. **Fixed 25 Aug 2026.** `this.logger?.log` with a
+message, matching every other event log.
 **20.** Version `0.0.4` hand-written in **three** places: `package.json:3`, `src/consentio.ts:23`, and the
 CDN URL in `gtm/consentio-tag/template.tpl:144`. The third is the one that ships.
 **Two of the three are closed, 25 Aug 2026.** `package.json` is the one source; webpack substitutes it into
@@ -224,8 +253,13 @@ override, so the rule is not enforced. That is defect 28.
 
 ### Fixed since
 
-Defects **1 to 5** were fixed on 24 Aug 2026 and their tests pass - each has a test with no `todo` flag.
-The tests, the CI workflow, the README and the documentation page exist.
+Defects **1 to 5** were fixed on 24 Aug 2026 and **6 to 13, 16 to 19, 22, 23 and 28 on 25 Aug 2026** -
+each is marked at its own entry above, and each has a test with no `todo` flag.
+
+**Open: 14, 15, 20, 21, 24, 25, 26.** 14 and 15 are plan 4's and hold the last fourteen `todo` flags between
+them - twelve, plus defect 21's pair. 20 is single-sourced by the release pipeline and only the template's
+CDN URL still carries a literal. 21 survives as a documentation item for plan 6. 25 and 26 are the template's
+and are plan 5's.
 
 **Defect 24 is not fixed.** `dist/` is untouched: `git status --porcelain dist/` is empty and no commit since
 `35a8b31` has written it, so the committed bundle is still the stale one. Rebuilding it in a working tree
@@ -241,3 +275,6 @@ Both contradict the decision of 25 Aug 2026 that the four are fixed. Remove the 
 `mergeConsents` merge into the four known keys and warn on anything else, and `signalMapFrom()` then has one
 possible answer. **This is what closing defect 27 costs, and it is the fix defect 4 should have had.**
 **Found on 25 Aug 2026, when the categories were settled.**
+**Fixed 25 Aug 2026.** `signals` and `signalMapFrom()` are gone. `mergeConsents` takes the four keys, warns on
+anything else and does not add it, and copies field by field rather than spreading the override - a spread
+carried through whatever else the site wrote, `signals` included.

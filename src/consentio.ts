@@ -85,30 +85,22 @@ class Consentio {
 	declare el: ConsentioAppElement | null;
 
 	static Create(options: ConsentioOptions = {}, cookies: CookieDescriptor[] = []): Consentio {
-		// The loader's double-init guard reads this, so Create has to set it or the two
-		// entry points cannot see each other - which is what makes issue 8 bite.
+		// The loader's double-init guard reads this. Issue 9.
 		const instance = new Consentio(options, cookies, window.console);
 		window.ConsentioInstance = instance;
 		return instance;
 	}
 
-	/**
-	 * The four categories are fixed, so this only ever changes copy. An unknown key is
-	 * warned about and dropped rather than added: a fifth category could never reach a
-	 * Google signal, and the loader has to know the set before it can read any config.
-	 */
+	// The four categories are fixed, so this only ever changes copy. Issue 28.
 	static mergeConsents(defaultConsents: ConsentCategory[], customConsents: ConsentCategoryOverride[], logger: Console | null = null): ConsentCategory[] {
 		const consentMap: Record<string, ConsentCategory> = Object.fromEntries(defaultConsents.map(c => [c.key, c]));
 		customConsents.forEach(c => {
 			if (!Object.prototype.hasOwnProperty.call(consentMap, c.key)) {
-				// Warned, not thrown: the rest of the config is still good and a blank page
-				// is a worse answer than a banner missing one category nobody could use.
+				// Warned, not thrown: the rest of the config is still good.
 				logger?.warn(`[Consentio] unknown consent category "${c.key}" ignored - the four categories are fixed`);
 				return;
 			}
-			// Field by field, not a spread of the whole override: a spread carries anything
-			// else the site wrote through, including the `signals` routing that used to be
-			// honoured here. Copy is a site's to change; taxonomy is not.
+			// Field by field: a spread would carry through whatever else the site wrote.
 			const changes: Partial<ConsentCategory> = {};
 			if (c.title !== undefined) { changes.title = c.title; }
 			if (c.description !== undefined) { changes.description = c.description; }
@@ -120,10 +112,8 @@ class Consentio {
 	}
 
 	constructor(options: ConsentioOptions = {}, cookies: CookieDescriptor[] = [], logger: Console | null = null) {
-		// One cookie identity, not two. The loader already resolved the name and the version
-		// off its own tag and published them; taking them back means a tag and a config JSON
-		// that disagree cannot point the two halves at different cookies. The tag manager
-		// route never runs the loader, so it keeps taking the config's values.
+		// The loader already resolved the cookie name and version off its own tag. Taking
+		// them back is what stops the two halves reading different cookies.
 		const fromLoader = typeof window === 'undefined' ? undefined : window.ConsentioDefault;
 
 		this.config = {
@@ -165,10 +155,7 @@ class Consentio {
 		this.attach();
 	}
 
-	/**
-	 * The loader appends the bundle with no `defer`, so a loader tag in `<head>` reaches
-	 * here while `document.body` is still null. Issue 10.
-	 */
+	// A loader tag in `<head>` reaches here before there is a body. Issue 10.
 	attach(): void {
 		if (document.body) {
 			document.body.appendChild(this.el!);
@@ -189,8 +176,7 @@ class Consentio {
 			['consentio-consent-item', ConsentioConsentItemElement],
 			['consentio-modal', ConsentioModalElement]
 		];
-		// define() throws on a name already taken, so a second Consentio on the page would
-		// die here rather than reuse the registry. Issue 8.
+		// define() throws on a name already taken. Issue 8.
 		for (const [name, constructor] of elements) {
 			if (!customElements.get(name)) {
 				customElements.define(name, constructor);
