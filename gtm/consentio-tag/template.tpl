@@ -1,4 +1,12 @@
-﻿___INFO___
+﻿___TERMS_OF_SERVICE___
+
+By creating or modifying this file you agree to Google Tag Manager's Community
+Template Gallery Developer Terms of Service available at
+https://developers.google.com/tag-manager/gallery-tos (or such other URL as
+Google may provide), as modified from time to time.
+
+
+___INFO___
 
 {
   "type": "TAG",
@@ -142,7 +150,7 @@ ___TEMPLATE_PARAMETERS___
     "simpleValueType": true,
     "defaultValue": "builtin",
     "alwaysInSummary": true,
-    "help": "Where the banner's wording comes from. Built-in English sends nothing and lets the banner use its own strings, so it picks up improvements with each version. Custom shows every string, filled in with the English text - edit it, or paste a translation over it. From a variable takes the whole set from any Tag Manager variable."
+    "help": "Where the banner\u0027s wording comes from. Built-in English sends nothing and lets the banner use its own strings, so it picks up improvements with each version. Custom shows every string, filled in with the English text - edit it, or paste a translation over it. From a variable takes the whole set from any Tag Manager variable."
   },
   {
     "type": "GROUP",
@@ -589,7 +597,7 @@ ___TEMPLATE_PARAMETERS___
         "type": "EQUALS"
       }
     ],
-    "help": "Any Tag Manager variable returning the whole set of strings - a Custom JavaScript variable, or a Lookup Table keyed on the page's language. Anything it leaves out falls back to the built-in English."
+    "help": "Any Tag Manager variable returning the whole set of strings - a Custom JavaScript variable, or a Lookup Table keyed on the page\u0027s language. Anything it leaves out falls back to the built-in English."
   },
   {
     "type": "SELECT",

@@ -1,4 +1,12 @@
-﻿___INFO___
+﻿___TERMS_OF_SERVICE___
+
+By creating or modifying this file you agree to Google Tag Manager's Community
+Template Gallery Developer Terms of Service available at
+https://developers.google.com/tag-manager/gallery-tos (or such other URL as
+Google may provide), as modified from time to time.
+
+
+___INFO___
 
 {
   "type": "MACRO",
@@ -10,7 +18,7 @@
     "UTILITY",
     "TAG_MANAGEMENT"
   ],
-  "description": "The cookie table the Consentio banner shows in its settings. Select it in the Consentio Tag's Cookies Variable field.",
+  "description": "The cookie table the Consentio banner shows in its settings. Select it in the Consentio Tag\u0027s Cookies Variable field.",
   "containerContexts": [
     "WEB"
   ]
@@ -32,7 +40,7 @@ ___TEMPLATE_PARAMETERS___
           "displayName": "Name",
           "simpleValueType": true,
           "lineCount": 2,
-          "help": "The cookie's name as it appears in the browser.",
+          "help": "The cookie\u0027s name as it appears in the browser.",
           "valueHint": "_ga"
         },
         "isUnique": true
@@ -45,7 +53,7 @@ ___TEMPLATE_PARAMETERS___
           "simpleValueType": true,
           "lineCount": 3,
           "help": "What it is for, in words a visitor can read. This is the column they actually stop on.",
-          "valueHint": "Tells Google Analytics one visitor's page views apart from another's"
+          "valueHint": "Tells Google Analytics one visitor\u0027s page views apart from another\u0027s"
         },
         "isUnique": false
       },
@@ -103,7 +111,7 @@ ___TEMPLATE_PARAMETERS___
         "isUnique": false
       }
     ],
-    "help": "One row per cookie your site sets, including Consentio's own: name consentio, purpose \"Stores the answer you give to this banner\", provenance this site, duration 90 days, category Strictly Necessary."
+    "help": "One row per cookie your site sets, including Consentio\u0027s own: name consentio, purpose \"Stores the answer you give to this banner\", provenance this site, duration 90 days, category Strictly Necessary."
   }
 ]
 
