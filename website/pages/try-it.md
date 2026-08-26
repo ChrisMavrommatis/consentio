@@ -1,6 +1,10 @@
 ---
 title: Try it on this page
 permalink: /try-it/
+# Keeps the blocking <script> whatever _config sets the route to. This is the one page
+# that demonstrates the direct install, and the only place the two routes can be seen
+# answering for one visitor.
+loader: true
 description: The banner on this site is the real thing, running the direct install route. Clear the cookie here and it asks again.
 ---
 

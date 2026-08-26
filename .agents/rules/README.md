@@ -22,6 +22,7 @@ A rule is a standing instruction that does not change per task. Why something is
 | About to... | Read |
 |---|---|
 | write or edit a **code comment** | [comments-are-for-humans](comments-are-for-humans.md) |
+| edit a **layout, include or Liquid block** under `website/` | [no-comments-in-liquid](no-comments-in-liquid.md) |
 | write a **heading in a public markdown file** - `README.md`, `website/`, `gtm/` | [icon-headings-in-public-docs](icon-headings-in-public-docs.md) |
 | add a **fact** to any file under `.agents/` | [one-fact-one-place](one-fact-one-place.md) |
 | add a **link** from one layer to another, or from outside `.agents/` | [who-references-whom](who-references-whom.md) |

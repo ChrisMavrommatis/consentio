@@ -14,8 +14,8 @@ Every section heading in a public markdown file opens with one emoji, then a spa
 ```
 
 **This is the house style and it is not decoration.** A reader lands on a long page - `README.md` and
-`website/pages/home.md` are both long - scrolls, and the icons are what let them find the section they came
-for without reading every heading. Dropping them makes a page harder to scan, not more serious.
+`website/pages/how-it-works.md` are both long - scrolls, and the icons are what let them find the section
+they came for without reading every heading. Dropping them makes a page harder to scan, not more serious.
 
 ## How to apply it
 
@@ -32,7 +32,7 @@ for without reading every heading. Dropping them makes a page harder to scan, no
 ## The set in use
 
 Grep these before inventing one. Every icon below is already carrying a heading in `README.md`,
-`test/README.md`, `gtm/README.md` or `website/pages/home.md`.
+`test/README.md`, `gtm/README.md` or a page under `website/pages/`.
 
 | Icon | Means |
 |---|---|

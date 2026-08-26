@@ -103,6 +103,7 @@ reading rules and the traps.
 ├── /test        # node:test suites, one scenario per file
 ├── /dist        # the shipped bundles. Build output, and what the CDN serves
 ├── /gtm         # the Google Tag Manager templates
+├── /scripts     # the release workflow's helpers — the changelog parser and the version check
 └── /website     # the Jekyll documentation site
 ```
 
@@ -118,8 +119,13 @@ npm run test:plain    # the same page-free tests again, with no jsdom at all
 npm run build         # the bundles, into build/lib/
 npm run build:website # the same bundles, into website/js/, for the documentation site
 npm run build:site    # the above, then the Jekyll site into website/_site/
+npm run build:site:prod  # the same, with website/_config.prod.yml overlaid — what CI publishes
 npm run serve         # the bundles, then the site on 127.0.0.1:4001
 ```
+
+> **A local site build loads no Google Tag Manager and drives the banner from the bundle you just built.**
+> `website/_config.prod.yml` is what turns that around for the published site, and only `build:site:prod`
+> and the deploy workflow pass it.
 
 > **`npm run serve` builds the JavaScript first, on purpose.** `website/js/` is gitignored, so a fresh clone
 > has none, and Jekyll will happily serve a site whose loader is a 404.

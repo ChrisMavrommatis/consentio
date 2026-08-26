@@ -19,10 +19,6 @@ layout: base
 			{{ content }}
 		</article>
 
-		{%- comment %}
-		Previous and next walk _data/nav.yml in order, so the sidebar and these can never
-		disagree about what comes after what.
-		{% endcomment -%}
 		{%- assign flat = "" | split: "" -%}
 		{%- for group in site.data.nav -%}{%- assign flat = flat | concat: group.items -%}{%- endfor -%}
 		{%- for item in flat -%}

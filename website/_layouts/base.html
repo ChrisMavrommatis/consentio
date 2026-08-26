@@ -13,36 +13,21 @@
 	<link rel="icon" href="{{ '/favicon.ico' | relative_url }}" />
 	<link rel="apple-touch-icon" href="{{ '/apple-touch-icon.png' | relative_url }}" />
 
-	{%- comment %}
-	Blocking, and first. The loader pushes the deny-by-default on its first pass, and that has
-	to reach the dataLayer before any tag reads it. `async` or `defer` here puts it back behind
-	the tag and gates nothing - the loader warns if you add one.
-
-	`loader: false` in a page's front matter leaves it out. That page is then driven by a tag
-	manager container instead, which is the only way to see both install routes answer for one
-	visitor on one site.
-	{% endcomment -%}
-	{%- unless page.loader == false %}
+	{%- assign use_loader = false -%}
+	{%- if page.loader == true -%}{%- assign use_loader = true -%}
+	{%- elsif page.loader != false and site.consentio_route != "tag-manager" -%}{%- assign use_loader = true -%}
+	{%- endif -%}
+	{%- if use_loader %}
 	<script src="{{ '/js/consentio-loader.min.js' | relative_url }}" data-consentio-loader
 		data-debug="{{ site.consentio_debug | default: false }}"
 		data-config-url="{{ '/data/consentio-config.json' | relative_url }}"
 		data-cookies-url="{{ '/data/consentio-cookies.json' | relative_url }}"></script>
-	{%- endunless %}
-
-	{%- comment %}
-	Google's container snippet, unchanged and after the loader. Empty in the repository: the
-	container is the maintainer's, and an ID nobody owns would be worse than none.
-	{% endcomment -%}
-	{%- if site.gtm_container_id and site.gtm_container_id != "" %}
-	<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-	new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-	j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-	'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-	})(window,document,'script','dataLayer','{{ site.gtm_container_id }}');</script>
 	{%- endif %}
+	{% gtm_head site.gtm_container_id %}
 </head>
 
 <body class="{{ site.default_theme }}">
+	{% gtm_body site.gtm_container_id %}
 	<a class="skip-link" href="#content">Skip to content</a>
 
 	<header class="site-header">

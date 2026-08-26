@@ -355,7 +355,8 @@ writing the second reader.** **Fixed the same day:** `makeNumber` on the way int
 config, so the cookie only ever holds a number.
 
 **31. The Texts variable drops the strictly necessary description.**
-`gtm/consentio-tag-texts/template.tpl` read `data.strictlyNecessarydescription` where the field is
+`gtm/consentio-tag-texts/template.tpl`, since deleted, read `data.strictlyNecessarydescription` where the
+field is
 `strictlyNecessaryDescription`. One category out of four, and the banner falls back to its built-in English
 text with nothing logged, so a site that translated all four saw three translated. **Found on 26 Aug 2026,
 writing the template's tests.** **Fixed the same day**, and the template's own tests now assert that title

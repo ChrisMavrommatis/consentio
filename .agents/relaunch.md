@@ -13,8 +13,14 @@ Each plan cites defect numbers from [design/issues.md](design/issues.md) and car
 
 | # | Plan | State | Gated by |
 |---|---|---|---|
-| 7 | [repo furnishing](plans/7-repo-furnishing.md) | **done** 26 Aug 2026, uncommitted. Delete once committed | - |
-| 8 | [release readiness](plans/8-release-readiness.md) | **Next**, and it is the maintainer's | a browser, a container, a runner and a published site |
+| 10 | [the site runs on its own template](plans/10-site-runs-on-its-own-template.md) | ready. **Next** | the gallery review. Nothing else |
+| 8 | [release readiness](plans/8-release-readiness.md) | **six of its ten checks are doable now** | the other four need a container, so they need 10 |
+
+**10 is a new number, not a reused one.** 9 was the repository restructure and is gone. Numbers are never
+reused here, so a defect note or a commit message naming a plan always means one plan.
+
+**Plan 7 was deleted on 26 Aug 2026**, its work committed: `SECURITY.md`, `CONTRIBUTING.md`, `src/README.md`,
+`.nvmrc`, `.gitattributes`, `CODEOWNERS`, `dependabot.yml`, the issue forms and the pull request template.
 
 **Plans 1, 2, 3, 4, 5, 6 and 9 are gone**, deleted once their work was committed - all on 25 Aug 2026
 except 6 and 5, deleted on 26 Aug 2026. They were the guidance truth-up, the release pipeline,

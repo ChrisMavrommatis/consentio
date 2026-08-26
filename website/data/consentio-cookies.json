@@ -1,30 +1,9 @@
 [
 	{
-		"name": "session_id",
-		"purpose": "Maintains user session",
-		"provenance": "First-party",
-		"duration": "Session",
+		"name": "consentio",
+		"purpose": "Stores the answer you gave to this banner, so you are not asked again on every page.",
+		"provenance": "This site",
+		"duration": "90 days",
 		"category": "strictly_necessary"
-	},
-	{
-		"name": "analytics_id",
-		"purpose": "Collects anonymous site usage data",
-		"provenance": "Third-party",
-		"duration": "1 Year",
-		"category": "statistics_performance"
-	},
-	{
-		"name": "ad_tracker",
-		"purpose": "Tracks user behavior for targeted advertising",
-		"provenance": "Third-party",
-		"duration": "6 Months",
-		"category": "marketing_advertising"
-	},
-	{
-		"name": "language_pref",
-		"purpose": "Remembers user language preference",
-		"provenance": "First-party",
-		"duration": "1 Year",
-		"category": "preferences_functionality"
 	}
 ]

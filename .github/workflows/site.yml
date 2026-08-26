@@ -50,18 +50,23 @@ jobs:
 
       # GitHub Pages cannot build this itself - jekyll-tidy is not on its plugin allowlist -
       # so the site is built here and only the output is handed over.
+      # The production overlay, and only here. It carries the published address, the
+      # container ID and the tag-manager route; _config.yml alone stays on localhost with
+      # no Google Tag Manager, which is what a local or pull-request build gets.
       - name: Build the site
         env:
           JEKYLL_ENV: production
         working-directory: website
-        run: bundle exec jekyll build
+        run: bundle exec jekyll build --config _config.yml,_config.prod.yml
 
       # The address lives in website/_config.yml and nowhere else. If it is ever wrong,
       # every link on the site is wrong, so it is worth one line of output per run.
       - name: What it was built for
         run: |
-          echo "url + baseurl, from website/_config.yml:"
-          grep -E '^(url|baseurl)' website/_config.yml
+          echo "from website/_config.prod.yml:"
+          grep -E '^(url|gtm_container_id|consentio_route)' website/_config.prod.yml
+          echo "baseurl, from website/_config.yml:"
+          grep -E '^baseurl' website/_config.yml
 
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
         with:

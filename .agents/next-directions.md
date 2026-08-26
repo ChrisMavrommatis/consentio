@@ -31,19 +31,15 @@ a browser, a container or the template editor: those three boxes are checks 2, 3
   half is done. **They describe something the code refuses**: one adds a fifth category, which
   `mergeConsents` drops since defect 28 was fixed. Deleting the flag would not make them pass.
 
-## The next sitting: there is not one here
+## The next sitting: plan 10
 
-Plan 7 was the last plan a session could work without a browser, a container or a runner. It is done:
-`SECURITY.md`, `CONTRIBUTING.md`, `src/README.md`, `.nvmrc`, `.gitattributes`, `CODEOWNERS`,
-`dependabot.yml`, the issue forms and the pull request template all exist, and the Node floor now agrees
-across `package.json`, `.nvmrc` and every workflow.
+[plans/10-site-runs-on-its-own-template.md](plans/10-site-runs-on-its-own-template.md) puts the published
+site on its own published template, so the tag manager route is exercised by the project rather than only by
+strangers. **It waits on the gallery review and nothing else.**
 
-**Nothing is left that a session can finish.** [plans/8-release-readiness.md](plans/8-release-readiness.md)
-assembles evidence from checks only the maintainer can run - a dry-run dispatch, a published site, a
-container, and the template editor.
-
-**The next commit should carry plans 5 and 7 together.** Once it lands, delete
-[plans/7-repo-furnishing.md](plans/7-repo-furnishing.md) and take its row off the board.
+**Six of plan 8's ten by-hand checks need only a browser and the live site, and can be done today** - checks
+1, 4, 5, 6, 7 and 8. They have been marked *not run - there is no browser here* since plan 3. There is a
+browser now.
 
 ## Two things the maintainer has to know before the next commit
 

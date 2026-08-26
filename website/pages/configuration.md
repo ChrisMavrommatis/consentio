@@ -109,17 +109,17 @@ matched by `category` against a consent `key`. An entry whose `category` matches
 ```json
 [
   {
-    "name": "session_id",
-    "purpose": "Maintains user session",
-    "provenance": "First-party",
-    "duration": "Session",
+    "name": "consentio",
+    "purpose": "Stores the answer you gave to this banner, so you are not asked again on every page.",
+    "provenance": "This site",
+    "duration": "90 days",
     "category": "strictly_necessary"
   },
   {
-    "name": "analytics_id",
-    "purpose": "Collects anonymous site usage data",
-    "provenance": "Third-party",
-    "duration": "1 Year",
+    "name": "_ga",
+    "purpose": "Tells Google Analytics one visitor apart from another.",
+    "provenance": "Google",
+    "duration": "2 years",
     "category": "statistics_performance"
   }
 ]
@@ -127,3 +127,8 @@ matched by `category` against a consent `key`. An entry whose `category` matches
 
 All five fields are strings and all five are shown verbatim. `duration` and `provenance` are free text —
 nothing parses them.
+
+**List every cookie your site really sets, including Consentio’s own.** The table is what a visitor reads
+before deciding, so a name in it that your site does not set is a false statement about your own site, and a
+cookie you do set but leave out is the one that matters. Open the browser’s storage inspector on a page
+where you have accepted everything, and write down what is actually there.

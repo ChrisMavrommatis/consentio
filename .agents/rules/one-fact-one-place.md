@@ -14,7 +14,7 @@ The facts most likely to get duplicated here, and where each one lives:
 | the cookie name, value, attributes and reading rules | [../design/delivery.md](../design/delivery.md) |
 | the two install routes and why they cannot share code | [../design/delivery.md](../design/delivery.md) |
 | a defect, its `file:line` and its number | [../design/issues.md](../design/issues.md) |
-| what a user needs to install it | `README.md` and `website/pages/home.md`, at the repository root |
+| what a user needs to install it | `README.md`, and the pages under `website/pages/` |
 
 **A plan cites a defect number. It never restates the defect.** That is what keeps the register the only
 place the count is true.

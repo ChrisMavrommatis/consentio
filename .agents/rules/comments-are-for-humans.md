@@ -1,7 +1,7 @@
 ---
 description: A comment carries the one thing that is not obvious from the code. Short. The reasoning goes in design/, never in both
 when: writing or editing a code comment
-paths: ["src/**", "test/**", "webpack.config.js", ".github/workflows/**", "gtm/**"]
+paths: ["src/**", "test/**", "webpack.config.js", "scripts/**", ".github/**", "gtm/**", "website/_plugins/**"]
 ---
 
 # Comments are for humans, and they are thin
@@ -51,6 +51,26 @@ recover them.
 **Why:** the source is read by people deciding whether to put this on their site. Comments that restate the
 code make it look like there is more going on than there is, and a comment that argues its own importance
 reads as a warning sign.
+
+## Stripping comments is a judgement, not a sweep
+
+**A comment written by an agent is not damage by virtue of who typed it.** When a pass goes through
+removing them, the test is the one above and nothing else. Several here were kept deliberately because they
+were better than the line they sat on: the bound-once note on the bar's click handler, the empty-array
+guard in the template's cookie reader, the reason `document.activeElement` is used exactly once inside a
+closed shadow root.
+
+**Cutting a comment that carried the only copy of a fact is a regression**, and a silent one - nothing
+fails. Move it to [../design/](../design/) first, then cut.
+
+## Where this rule does not reach
+
+**Layouts and includes take no comments at all** - see
+[no-comments-in-liquid](no-comments-in-liquid.md). That is a stricter rule, not this one applied to
+templates.
+
+**Config files keep theirs.** `_config.yml`, `_config.prod.yml`, `dependabot.yml`, `nav.yml` are read by a
+person deciding what to set, and the line beside a key is what tells them. Same for `CHANGELOG.md`'s header.
 
 See [plain-language](plain-language.md) for the register to avoid. It bites comments hardest, because a
 comment has no room to recover from a bad first sentence.

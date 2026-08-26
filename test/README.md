@@ -43,7 +43,7 @@ imports nothing from `src/consentio.js` or `src/elements/`; `helpers.mts` holds 
 `test:plain` is not a second suite — every file in it also runs under `npm test`. It is a guard. A test that
 reaches for a real page fails there instead of passing under jsdom and hiding the coupling.
 
-`cookies/secure-flag.test.mts` is the one cookie test that stays on jsdom: it swaps the page origin, which
+`lib/cookies/secure-flag.test.mts` is the one cookie test that stays on jsdom: it swaps the page origin, which
 the stand-in cannot do.
 
 ## ⚙️ `resolve.mjs` and `register.mjs`

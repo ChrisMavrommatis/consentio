@@ -68,6 +68,47 @@ There are **two** templates, developed in `gtm/` in this repository:
 | `consentio-tag` | TAG | the banner itself. Sets the consent default, injects `consentio.min.js`, calls `Consentio.Create`, and holds every string it renders |
 | `consentio-tag-cookies` | MACRO | a variable supplying the cookie table shown in the settings modal |
 
+### How the published site installs Consentio
+
+**Two builds, one difference.** `website/_config.yml` is the local one and
+`website/_config.prod.yml` is an overlay the publish build passes alongside it:
+
+```
+npm run build:site        _config.yml                          local
+npm run build:site:prod   _config.yml,_config.prod.yml         what site.yml runs
+```
+
+Three keys move between them, and nothing else does:
+
+| Key | `_config.yml` | `_config.prod.yml` |
+|---|---|---|
+| `url` | `http://localhost:4001` | the published address |
+| `gtm_container_id` | empty, so no container snippet is emitted at all | the maintainer's container |
+| `consentio_route` | `direct` | `tag-manager` |
+
+`baseurl` deliberately stays in `_config.yml` alone, so a local build serves from the same `/consentio`
+prefix the live site does and a link that only breaks under a prefix breaks locally too.
+
+**`consentio_route` decides which install route the site itself uses.** A local build runs the bundle this
+repository has just built - that is what makes it useful for testing a change. The published site runs the
+**published template**, which is what strangers install, so a template that has drifted from its source is
+something the maintainer trips over before a stranger files it.
+
+**A page overrides the route either way**: `loader: true` in its front matter keeps the blocking script
+whatever the route says, `loader: false` drops it. `/try-it/` is pinned to `true` and
+`/try-it/tag-manager/` to `false`, which is what keeps both routes reachable on one site - the only way to
+see whether the two cookie readers agree about one visitor.
+
+**Google's snippet comes from `website/_plugins/gtm_tag.rb`**, two Liquid tags, `gtm_head` and `gtm_body`.
+It renders nothing at all when the ID is empty, so the emptiness in `_config.yml` is what keeps a local
+build free of Google entirely rather than emitting a snippet with a blank ID. `gtm_body` is the `<noscript>`
+iframe, which the hand-inlined snippet it replaced did not have.
+
+**The order in `<head>` matters and is not arbitrary.** The loader is written before the container snippet,
+because on the direct route the deny-by-default has to reach the dataLayer before any tag reads it. On the
+published route there is no loader in the page at all and the template does that job itself, before it
+injects anything - see the deny-by-default section above.
+
 ### What the gallery requires
 
 **Checked against Google's own documentation on 26 Aug 2026.** At the **root of a dedicated public

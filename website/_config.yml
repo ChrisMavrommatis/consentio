@@ -10,16 +10,26 @@ author:
   name                  : "Chris Mavrommatis"
   url                   : "https://github.com/ChrisMavrommatis"
 
-# The base hostname and protocol. Absolute links and any sitemap are built from this plus baseurl.
-# This and baseurl below are the only place the address is written down.
-url                     : "https://chrismavrommatis.github.io"
+# Localhost on purpose. The published address lives in _config.prod.yml, which only the publish
+# build passes, so a local build never emits a canonical link pointing at the live site.
+url                     : "http://localhost:4001"
 repository_url          : "https://github.com/ChrisMavrommatis/consentio"
 
 # The version this documentation describes. Shown in the header and in the release note.
 docs_version            : "0.1.0"
 
-# Google's container snippet, emitted after the loader when this is filled in. Empty on
-# purpose - the container is the maintainer's, and a stranger's ID is worse than none.
+# How this build loads Consentio, and which container it uses.
+#
+# Both are empty or "direct" here so a local build and a pull-request build load no Google
+# Tag Manager at all and drive the banner from the bundle this repository just built.
+# _config.prod.yml overlays the published values, and only the publish build passes it.
+#
+# consentio_route: "direct"      the blocking <script> in the page head - what this repo builds
+#                  "tag-manager" no script tag; the container's Consentio Tag loads the banner
+#
+# A page can force the direct route with `loader: true` in its front matter, or force it off
+# with `loader: false`, whatever the route says. That is how one site shows both.
+consentio_route         : "direct"
 gtm_container_id        : ""
 
 ############################################################

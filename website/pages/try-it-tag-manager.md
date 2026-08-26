@@ -14,9 +14,9 @@ cookie by the same rules, so the answer has to survive the trip. If it does not,
 wrong, and the [cookie contract]({{ '/cookie/' | relative_url }}#the-cookie-contract) says which.
 
 <div class="callout callout--warn" markdown="1">
-**There is no container configured**, so this page currently shows nothing at all. Set `gtm_container_id` in
-`website/_config.yml` and publish a container carrying the Consentio template, and the banner appears here
-through the tag manager instead of through a script tag.
+**There is no container configured**, so this page currently shows nothing at all. Once one is set and it
+carries the Consentio template, the banner appears here through the tag manager instead of through a
+script tag.
 </div>
 
 ## 🔍 What to compare {#what-to-compare}

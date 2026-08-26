@@ -1,0 +1,25 @@
+# Production overlay. Passed alongside _config.yml only by the publish build:
+#
+#   bundle exec jekyll build --config _config.yml,_config.prod.yml
+#
+# npm run build:site:prod does that, and .github/workflows/site.yml runs it. Nothing else
+# does, so a local build and a pull-request build stay on localhost and load no Google Tag
+# Manager at all.
+
+# The published address, and the only place it is written down for the site. baseurl stays
+# in _config.yml so a local build exercises the same /consentio prefix the live site has.
+url                     : "https://chrismavrommatis.github.io"
+
+# The container. Filling this in emits Google's snippet on every page.
+gtm_container_id        : ""
+
+# The published site installs Consentio the way most of its readers will: through the
+# published Tag Manager template, not the blocking <script> this repository builds.
+#
+# Two things must be true before this is deployed, and neither is checked anywhere:
+#   1. the Consentio Tag template is live in the gallery, and
+#   2. it is added to the container above, on Consent Initialization - All Pages.
+# Until both hold, a publish with this set leaves the live site with no banner at all.
+#
+# /try-it/ carries `loader: true` so one page keeps the direct route whatever this says.
+consentio_route         : "tag-manager"
