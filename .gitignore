@@ -4,5 +4,6 @@
 /website/_site
 .idea
 
-# Working brief for the relaunch. Survives sessions, is not published.
-/.agents/relaunch-brief.md
+.agents
+
+CLAUDE.md
