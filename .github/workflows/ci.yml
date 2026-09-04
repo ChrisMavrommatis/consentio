@@ -12,7 +12,7 @@ jobs:
     name: typecheck, build and test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # The test harness resolves .ts through module.registerHooks and relies on Node's
       # built-in type stripping. package.json says >=24 and this follows it.
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Full history: the guard below reads the commits the push actually carried.
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
