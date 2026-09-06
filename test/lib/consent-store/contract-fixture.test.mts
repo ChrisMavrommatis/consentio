@@ -10,7 +10,7 @@ import { clearCookies } from '../../basics.mjs';
 
 /**
  * The cookie is read by two implementations - this one, and the sandboxed reader in
- * gtm/consentio-tag/template.tpl. No test can span them, so both are pointed at the
+ * gtm/consentio-tag/src/sandbox.js. No test can span them, so both are pointed at the
  * same worked values instead: these assertions, and the same numbers pasted into each
  * template's own tests. A disagreement then shows up as a diff in one file.
  */

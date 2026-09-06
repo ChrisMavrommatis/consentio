@@ -11,7 +11,17 @@ release body, so write these entries for the people using Consentio, not for the
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- Greek. The banner's words now live in `i18n/*.yaml`, one file per language, and each builds to a json file
+  you pass to `Consentio.Create`. `en.json` and `el.json` are attached to the release.
+
+### Changed
+
+- **The tag manager templates are downloaded and imported by hand.** Neither is listed anywhere. Both are
+  attached to the release as `consentio-tag.tpl` and `consentio-tag-cookies.tpl`; import one under
+  **Templates → New → ⋮ → Import**.
+- The English wording has one source, `i18n/en.yaml`, and the tag's pre-filled fields are built from it.
 
 ## [0.1.0] - 2026-08-25
 
@@ -42,7 +52,7 @@ Nothing yet.
 ## [0.0.4] - 2025-11-04
 
 No changelog was kept before this file existed. `0.0.1` to `0.0.4` are on the repository as tags, and
-`0.0.4` is what the published tag manager template pins today.
+`0.0.4` is what the tag manager template pinned at the time.
 
 **The files published at `0.0.4` are not what its source builds.** The loader in that tag ignores its own
 configuration. Use the next release instead.

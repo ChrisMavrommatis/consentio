@@ -12,16 +12,25 @@ the test harness runs TypeScript through Node's built-in type stripping, which o
 nvm use          # or install Node 24 however you like
 npm install
 npm run typecheck     # tsc --noEmit
-npm run build         # the four bundles, into build/lib/
+npm run build:js      # the four bundles, into build/js/
 ```
 
-`npm run build` is the one you want. The other build scripts write somewhere specific:
+**`build:` is yours, `publish:` is the release workflow's.** Nothing named `build:` can reach `dist/`.
 
 | Command | Writes to | For |
 |---|---|---|
-| `npm run build` | `build/lib/` | ordinary local work. Gitignored |
-| `npm run build:website` | `website/js/` | the documentation site's own copy. Gitignored |
-| `npm run build:dist` | `dist/` | **the release workflow only.** See below |
+| `npm run build:js` | `build/js/` | the four bundles |
+| `npm run build:i18n` | `build/i18n/` | the language files people paste |
+| `npm run build:gtm` | `build/gtm/` | the two tag manager templates |
+| `npm run build:site` | `website/` | the site, assets and all |
+| `npm run watch` | `website/js/` | the bundles, rebuilt as you edit |
+| `npm run publish:js` | `dist/` | **the release workflow only.** See below |
+| `npm run publish:i18n` | `dist/i18n/` | **the release workflow only** |
+| `npm run publish:gtm` | `dist/*.tpl` | **the release workflow only** |
+| `npm run publish:site` | `website/_site/`, published settings | **`site.yml` only** |
+
+Everything under `build/` and `website/` is gitignored. `build/` mirrors `dist/`, so you can see what a
+release would ship without writing `dist/`.
 
 To read the documentation site while you work on it:
 
@@ -59,8 +68,7 @@ exact bytes out of the git tag, so whatever is in there is what every site runni
 
 **Only the release workflow writes it.** A pull request must never contain a `dist/` change, and CI fails
 one that does — it rebuilds `dist/` from your source and fails on any difference, and it separately fails
-a commit that touched `dist/` and was not the release. `npm run build` cannot reach it; it writes to
-`build/lib/`.
+a commit that touched `dist/` and was not the release. No `build:` or `site:` script can reach it.
 
 If you find a `dist/` diff in your working tree, that is a finding, not tidying. Leave it and say so in
 the pull request.
@@ -68,7 +76,7 @@ the pull request.
 ## 🍪 Changing the cookie moves two things
 
 The consent cookie is a contract with **two independent implementations**: `src/lib/consent-store.ts`, and
-the sandboxed reader inside `gtm/consentio-tag/template.tpl`, which cannot import anything. Change the
+the sandboxed reader in `gtm/consentio-tag/src/sandbox.js`, which cannot import anything. Change the
 cookie's name, its version field or its JSON shape in one and you have to change the other by hand.
 
 Nothing fails loudly when they disagree — a returning visitor is simply asked again, or the two install
@@ -96,8 +104,8 @@ touch the cookie, update the fixture in the same change.
 - Say what you checked by hand, if anything. A check nobody ran is reported as not run, never as passed.
 
 **Open an issue first for anything large.** A change to the cookie, to the consent categories or to a
-published template costs more than it looks like from here — the templates go through Google's gallery
-review, which is neither instant nor ours.
+template costs more than it looks like from here — a template is imported by hand into every container that
+uses it, so a change only reaches those people when each of them re-imports it.
 
 ## 📄 Licence
 

@@ -16,9 +16,14 @@ src/elements/…            ->  test/elements/…
 
 `mount.mts` files next to a folder's tests are shared fixtures, not test files.
 
-`test/scripts/` is the exception: it covers the release machinery — `scripts/changelog.mjs` and
-`.github/scripts/dist-guard.sh` — by running each against a throwaway file or repository. Both would
-otherwise only ever be exercised by a real release.
+Three folders do not mirror `src/`, because what they cover is not in `src/`:
+
+- `test/scripts/` covers the release machinery — `scripts/changelog.mjs` and `.github/scripts/dist-guard.sh`
+  — by running each against a throwaway file or repository. Both would otherwise only ever be exercised by a
+  real release
+- `test/gtm/` covers the tag manager templates: that the sandboxed cookie reader still answers to
+  `gtm/contract.fixture.json`, and that every template still composes from its parts
+- `test/i18n/` covers the language files: that every translation carries exactly English's keys and no blanks
 
 ## 🧩 Why the files are so small
 
@@ -56,6 +61,9 @@ bundle:
   step, and stack traces point at `.ts` files
 - **turns `.html` into its own text and `.scss` into an empty string**, which is what `html-loader` and
   `asset/source` hand the bundle. No test asserts on styling
+- **parses `.yaml` into an object**, which is what the `json`-type rule hands the bundle. This is how
+  `i18n/en.yaml` reaches `src/consentio.ts`
+- **sets `__CONSENTIO_VERSION__`** from `package.json`, which is what `DefinePlugin` does for the bundle
 
 `register.mjs` then installs a jsdom window on `globalThis`. That has to happen before any element module is
 evaluated, because the classes extend `HTMLElement` at module scope.
@@ -88,9 +96,9 @@ diff, which is the proof the fix landed.
   container loads. `website/_layouts/page.html` is wired for the first part; the rest has not been done.
 - **The Google Tag Manager template route, entirely.** A custom template cannot inject a blocking script, so
   it has to set the default itself in the tag manager's sandbox and never runs `consentio-loader.js`. That
-  code does not exist yet, and when it does it will live in its own repository — see
-  [`gtm/README.md`](../gtm/README.md). The two routes must agree on the cookie name, version and shape or a
-  returning visitor is asked twice.
+  code is `gtm/consentio-tag/src/sandbox.js` and only the tag manager can run it — `test/gtm/` checks it by
+  reading, against [`gtm/contract.fixture.json`](../gtm/contract.fixture.json). The two routes must agree on
+  the cookie name, version and shape or a returning visitor is asked twice.
 - **`isHidden`** is `display === 'none' || offsetParent === null`, and jsdom does no layout, so
   `offsetParent` is null for every element. Only the inline-display half is observable; assertions set
   `display` explicitly.

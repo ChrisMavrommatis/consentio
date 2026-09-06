@@ -1,0 +1,207 @@
+scenarios:
+- name: first-time visitor
+  code: |-
+    // no cookie at all
+    mock('getCookieValues', () => []);
+
+    runCode(mockData);
+
+    assertApi('setDefaultConsentState').wasCalledWith({
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'denied',
+      functionality_storage: 'denied',
+      personalization_storage: 'denied',
+      security_storage: 'granted',
+      wait_for_update: 500
+    });
+- name: returning visitor, accepted everything
+  code: |-
+    // every category granted
+    mock('getCookieValues', () => ['{"version":1,"consents":{"strictly_necessary":"granted","preferences_functionality":"granted","statistics_performance":"granted","marketing_advertising":"granted"}}']);
+
+    runCode(mockData);
+
+    assertApi('setDefaultConsentState').wasCalledWith({
+      ad_storage: 'granted',
+      ad_user_data: 'granted',
+      ad_personalization: 'granted',
+      analytics_storage: 'granted',
+      functionality_storage: 'granted',
+      personalization_storage: 'granted',
+      security_storage: 'granted'
+    });
+- name: returning visitor, statistics only
+  code: |-
+    // one category granted beside the necessary one
+    mock('getCookieValues', () => ['{"version":1,"consents":{"strictly_necessary":"granted","preferences_functionality":"denied","statistics_performance":"granted","marketing_advertising":"denied"}}']);
+
+    runCode(mockData);
+
+    assertApi('setDefaultConsentState').wasCalledWith({
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'granted',
+      functionality_storage: 'denied',
+      personalization_storage: 'denied',
+      security_storage: 'granted'
+    });
+- name: version mismatch
+  code: |-
+    // stored at another version, so the whole value is discarded
+    mock('getCookieValues', () => ['{"version":2,"consents":{"strictly_necessary":"granted","preferences_functionality":"granted","statistics_performance":"granted","marketing_advertising":"granted"}}']);
+
+    runCode(mockData);
+
+    assertApi('setDefaultConsentState').wasCalledWith({
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'denied',
+      functionality_storage: 'denied',
+      personalization_storage: 'denied',
+      security_storage: 'granted',
+      wait_for_update: 500
+    });
+- name: the flat shape
+  code: |-
+    // written before the categories were nested, so there is no consents key
+    mock('getCookieValues', () => ['{"version":1,"strictly_necessary":"granted","preferences_functionality":"granted","statistics_performance":"granted","marketing_advertising":"granted"}']);
+
+    runCode(mockData);
+
+    assertApi('setDefaultConsentState').wasCalledWith({
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'denied',
+      functionality_storage: 'denied',
+      personalization_storage: 'denied',
+      security_storage: 'granted',
+      wait_for_update: 500
+    });
+- name: malformed value
+  code: |-
+    // not JSON at all
+    mock('getCookieValues', () => ['not json']);
+
+    runCode(mockData);
+
+    assertApi('setDefaultConsentState').wasCalledWith({
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'denied',
+      functionality_storage: 'denied',
+      personalization_storage: 'denied',
+      security_storage: 'granted',
+      wait_for_update: 500
+    });
+- name: valid JSON that is not an object
+  code: |-
+    // a bare string parses and is still no answer
+    mock('getCookieValues', () => ['"granted"']);
+
+    runCode(mockData);
+
+    assertApi('setDefaultConsentState').wasCalledWith({
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'denied',
+      functionality_storage: 'denied',
+      personalization_storage: 'denied',
+      security_storage: 'granted',
+      wait_for_update: 500
+    });
+- name: ads_data_redaction is on until ad storage is granted
+  code: |-
+    let redaction = null;
+    mock('gtagSet', (obj) => { redaction = obj.ads_data_redaction; });
+
+    mock('getCookieValues', () => []);
+    runCode(mockData);
+    assertThat(redaction, 'a visitor who has not answered denies ad storage').isEqualTo(true);
+
+    // The page-lifetime guard has to be cleared, or the second run stops at it.
+    storage = {};
+    mock('getCookieValues', () => ['{"version":1,"consents":{"strictly_necessary":"granted","preferences_functionality":"granted","statistics_performance":"granted","marketing_advertising":"granted"}}']);
+    runCode(mockData);
+    assertThat(redaction, 'a visitor who granted ad storage does not need it').isEqualTo(false);
+- name: a second firing pushes nothing and injects nothing
+  code: |-
+    mock('templateStorage', {
+      getItem: () => true,
+      setItem: () => {}
+    });
+
+    runCode(mockData);
+
+    assertApi('setDefaultConsentState').wasNotCalled();
+    assertApi('injectScript').wasNotCalled();
+    assertApi('gtmOnSuccess').wasCalled();
+- name: built-in English sends no strings at all
+  code: |-
+    mock('getCookieValues', () => []);
+
+    const config = captureConfig();
+
+    assertThat(config.texts).isEqualTo({});
+    assertThat(config.consents[0].title).isEqualTo(undefined);
+- name: custom text reaches the banner and the rest still falls back
+  code: |-
+    mock('getCookieValues', () => []);
+    mockData.textSource = 'custom';
+    mockData.barTitle = 'Cookies on this site';
+    mockData.strictlyNecessaryTitle = 'Necessary';
+
+    const config = captureConfig();
+
+    assertThat(config.texts.barTitle).isEqualTo('Cookies on this site');
+    assertThat(config.texts.barDescription).isEqualTo(undefined);
+    assertThat(config.consents[0].title).isEqualTo('Necessary');
+- name: a texts variable supplies the whole set
+  code: |-
+    mock('getCookieValues', () => []);
+    mockData.textSource = 'variable';
+    mockData.textsVariable = {
+      barTitle: 'From a variable',
+      strictly_necessary: { title: 'Necessary', description: 'The ones the site cannot work without.' }
+    };
+
+    const config = captureConfig();
+
+    assertThat(config.texts.barTitle).isEqualTo('From a variable');
+    assertThat(config.consents[0].title).isEqualTo('Necessary');
+    assertThat(config.consents[0].description).isEqualTo('The ones the site cannot work without.');
+setup: |-
+  const mockData = {
+    version: 1,
+    debug: false,
+    consentRequired: true,
+    preferencesFunctionalityDefaultState: 'denied',
+    statisticsPerformanceDefaultState: 'denied',
+    marketingAdvertisingDefaultState: 'denied',
+    textSource: 'builtin',
+    cookies: 'none'
+  };
+
+  // injectScript does nothing in the test sandbox, so the success callback - and with it
+  // Consentio.Create - only runs when it is mocked.
+  const captureConfig = () => {
+    let sent = null;
+    mock('injectScript', (url, onSuccess) => onSuccess());
+    mock('callInWindow', (path, config) => { sent = config; });
+    runCode(mockData);
+    return sent;
+  };
+
+  // The values below are gtm/contract.fixture.json, which the banner's own tests assert
+  // against. The two readers of this cookie share no code, so they share these numbers.
+  let storage = {};
+  mock('templateStorage', {
+    getItem: (key) => storage[key],
+    setItem: (key, value) => { storage[key] = value; }
+  });

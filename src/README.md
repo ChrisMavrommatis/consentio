@@ -47,9 +47,10 @@ which costs more than the bytes it saves.
 ```text
 src/
 ├── consentio-loader.ts    # entry point 1 - the blocking loader
-├── consentio.ts           # entry point 2 - the banner, and Consentio.Create
+├── consentio.ts           # entry point 2 - the banner, and Consentio.Create. Its English
+│                          #   comes from ../i18n/en.yaml, the one import outside src/
 ├── types.ts               # the config shape, shared
-├── globals.d.ts           # the .scss and .html import declarations, and the version constant
+├── globals.d.ts           # the .scss, .html and .yaml import declarations, and the version constant
 ├── elements/              # the six custom elements. They extend HTMLElement at module load
 ├── lib/                   # the modules above, plus state, logging, focus, the DOM helpers
 ├── scss/                  # the stylesheet. Compiled to a string and inlined, not shipped as a file

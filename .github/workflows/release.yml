@@ -109,7 +109,9 @@ jobs:
 
       - run: npm ci
       - run: npm run typecheck
-      - run: npm run build:dist
+      - run: npm run publish:i18n
+      - run: npm run publish:gtm
+      - run: npm run publish:js
       - run: npm test
       - run: npm run test:plain
 
@@ -163,7 +165,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          files=(dist/consentio.js dist/consentio.min.js dist/consentio-loader.js dist/consentio-loader.min.js)
+          # The templates and the language packs are attached too: both are things a
+          # person downloads and pastes, and a release asset is a stable link to one.
+          files=(
+            dist/consentio.js dist/consentio.min.js
+            dist/consentio-loader.js dist/consentio-loader.min.js
+            dist/consentio-tag.tpl dist/consentio-tag-cookies.tpl
+            dist/i18n/en.json dist/i18n/el.json
+          )
           if gh release view "$VERSION" >/dev/null 2>&1; then
             gh release edit "$VERSION" --notes-file "$RUNNER_TEMP/notes.md"
             gh release upload "$VERSION" "${files[@]}" --clobber

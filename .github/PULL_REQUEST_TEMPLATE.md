@@ -16,7 +16,7 @@
 
 - [ ] The cookie - its name, its version field or its shape. **Both readers change**, and
       `gtm/contract.fixture.json` with them
-- [ ] A tag manager template, which means a gallery review cycle
+- [ ] A tag manager template, which everyone using it has to re-import by hand
 - [ ] The four consent categories
 - [ ] The size of the blocking loader
 - [ ] A user-visible change, so `CHANGELOG.md` has an `Unreleased` line for it

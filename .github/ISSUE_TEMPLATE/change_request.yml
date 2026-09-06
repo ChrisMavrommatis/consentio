@@ -42,7 +42,7 @@ body:
       label: What it would touch
       description: >
         Tick anything that applies. Each one costs more than it looks like - a template change goes
-        through Google's gallery review, and a cookie change has to be made twice by hand.
+        re-imported by hand into every container using it, and a cookie change has to be made twice.
       options:
         - label: The cookie - its name, its version field or its shape
         - label: The four consent categories, which are fixed

@@ -1,0 +1,15 @@
+{
+	"type": "MACRO",
+	"id": "cvt_temp_public_id",
+	"version": 1,
+	"securityGroups": [],
+	"displayName": "Consentio Tag - Cookies",
+	"categories": [
+		"UTILITY",
+		"TAG_MANAGEMENT"
+	],
+	"description": "The cookie table the Consentio banner shows in its settings. Select it in the Consentio Tag's Cookies Variable field.",
+	"containerContexts": [
+		"WEB"
+	]
+}

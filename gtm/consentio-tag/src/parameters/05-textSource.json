@@ -1,0 +1,24 @@
+{
+	"type": "SELECT",
+	"name": "textSource",
+	"displayName": "Text source",
+	"macrosInSelect": false,
+	"selectItems": [
+		{
+			"value": "builtin",
+			"displayValue": "Built-in English"
+		},
+		{
+			"value": "custom",
+			"displayValue": "Custom - fill in the fields below"
+		},
+		{
+			"value": "variable",
+			"displayValue": "From a variable"
+		}
+	],
+	"simpleValueType": true,
+	"defaultValue": "builtin",
+	"alwaysInSummary": true,
+	"help": "Where the banner's wording comes from. Built-in English sends nothing and lets the banner use its own strings, so it picks up improvements with each version. Custom shows every string, filled in with the English text - edit it, or paste a translation over it. From a variable takes the whole set from any Tag Manager variable."
+}

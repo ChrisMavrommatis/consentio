@@ -26,13 +26,6 @@ anywhere but the visitor's browser. It suits a static site, or any site whose HT
 **There is no npm package and nothing to import.** You copy two files into your site, or serve them from a
 CDN at a version you pin. Apache-2.0, no dependencies.
 
-<div class="callout callout--warn" markdown="1">
-**This site documents version {{ site.docs_version }}, which is released.** If you install by putting the
-script in your HTML, everything here describes what you get. **The Tag Manager template in Google's gallery
-is still the older one** — it loads the previous banner until its update clears review, so that route lags
-this page for now.
-</div>
-
 <ul class="cards">
 	<li class="card">
 		<h3>Put it in your HTML</h3>
@@ -113,8 +106,9 @@ Start at the top. The last six are reference — read them when you need them, n
 `async` stopped the banner working with no warning at all; the script has to block, and now it says so.
 Nothing else changes for you.
 
-**If you use the Tag Manager template**, update it in your container when its new version appears in the
-gallery. The published template still loads the older banner until then.
+**If you use the Tag Manager template**, download the new `.tpl` from the release and import it over the one
+in your container. Nothing tells you a new one exists; the template you imported keeps loading the banner
+version it was built against.
 
 Pin an exact version wherever you load the files from. A URL that follows the newest release will change what
 your site runs without you touching anything.

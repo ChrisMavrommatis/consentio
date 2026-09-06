@@ -52,7 +52,7 @@ Consentio.Create(config, cookies);
 `window.ConsentioInstance` after calling it if it wants the run-once guard to work.
 
 **The cookie is a contract, not an implementation detail.** The template reads it a second time, in a
-different language, in a different repository. Its name, its `version` field, its shape and what "no stored
+different language, in Tag Manager's sandbox. Its name, its `version` field, its shape and what "no stored
 answer" means all have to agree exactly, or the two routes disagree about the same visitor — silently.
 Anyone writing a reader implements against
 [the cookie page]({{ '/cookie/' | relative_url }}#the-cookie-contract), not against a guess, and
@@ -63,7 +63,7 @@ that is easiest to get wrong.
 
 | | **Directly in the site** | **Google Tag Manager custom template** |
 |---|---|---|
-| What you add | `consentio-loader.min.js` as a plain **blocking** `<script>` in `<head>`, above the tag manager snippet | the published template, on the **Consent Initialization - All Pages** trigger |
+| What you add | `consentio-loader.min.js` as a plain **blocking** `<script>` in `<head>`, above the tag manager snippet | the Consentio tag, on the **Consent Initialization - All Pages** trigger |
 | What pushes the consent default | the loader, on its first pass, before it fetches or injects anything | the template's own sandboxed code, before it calls `injectScript` |
 | Where settings come from | two JSON files, fetched by URL | the template's own fields |
 | Uses the loader | yes | **no — never** |

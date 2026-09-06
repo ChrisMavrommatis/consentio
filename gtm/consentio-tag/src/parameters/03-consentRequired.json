@@ -1,0 +1,8 @@
+{
+	"type": "CHECKBOX",
+	"name": "consentRequired",
+	"checkboxText": "Consent Required",
+	"simpleValueType": true,
+	"alwaysInSummary": true,
+	"help": "Shows the banner as a full-screen overlay the visitor has to answer before they can use the page. Off, the banner sits at the bottom and the page stays usable."
+}

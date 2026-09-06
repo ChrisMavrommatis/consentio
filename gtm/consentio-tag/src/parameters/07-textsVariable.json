@@ -1,0 +1,21 @@
+{
+	"type": "SELECT",
+	"name": "textsVariable",
+	"displayName": "Texts Variable",
+	"macrosInSelect": true,
+	"selectItems": [
+		{
+			"value": "none",
+			"displayValue": "None"
+		}
+	],
+	"simpleValueType": true,
+	"enablingConditions": [
+		{
+			"paramName": "textSource",
+			"paramValue": "variable",
+			"type": "EQUALS"
+		}
+	],
+	"help": "Any Tag Manager variable returning the whole set of strings - a Custom JavaScript variable, or a Lookup Table keyed on the page's language. Anything it leaves out falls back to the built-in English."
+}

@@ -1,10 +1,13 @@
 const path = require('path');
 const webpack = require('webpack');
+const { parse } = require('yaml');
 
-// Where each target writes. `lib` is the default so an ordinary local build cannot reach
-// dist/ - only the release workflow writes it, and CI fails a push that disagrees.
+// Where each target writes, one per verb: build: -> build/, site: -> website/,
+// publish: -> dist/. `build` is the default, so nothing local reaches dist/ or the
+// published site by accident. build/ mirrors dist/, so what a release ships can be looked
+// at without writing dist/.
 const DESTINATIONS = {
-	lib: 'build/lib',
+	build: 'build',
 	website: 'website/js',
 	dist: 'dist'
 };
@@ -13,7 +16,7 @@ module.exports = (env, argv) => {
 
 	this.parallelism = 1;
 
-	const target = env.build ?? 'lib';
+	const target = env.build ?? 'build';
 	const dest = DESTINATIONS[target];
 	if (!dest) {
 		throw new Error(`Unknown build target '${target}'. Use one of: ${Object.keys(DESTINATIONS).join(', ')}.`);
@@ -65,6 +68,12 @@ module.exports = (env, argv) => {
 				{
 					test: /\.html$/,
 					use: 'html-loader',
+				},
+				{
+					// `type: 'json'` is webpack's own, so this needs no loader package.
+					test: /\.ya?ml$/,
+					type: 'json',
+					parser: { parse }
 				}
 			],
 		},

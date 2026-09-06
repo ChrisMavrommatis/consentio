@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 
 /**
  * The consent cookie is read twice - by src/lib/consent-store.ts and by the sandboxed
- * reader inside gtm/consentio-tag/template.tpl - and the two share no code. Both are
+ * reader in gtm/consentio-tag/src/sandbox.js - and the two share no code. Both are
  * pointed at gtm/contract.fixture.json instead, and this is what fails when one of them
  * stops pointing there.
  */
@@ -17,9 +17,8 @@ const fixture = JSON.parse(readFileSync(new URL('gtm/contract.fixture.json', roo
 	cases: { name: string; cookie: string | null; waitForUpdate: number | null }[];
 };
 
-const template = readFileSync(new URL('gtm/consentio-tag/template.tpl', root), 'utf8');
-const code = template.split('___SANDBOXED_JS_FOR_WEB_TEMPLATE___')[1].split('___WEB_PERMISSIONS___')[0];
-const tests = template.split('___TESTS___')[1].split('___NOTES___')[0];
+const code = readFileSync(new URL('gtm/consentio-tag/src/sandbox.js', root), 'utf8');
+const tests = readFileSync(new URL('gtm/consentio-tag/src/tests.yaml', root), 'utf8');
 
 test('the template reads the cookie the fixture names', () => {
 	const name = /const COOKIE_NAME = '([^']+)'/.exec(code)?.[1];
@@ -54,7 +53,7 @@ for (const scenario of fixture.cases) {
 	test(`the template's own tests carry the fixture value for ${scenario.name}`, () => {
 		assert.ok(
 			tests.includes(scenario.cookie!),
-			`gtm/consentio-tag/template.tpl no longer tests the value the fixture calls "${scenario.name}"`
+			`gtm/consentio-tag/src/tests.yaml no longer carries the value the fixture calls "${scenario.name}"`
 		);
 	});
 }

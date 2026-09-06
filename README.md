@@ -25,7 +25,7 @@ it is written for.
 
 | | **Directly in the site** | **Google Tag Manager custom template** |
 |---|---|---|
-| What you add | `consentio-loader.min.js` as a plain **blocking** `<script>` in `<head>`, above the tag manager snippet | the published template, on the **Consent Initialization - All Pages** trigger |
+| What you add | `consentio-loader.min.js` as a plain **blocking** `<script>` in `<head>`, above the tag manager snippet | the Consentio tag, on the **Consent Initialization - All Pages** trigger |
 | What pushes the consent default | the loader, on its first pass, before it fetches or injects anything | the template's own sandboxed code, before it calls `injectScript` |
 | Where settings come from | two JSON files, fetched by URL | the template's own fields |
 | Uses the loader | yes | **no — never** |
@@ -69,9 +69,12 @@ relative to its own `src` — then:
 
 ## 🏷️ Tag manager template
 
-Two templates, published one per repository because the gallery requires it: the tag itself, and an optional
-variable holding your cookie table. They are developed in **[`gtm/`](gtm/)**, which explains what each one is
-and how they are edited.
+Two templates you import into your container by hand: the tag itself, and an optional variable holding your
+cookie table. They are built by `npm run build:gtm` from the parts in **[`gtm/`](gtm/)**, which explains what
+each one is and how they are edited. Both are attached to every release as a `.tpl` file.
+
+**They are provided as they are.** Neither is listed anywhere, and there is nothing to subscribe to - a fix
+reaches your container when you import the newer file.
 
 ## 🍪 The cookie
 
@@ -101,9 +104,10 @@ reading rules and the traps.
 /consentio
 ├── /src         # TypeScript source — the banner, the loader, the web components
 ├── /test        # node:test suites, one scenario per file
-├── /dist        # the shipped bundles. Build output, and what the CDN serves
-├── /gtm         # the Google Tag Manager templates
-├── /scripts     # the release workflow's helpers — the changelog parser and the version check
+├── /dist        # what the CDN serves: the bundles, the two templates, the language packs
+├── /gtm         # the Google Tag Manager templates, as the parts they are built from
+├── /i18n        # the banner's words, one yaml file per language
+├── /scripts     # the build and release helpers — the packs, the templates, the changelog
 └── /website     # the Jekyll documentation site
 ```
 
@@ -116,24 +120,28 @@ npm install
 npm run typecheck     # tsc --noEmit
 npm test              # node --test over test/**/*.test.mts
 npm run test:plain    # the same page-free tests again, with no jsdom at all
-npm run build         # the bundles, into build/lib/
-npm run build:website # the same bundles, into website/js/, for the documentation site
-npm run build:site    # the above, then the Jekyll site into website/_site/
-npm run build:site:prod  # the same, with website/_config.prod.yml overlaid — what CI publishes
-npm run serve         # the bundles, then the site on 127.0.0.1:4001
+npm run build:js      # the bundles,        into build/js/
+npm run build:i18n    # the language packs,  into build/i18n/
+npm run build:gtm     # the two templates,   into build/gtm/
+npm run build:site    # the site's assets,   then Jekyll into website/_site/
+npm run serve         # the same, served on 127.0.0.1:4001
+npm run watch         # the bundles, rebuilt into website/js/ as you edit
 ```
 
+**Two verbs.** `build:` is yours - `build:js`, `build:i18n` and `build:gtm` write `build/`, which mirrors
+what a release ships, and `build:site` writes the site into `website/`. `publish:` is the workflows' -
+`publish:js`, `publish:i18n` and `publish:gtm` write `dist/`, `publish:site` builds the published site.
+
 > **A local site build loads no Google Tag Manager and drives the banner from the bundle you just built.**
-> `website/_config.prod.yml` is what turns that around for the published site, and only `build:site:prod`
+> `website/_config.prod.yml` is what turns that around for the published site, and only `publish:site`
 > and the deploy workflow pass it.
 
-> **`npm run serve` builds the JavaScript first, on purpose.** `website/js/` is gitignored, so a fresh clone
-> has none, and Jekyll will happily serve a site whose loader is a 404.
+> **`npm run serve` builds the site's assets first, on purpose.** `website/js/` and `website/i18n/` are
+> gitignored, so a fresh clone has neither, and Jekyll will happily serve a site whose loader is a 404.
 
 > **`dist/` is the shipped product, not a convenience copy.** A CDN serves those exact bytes out of the git
-> tag, so it is written by the release and by nothing else. No local build can reach it — `npm run build`
-> writes to `build/lib/`. CI fails a push whose `dist/` is not what the source builds, and fails one that
-> wrote `dist/` by hand.
+> tag, so it is written by the release and by nothing else. No `build:` or `site:` script can reach it.
+> CI fails any commit that wrote `dist/` and was not the release.
 
 **Releases are one dispatch.** `.github/workflows/release.yml` takes a version, checks the changelog section
 and that the version is not already tagged, builds and tests, then commits `dist/`, tags that commit and
@@ -149,12 +157,6 @@ and why a published tag is never patched in place.
 
 **Some tests are marked `todo` on purpose.** They describe behaviour the code does not have yet, so the run
 exits 0 with those listed. That is the correct state. See **[`test/README.md`](test/README.md)**.
-
-## 🏁 Release note
-
-Moving the consent default into the loader is a **breaking change** — the loader tag has to stop being
-`async` — and the version needs to go to **0.1.0**. It is a two-repository release: `consentio-tag` pins the
-version in its CDN URL, so it moves with the tag. The cookie table variable pins nothing and stays put.
 
 ## 📄 Licence
 

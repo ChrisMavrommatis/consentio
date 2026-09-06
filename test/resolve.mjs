@@ -5,12 +5,15 @@
 //   - `.html` becomes its own text, which is what html-loader hands the bundle
 //   - `.scss` becomes an empty string; the bundle gets compiled CSS there, and no test
 //     asserts on styling
+//   - `.yaml` becomes the parsed object, which is what webpack's json-type rule hands the
+//     bundle - this is how the language packs reach src/consentio.ts
 //   - `__CONSENTIO_VERSION__` is set from package.json, which is what DefinePlugin does
 import { registerHooks } from 'node:module';
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { parse } from 'yaml';
 
-const ASSET = /\.(scss|html)$/;
+const ASSET = /\.(scss|html|ya?ml)$/;
 
 globalThis.__CONSENTIO_VERSION__ = JSON.parse(
 	readFileSync(new URL('../package.json', import.meta.url), 'utf8')
@@ -35,8 +38,13 @@ registerHooks({
 	},
 
 	load(url, context, nextLoad) {
-		if (ASSET.test(new URL(url).pathname)) {
-			const text = url.endsWith('.scss') ? '' : readFileSync(fileURLToPath(url), 'utf8');
+		const { pathname } = new URL(url);
+		if (ASSET.test(pathname)) {
+			if (/\.ya?ml$/.test(pathname)) {
+				const pack = parse(readFileSync(fileURLToPath(url), 'utf8'));
+				return { format: 'module', source: `export default ${JSON.stringify(pack)};`, shortCircuit: true };
+			}
+			const text = pathname.endsWith('.scss') ? '' : readFileSync(fileURLToPath(url), 'utf8');
 			return { format: 'module', source: `export default ${JSON.stringify(text)};`, shortCircuit: true };
 		}
 		return nextLoad(url, context);

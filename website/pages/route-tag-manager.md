@@ -18,7 +18,14 @@ detail. If in doubt, [put it in your HTML]({{ '/install/direct/' | relative_url 
 
 ## 🚀 Four steps {#four-steps}
 
-**1. Add the Consentio template to your container** from the community gallery.
+**1. Import the Consentio template into your container.**
+
+Download `consentio-tag.tpl` from the [latest release](https://github.com/ChrisMavrommatis/consentio/releases/latest).
+In Tag Manager go to **Templates → Tag Templates → New**, open the **⋮** menu at the top right, choose
+**Import**, pick the file and **Save**.
+
+There is nothing to search for and nothing that tells you when a newer one exists. It is provided as it is:
+what you import is what your container runs until you import a newer file.
 
 **2. Make a tag from it, on the Consent Initialization trigger.**
 
@@ -33,8 +40,9 @@ Set it to *Custom* and every string appears in a box, already filled in with tha
 want, or paste a translation over it. Set it to *From a variable* and the whole set comes from a Tag Manager
 variable, which is how you switch wording by language.
 
-For the cookie table, add the **Consentio Tag - Cookies** template as well, make a variable from it, and
-pick it here. [Settings]({{ '/configuration/' | relative_url }}#configuration) lists every option.
+For the cookie table, download `consentio-tag-cookies.tpl` from the same release and import it the same way -
+under **Variable Templates** rather than Tag Templates. Make a variable from it, fill in your rows, and pick
+it here. [Settings]({{ '/configuration/' | relative_url }}#configuration) lists every option.
 
 **4. Publish, then move everything else into the container.** Anything still pasted into a page is not
 covered by the banner. On this route that clean-up is most of the work.

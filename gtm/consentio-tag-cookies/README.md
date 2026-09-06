@@ -25,4 +25,5 @@ They are fixed, so every row belongs to one of them.
 
 ## 📄 Licence {#licence}
 
-Apache 2.0. See [LICENSE](LICENSE).
+Apache 2.0. The full text sits beside this file in a built template folder, and at the root of the
+Consentio repository.

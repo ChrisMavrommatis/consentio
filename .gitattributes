@@ -1,5 +1,5 @@
-# Normalise to LF in the repository. dist/ is byte-compared by CI against a fresh build,
-# so a CRLF checkin would fail the release for no reason.
+# Normalise to LF in the repository. dist/ is rebuilt and committed by the release, so a
+# CRLF checkin would show up as a whole-file diff there for no reason.
 * text=auto eol=lf
 
 *.png binary
