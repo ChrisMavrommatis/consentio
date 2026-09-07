@@ -12,16 +12,16 @@ the test harness runs TypeScript through Node's built-in type stripping, which o
 nvm use          # or install Node 24 however you like
 npm install
 npm run typecheck     # tsc --noEmit
-npm run build:js      # the four bundles, into build/js/
+npm run build:js      # the four bundles, into build/
 ```
 
 **`build:` is yours, `publish:` is the release workflow's.** Nothing named `build:` can reach `dist/`.
 
 | Command | Writes to | For |
 |---|---|---|
-| `npm run build:js` | `build/js/` | the four bundles |
+| `npm run build:js` | `build/` | the four bundles |
 | `npm run build:i18n` | `build/i18n/` | the language files people paste |
-| `npm run build:gtm` | `build/gtm/` | the two tag manager templates |
+| `npm run build:gtm` | `build/<name>.tpl` | the two tag manager templates |
 | `npm run build:site` | `website/` | the site, assets and all |
 | `npm run watch` | `website/js/` | the bundles, rebuilt as you edit |
 | `npm run publish:js` | `dist/` | **the release workflow only.** See below |
@@ -29,8 +29,13 @@ npm run build:js      # the four bundles, into build/js/
 | `npm run publish:gtm` | `dist/*.tpl` | **the release workflow only** |
 | `npm run publish:site` | `website/_site/`, published settings | **`site.yml` only** |
 
-Everything under `build/` and `website/` is gitignored. `build/` mirrors `dist/`, so you can see what a
-release would ship without writing `dist/`.
+`build/` is gitignored and mirrors `dist/`, so you can see what a release would ship without writing
+`dist/`. Under `website/` the bundles are gitignored too — but `website/data/i18n/` is **committed**, because
+those two files are site data the site reads out of the checkout rather than something rebuilt every time.
+
+**So a site build can leave a diff under `website/data/i18n/`, and that diff is normal.** It means you
+edited `i18n/*.yaml` and the generated json is owed: commit it alongside the yaml, in the same change. This
+is the opposite of a `dist/` diff — see below.
 
 To read the documentation site while you work on it:
 
@@ -67,8 +72,12 @@ so small.
 exact bytes out of the git tag, so whatever is in there is what every site running Consentio gets.
 
 **Only the release workflow writes it.** A pull request must never contain a `dist/` change, and CI fails
-one that does — it rebuilds `dist/` from your source and fails on any difference, and it separately fails
-a commit that touched `dist/` and was not the release. No `build:` or `site:` script can reach it.
+any commit that touched `dist/` and was not the release. No `build:` or `site:` script can reach it.
+
+**`dist/` is expected to differ from what your source builds**, and that is not a fault. It is only
+rewritten by a release, so between one release and the next a dependency bump moves the bundle and leaves
+`dist/` behind. CI used to check that they matched and that check was removed, because it failed whenever
+the process was working correctly.
 
 If you find a `dist/` diff in your working tree, that is a finding, not tidying. Leave it and say so in
 the pull request.

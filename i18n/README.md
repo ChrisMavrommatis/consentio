@@ -34,6 +34,9 @@ their language, and a translation is never a service that can go down.
    so nothing has to be looked up
 2. Change `locale` and `name`
 3. `npm test`
+4. `node scripts/i18n.mjs --website`, and commit what it writes into `website/data/i18n/` with your yaml.
+   Those files are site data and are committed on purpose, so the site serves your language from a clean
+   checkout
 
 `test/i18n/packs.test.mts` refuses a file that is missing a key, carries one English does not have, or
 leaves a value blank. **A blank is not a fallback** - at runtime an empty string counts as a supplied value,

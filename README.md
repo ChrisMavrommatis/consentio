@@ -120,10 +120,10 @@ npm install
 npm run typecheck     # tsc --noEmit
 npm test              # node --test over test/**/*.test.mts
 npm run test:plain    # the same page-free tests again, with no jsdom at all
-npm run build:js      # the bundles,        into build/js/
-npm run build:i18n    # the language packs,  into build/i18n/
-npm run build:gtm     # the two templates,   into build/gtm/
-npm run build:site    # the site's assets,   then Jekyll into website/_site/
+npm run build:js      # the bundles,        into build/
+npm run build:i18n    # the language packs, into build/i18n/
+npm run build:gtm     # the two templates,  into build/<name>.tpl
+npm run build:site    # the site's assets,  then Jekyll into website/_site/
 npm run serve         # the same, served on 127.0.0.1:4001
 npm run watch         # the bundles, rebuilt into website/js/ as you edit
 ```
@@ -136,8 +136,9 @@ what a release ships, and `build:site` writes the site into `website/`. `publish
 > `website/_config.prod.yml` is what turns that around for the published site, and only `publish:site`
 > and the deploy workflow pass it.
 
-> **`npm run serve` builds the site's assets first, on purpose.** `website/js/` and `website/i18n/` are
-> gitignored, so a fresh clone has neither, and Jekyll will happily serve a site whose loader is a 404.
+> **`npm run serve` builds the site's assets first, on purpose.** `website/js/` is gitignored, so a fresh
+> clone has no bundles at all, and Jekyll will happily serve a site whose loader is a 404. It also rebuilds
+> the language packs into `website/data/i18n/`, which — unlike the bundles — are committed.
 
 > **`dist/` is the shipped product, not a convenience copy.** A CDN serves those exact bytes out of the git
 > tag, so it is written by the release and by nothing else. No `build:` or `site:` script can reach it.

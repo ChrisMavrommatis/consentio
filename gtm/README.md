@@ -55,24 +55,22 @@ The MACRO template reads no cookie, so the fixture does not reach it.
 | `src/notes.txt` | `___NOTES___` |
 | `terms-of-service.txt` | `___TERMS_OF_SERVICE___`, shared by both |
 
-**Nothing built lives in this folder.** `build:gtm` writes a folder per template — the file to import, what
-it is, and the licence:
-
-```
-build/gtm/consentio-tag/
-  template.tpl     built from src/
-  README.md        copied from gtm/consentio-tag/
-  LICENSE          copied from the repository root
-```
-
-**The licence is copied at build time** rather than kept as a second copy of the same file.
+**Nothing built lives in this folder.** Each template composes to one file, named after the template it is:
 
 ```bash
-npm run build:gtm      # the parts -> build/gtm/<name>/
-npm run publish:gtm    # the .tpl alone -> dist/<name>.tpl. The release workflow's
-node scripts/gtm.mjs --check                        # do the parts still compose?
+npm run build:gtm      # the parts -> build/<name>.tpl
+npm run publish:gtm    # the same file -> dist/<name>.tpl. The release workflow's
+node scripts/gtm.mjs --check                          # do the parts still compose?
 node scripts/gtm.mjs --decompose <export.tpl> <name>  # split an export back into parts
 ```
+
+`build/` mirrors `dist/`, so what a release would ship can be looked at without writing `dist/`.
+
+**`--decompose` is a true inverse**: composing a template, splitting the result back into parts and
+composing again returns the same bytes, and the parts it writes match the committed ones exactly. The
+format it writes is the editor's own — the byte order mark, the section markers in Google's order, and
+apostrophes escaped and nothing else — so an export should split cleanly too. **That last step has not been
+run against a real export yet**; it needs the editor, like everything else here.
 
 `test/gtm/template-composed.test.mts` runs `--check`, so bad JSON in a part, or a `$text` naming a string
 `i18n/en.yaml` does not have, fails the suite rather than the template editor.

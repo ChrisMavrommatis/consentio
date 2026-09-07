@@ -11,17 +11,39 @@ release body, so write these entries for the people using Consentio, not for the
 
 ## [Unreleased]
 
-### Added
+### ✨ Added
 
-- Greek. The banner's words now live in `i18n/*.yaml`, one file per language, and each builds to a json file
-  you pass to `Consentio.Create`. `en.json` and `el.json` are attached to the release.
+- **Greek, and a way to ship any other language.** The banner's words now live in one file per language, and
+  each is published as a json file you hand straight to `Consentio.Create`. `en.json` and `el.json` are
+  attached to this release.
 
-### Changed
+  ```js
+  const texts = await fetch('/i18n/el.json').then((r) => r.json());
+  Consentio.Create({ ...texts, consentRequired: true }, cookies);
+  ```
 
-- **The tag manager templates are downloaded and imported by hand.** Neither is listed anywhere. Both are
-  attached to the release as `consentio-tag.tpl` and `consentio-tag-cookies.tpl`; import one under
-  **Templates → New → ⋮ → Import**.
-- The English wording has one source, `i18n/en.yaml`, and the tag's pre-filled fields are built from it.
+  On the tag manager route the same file goes into a variable and the tag's *Text source* is set to *From a
+  variable*, which is how you switch wording by page language.
+
+- **A translation is a file you own.** Nothing is fetched from us at run time, so a language cannot fail to
+  load. To add one, copy `i18n/en.yaml`, translate the values, and run `npm test` — it refuses a file that
+  is missing a key, carries one English does not have, or leaves a value blank.
+
+### 🔀 Changed
+
+- **The tag manager templates are downloaded and imported by hand.** Both are attached to this release as
+  `consentio-tag.tpl` and `consentio-tag-cookies.tpl`. In Tag Manager go to **Templates → New**, open the
+  **⋮** menu, choose **Import**, pick the file and save.
+
+  **Neither is listed anywhere, and nothing tells you when a newer one exists.** What you import is what
+  your container runs until you import a newer file — including the Consentio version its CDN URL pins. If
+  you already run one of these templates, re-import it to pick up this release.
+
+- **The banner's English has one source**, and the tag's pre-filled text fields are built from it. The words
+  in those fields are now exactly the words the banner falls back to, so the two cannot drift apart.
+
+- Your stored answer, the cookie, and what the banner does are unchanged. **Nobody is asked again by this
+  release.**
 
 ## [0.1.0] - 2026-08-25
 
