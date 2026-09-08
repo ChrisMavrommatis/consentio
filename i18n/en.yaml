@@ -10,27 +10,28 @@ texts:
   barTitle: Cookie Policy
 
   barDescription: >-
-    This site uses cookies to enhance your experience. We are assuming that you
-    are okay with that, but you can change that by clicking at the settings
-    button.
+    This site uses cookies. Until you choose, only the ones the site cannot run
+    without are on. Accept them all, reject the rest, or open the settings to
+    choose category by category.
 
   buttonSettings: Settings
   buttonSave: Save
   buttonCancel: Cancel
   buttonAcceptAll: Accept All
+  buttonRejectAll: Reject All
 
   modalTitle: Cookie Settings
 
   modalDescription: >-
-    Here you can change your cookie preferences. Clicking on save will save the
-    current settings, while clicking on cancel makes no change. According to the
-    European general data protection regulation (GDPR) and the ePrivacy
-    directive, websites must receive the user’s consent before using any cookie
-    besides the strictly necessary ones. You can expand each section to learn a
-    bit more for each category. If you are interested to learn more, then follow
-    the link.
+    Choose which cookies this site may use. Save stores your choice, Cancel
+    leaves it as it was. Under the European general data protection regulation
+    (GDPR) and the ePrivacy directive, a site must have your consent before it
+    uses any cookie besides the strictly necessary ones. Expand a category to
+    read what it covers.
 
   alwaysOnLabel: Always On
+
+  policyLinkLabel: Privacy Policy
 
   cookieTableHeaderName: Cookie Name
   cookieTableHeaderPurpose: Cookie Purpose

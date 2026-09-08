@@ -11,7 +11,10 @@
 		display: inline-block;
 		text-align: center;
 		height: 36px;
-		min-width: 200px;
+		// A form control is border-box in every UA sheet, so this is the whole button. Three
+		// of them have to take the room two used to, or the bar's footer stops fitting
+		// beside the text on a 1920 screen.
+		min-width: 130px;
 		padding: 8px 20px;
 		margin: 8px 5px;
 		transition: background-color .3s ease-out;

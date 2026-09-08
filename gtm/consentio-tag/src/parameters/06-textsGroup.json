@@ -183,6 +183,57 @@
 							"type": "EQUALS"
 						}
 					]
+				},
+				{
+					"type": "TEXT",
+					"name": "buttonRejectAll",
+					"displayName": "Reject All Button",
+					"simpleValueType": true,
+					"canBeEmptyString": true,
+					"lineCount": 1,
+					"defaultValue": {
+						"$text": "texts.buttonRejectAll"
+					},
+					"enablingConditions": [
+						{
+							"paramName": "textSource",
+							"paramValue": "custom",
+							"type": "EQUALS"
+						}
+					]
+				}
+			],
+			"enablingConditions": [
+				{
+					"paramName": "textSource",
+					"paramValue": "custom",
+					"type": "EQUALS"
+				}
+			]
+		},
+		{
+			"type": "GROUP",
+			"name": "policy",
+			"displayName": "Privacy Policy",
+			"groupStyle": "ZIPPY_CLOSED",
+			"subParams": [
+				{
+					"type": "TEXT",
+					"name": "policyLinkLabel",
+					"displayName": "Privacy Policy Link",
+					"simpleValueType": true,
+					"canBeEmptyString": true,
+					"lineCount": 1,
+					"defaultValue": {
+						"$text": "texts.policyLinkLabel"
+					},
+					"enablingConditions": [
+						{
+							"paramName": "textSource",
+							"paramValue": "custom",
+							"type": "EQUALS"
+						}
+					]
 				}
 			],
 			"enablingConditions": [

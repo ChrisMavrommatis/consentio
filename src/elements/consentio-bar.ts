@@ -17,6 +17,10 @@ class ConsentioBarElement extends HTMLElement {
 		return this.querySelector<HTMLButtonElement>('button[data-role="settings"]');
 	}
 
+	get rejectAllBtn(): HTMLButtonElement | null {
+		return this.querySelector<HTMLButtonElement>('button[data-role="rejectAll"]');
+	}
+
 	get acceptAllBtn(): HTMLButtonElement | null {
 		return this.querySelector<HTMLButtonElement>('button[data-role="acceptAll"]');
 	}
@@ -44,6 +48,10 @@ class ConsentioBarElement extends HTMLElement {
 			this.openSettings(event);
 			return;
 		}
+		if (target?.closest('button[data-role="rejectAll"]')) {
+			this.rejectAll(event);
+			return;
+		}
 		if (target?.closest('button[data-role="acceptAll"]')) {
 			this.acceptAll(event);
 		}
@@ -53,6 +61,12 @@ class ConsentioBarElement extends HTMLElement {
 		event.stopImmediatePropagation();
 		this.emit('consentio:open-settings', {});
 		this.logger?.log('[Consentio:Event] open-settings', 'info');
+	}
+
+	rejectAll(event: Event): void {
+		event.stopImmediatePropagation();
+		this.emit('consentio:reject-all-consents', {});
+		this.logger?.log('[Consentio:Event] reject-all-consents', 'info');
 	}
 
 	acceptAll(event: Event): void {

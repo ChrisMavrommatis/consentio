@@ -22,12 +22,14 @@ Every top-level option, with something in it. Nothing here is required.
   "version": 1,
   "debug": false,
   "consentRequired": false,
+  "policyUrl": "/privacy/",
   "texts": {
     "barTitle": "Cookies on this site",
     "barDescription": "We use cookies to run the site and, with your permission, to measure how it is used.",
     "buttonSettings": "Choose",
     "buttonSave": "Save my choice",
-    "buttonAcceptAll": "Allow all"
+    "buttonAcceptAll": "Allow all",
+    "buttonRejectAll": "Allow none"
   },
   "consents": [
     { "key": "statistics_performance", "title": "Measurement", "defaultState": "denied" },
@@ -36,7 +38,7 @@ Every top-level option, with something in it. Nothing here is required.
 }
 ```
 
-That file changes five strings and two category titles. Everything else — the other eight `texts` keys, the
+That file changes six strings and two category titles. Everything else — the other nine `texts` keys, the
 two categories not named, every default — is untouched and keeps working.
 
 ## 🔧 Top level {#top-level}
@@ -47,6 +49,7 @@ two categories not named, every default — is untouched and keeps working.
 | `debug` | boolean | `false` | Turns on the banner's informational logging |
 | `version` | number | `1` | Raise it to throw away every stored answer and ask everyone again. **Ignored if you also set `data-version` on the tag.** See [Asking everyone again]({{ '/versioning/' | relative_url }}#versioning-stored-consent) |
 | `consentRequired` | boolean | `false` | Shows a full-screen blocking overlay behind the bar and modal until the visitor answers |
+| `policyUrl` | string | none | Where the banner's privacy policy link points, on the bar and in the panel. Leave it out and no link is shown. It must start with `http://`, `https://` or a single `/` for a page on your own site — anything else is dropped with a warning on the console, because the address goes into an `href` and is not escaped the way a text is |
 | `texts` | object | see below | Every string in the UI |
 | `consents` | array | the four categories | Copy changes to the four. The set is fixed |
 
@@ -55,14 +58,16 @@ two categories not named, every default — is untouched and keeps working.
 | Key | Default |
 |---|---|
 | `barTitle` | `Cookie Policy` |
-| `barDescription` | `This site uses cookies to enhance your experience…` |
+| `barDescription` | `This site uses cookies. Until you choose, only the ones the site cannot run without are on…` |
 | `buttonSettings` | `Settings` |
 | `buttonSave` | `Save` |
 | `buttonCancel` | `Cancel` |
 | `buttonAcceptAll` | `Accept All` |
+| `buttonRejectAll` | `Reject All` |
 | `modalTitle` | `Cookie Settings` |
-| `modalDescription` | A paragraph on GDPR and the ePrivacy directive |
+| `modalDescription` | A paragraph on what Save and Cancel do, and on GDPR and the ePrivacy directive |
 | `alwaysOnLabel` | `Always On` |
+| `policyLinkLabel` | `Privacy Policy` — the wording of the link `policyUrl` points at |
 | `cookieTableHeaderName` | `Cookie Name` |
 | `cookieTableHeaderPurpose` | `Cookie Purpose` |
 | `cookieTableHeaderProvenance` | `Provenance` |

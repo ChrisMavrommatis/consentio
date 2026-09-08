@@ -1,4 +1,11 @@
+---
+layout: null
+---
 {
 	"debug": false,
-	"consentRequired": true
+	"consentRequired": true,
+	"policyUrl": "{{ '/cookie/' | relative_url }}",
+	"texts": {
+		"policyLinkLabel": "The cookie this site sets"
+	}
 }

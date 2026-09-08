@@ -64,6 +64,40 @@ test('issue 28 - a category cannot re-point a Google signal', () => {
 	assert.equal(statistics.signals, undefined, 'a site that re-points a category has made its name lie');
 });
 
+// --- defect 37 -------------------------------------------------------------
+//
+// The address is an attribute, and TemplateRenderer only protects a text node. So the
+// scheme is checked here, before anything reaches setAttribute.
+
+test('issue 37 - a site address survives the check', () => {
+	assert.equal(Consentio.policyUrl('/privacy/'), '/privacy/');
+	assert.equal(Consentio.policyUrl('https://example.com/privacy'), 'https://example.com/privacy');
+});
+
+test('issue 37 - a scheme that is not an address is dropped', () => {
+	assert.equal(Consentio.policyUrl('javascript:alert(1)'), '');
+});
+
+test('issue 37 - dropping one says so rather than failing silently', () => {
+	const warnings: string[] = [];
+	const logger = { warn: (message: string) => { warnings.push(message); } } as unknown as Console;
+	Consentio.policyUrl('javascript:alert(1)', logger);
+	assert.equal(warnings.length, 1);
+	assert.match(warnings[0], /policy URL/);
+});
+
+test('issue 37 - no policy URL is not a mistake, so nothing is logged', () => {
+	const warnings: string[] = [];
+	const logger = { warn: (message: string) => { warnings.push(message); } } as unknown as Console;
+	Consentio.policyUrl('', logger);
+	assert.deepEqual(warnings, []);
+});
+
+test('issue 37 - the config carries the checked address, not the one supplied', () => {
+	const instance = new Consentio({ policyUrl: 'javascript:alert(1)' }, [], null);
+	assert.equal(instance.config.policyUrl, '');
+});
+
 test('the default order is preserved', () => {
 	const merged = Consentio.mergeConsents(DEFAULTS, [{ key: 'strictly_necessary', title: 'First' }]);
 	assert.deepEqual(keys(merged), keys(DEFAULTS));

@@ -13,6 +13,30 @@ release body, so write these entries for the people using Consentio, not for the
 
 ### ✨ Added
 
+- **A Reject All button, beside Accept All on the first screen.** Refusing used to mean opening the
+  settings, leaving three switches alone and pressing Save — three actions against one. It is now one, and
+  it is the same size and the same style as accepting.
+
+  Rejecting **stores an answer**: everything except the strictly necessary category is denied, the choice
+  goes in the cookie, and the visitor is not asked again on the next page.
+
+  **The bar's buttons are narrower than they were**, so three of them take the room two used to: on a wide
+  screen they still sit beside the text rather than dropping below it. Under 600px all three stack at full
+  width, the same size as each other.
+
+- **Somewhere to link your privacy policy.** Set `policyUrl` and the address appears as a link on the bar
+  and in the settings panel; leave it out and no link is shown. `texts.policyLinkLabel` is its wording, so
+  it translates with the rest.
+
+  ```json
+  { "policyUrl": "/privacy/", "texts": { "policyLinkLabel": "Privacy Policy" } }
+  ```
+
+  On the tag manager route it is the **Privacy Policy URL** field, which sits outside *Text source* because
+  a site using the built-in English still has a policy page. The address must start with `http://`,
+  `https://` or a single `/` — anything else is dropped with a warning on the console rather than put into
+  a link.
+
 - **Greek, and a way to ship any other language.** The banner's words now live in one file per language, and
   each is published as a json file you hand straight to `Consentio.Create`. `en.json` and `el.json` are
   attached to this release.
@@ -39,11 +63,20 @@ release body, so write these entries for the people using Consentio, not for the
   your container runs until you import a newer file — including the Consentio version its CDN URL pins. If
   you already run one of these templates, re-import it to pick up this release.
 
+- **The banner's built-in English says something different, and a site keeping the defaults will see it.**
+  The bar used to read "We are assuming that you are okay with that", which was the opposite of what the
+  code does — with no stored answer everything but the strictly necessary category is denied. The settings
+  panel used to end by telling the reader to follow a link that was never rendered. Both are rewritten, and
+  the Greek moved with them.
+
+  **Nothing needs doing.** If you supply your own `texts`, or filled in the tag's custom fields, your
+  wording is untouched. If you kept the defaults, the new words appear when you update — and on the tag
+  manager route, the pre-filled fields carry them the next time you import the template.
+
 - **The banner's English has one source**, and the tag's pre-filled text fields are built from it. The words
   in those fields are now exactly the words the banner falls back to, so the two cannot drift apart.
 
-- Your stored answer, the cookie, and what the banner does are unchanged. **Nobody is asked again by this
-  release.**
+- Your stored answer and the cookie are unchanged. **Nobody is asked again by this release.**
 
 ## [0.1.0] - 2026-08-25
 

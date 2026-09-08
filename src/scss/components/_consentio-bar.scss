@@ -1,3 +1,6 @@
+@use '../media-variables' as *;
+
+
 :host {
 	consentio-bar {
 		box-sizing: border-box;
@@ -29,23 +32,42 @@
 				max-width: 1000px;
 				width: 100%;
 
-				>h5 {
+				// h2, because that is what the template renders - this named h5 and never applied.
+				// Size and weight are left to typography on purpose. Issue 42.
+				>h2 {
 					color: var(--bar-title-color);
 					margin: 0 0 10px;
 					padding: 0;
-					font-size: 20px;
 					line-height: 1.2;
-					font-weight: 300;
 				}
 
 				>p {
 					font-size: 14px;
 				}
+
+				// The policy link is its own paragraph, so without this it reads as one more
+				// line of the description. The anchor takes the paragraph's size rather than
+				// the 15px every other link gets.
+				>.policy {
+					margin-top: 8px;
+
+					>a {
+						font-size: inherit;
+					}
+				}
 			}
 
 			>footer {
-				align-items: end;
 				margin: -5px;
+
+				// Too narrow for one row of three: stack them full width rather than leave one
+				// on a row of its own, which reads as the odd one out. The old `align-items:
+				// end` here did nothing - a block container has no cross axis.
+				@media #{$small-and-down} {
+					display: flex;
+					flex-direction: column;
+					width: 100%;
+				}
 			}
 		}
 

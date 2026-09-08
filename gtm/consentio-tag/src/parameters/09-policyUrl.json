@@ -1,0 +1,10 @@
+{
+	"type": "TEXT",
+	"name": "policyUrl",
+	"displayName": "Privacy Policy URL",
+	"simpleValueType": true,
+	"canBeEmptyString": true,
+	"lineCount": 1,
+	"valueHint": "/privacy/",
+	"help": "Where the banner's privacy policy link points. Leave it empty and no link is shown. It must start with http://, https:// or a single / for a page on this site; anything else is dropped with a warning on the console. It is not a text, so it stays the same whichever Text source you pick."
+}

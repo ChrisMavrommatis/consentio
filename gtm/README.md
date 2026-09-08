@@ -59,7 +59,7 @@ The MACRO template reads no cookie, so the fixture does not reach it.
 
 ```bash
 npm run build:gtm      # the parts -> build/<name>.tpl
-npm run publish:gtm    # the same file -> dist/<name>.tpl. The release workflow's
+npm run publish:gtm    # the same file -> dist/<name>.tpl. The release workflow's, not yours
 node scripts/gtm.mjs --check                          # do the parts still compose?
 node scripts/gtm.mjs --decompose <export.tpl> <name>  # split an export back into parts
 ```

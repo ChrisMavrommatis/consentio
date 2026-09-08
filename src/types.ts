@@ -12,9 +12,11 @@ export interface ConsentioTexts {
 	buttonSave: string;
 	buttonCancel: string;
 	buttonAcceptAll: string;
+	buttonRejectAll: string;
 	modalTitle: string;
 	modalDescription: string;
 	alwaysOnLabel: string;
+	policyLinkLabel: string;
 	cookieTableHeaderName: string;
 	cookieTableHeaderPurpose: string;
 	cookieTableHeaderProvenance: string;
@@ -48,6 +50,8 @@ export interface ConsentioConfig {
 	debug: boolean;
 	version: number;
 	consentRequired: boolean;
+	/** Address of the site's privacy policy, or '' for no link. Checked, not escaped - issue 37. */
+	policyUrl: string;
 	texts: ConsentioTexts;
 	consents: ConsentCategory[];
 }

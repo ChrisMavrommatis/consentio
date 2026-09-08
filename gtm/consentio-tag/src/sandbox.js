@@ -159,6 +159,9 @@ const config = {
   version: version,
   debug: data.debug,
   consentRequired: data.consentRequired,
+  // An address, not a word, so it is a field of its own rather than one of the texts. The
+  // banner checks the scheme; nothing here is put in an href.
+  policyUrl: data.policyUrl,
   texts: {
     barTitle: text('barTitle'),
     barDescription: text('barDescription'),
@@ -166,9 +169,11 @@ const config = {
     buttonSave: text('buttonSave'),
     buttonCancel: text('buttonCancel'),
     buttonAcceptAll: text('buttonAcceptAll'),
+    buttonRejectAll: text('buttonRejectAll'),
     modalTitle: text('modalTitle'),
     modalDescription: text('modalDescription'),
     alwaysOnLabel: text('alwaysOnLabel'),
+    policyLinkLabel: text('policyLinkLabel'),
     cookieTableHeaderName: text('cookieTableHeaderName'),
     cookieTableHeaderPurpose: text('cookieTableHeaderPurpose'),
     cookieTableHeaderProvenance: text('cookieTableHeaderProvenance'),

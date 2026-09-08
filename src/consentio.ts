@@ -17,6 +17,7 @@ import ConsentioConsentItemElement from './elements/consentio-consent-item.js';
 import ConsentioModalElement from './elements/consentio-modal.js';
 import ConsentioState from './lib/state.js'
 import ConsentioLogger from './lib/logger.js'
+import { safeUrl } from './lib/url.js'
 import english from '../i18n/en.yaml'
 import type { ConsentCategory, ConsentCategoryOverride, ConsentioConfig, ConsentioOptions, CookieDescriptor } from './types.js'
 
@@ -27,6 +28,7 @@ class Consentio {
 		debug: false,
 		version: 1,
 		consentRequired: false,
+		policyUrl: '',
 		// alwaysOn and defaultState stay here: they are behaviour, not words.
 		texts: { ...english.texts },
 		consents: [
@@ -70,6 +72,15 @@ class Consentio {
 		return Object.values(consentMap);
 	}
 
+	static policyUrl(value: string, logger: Console | null = null): string {
+		const url = safeUrl(value);
+		if (!url && value) {
+			// Warned, not thrown: a banner with no link is better than no banner.
+			logger?.warn(`[Consentio] policy URL "${value}" ignored - it must start with http://, https:// or /`);
+		}
+		return url || '';
+	}
+
 	constructor(options: ConsentioOptions = {}, cookies: CookieDescriptor[] = [], logger: Console | null = null) {
 		// The loader already resolved the cookie name and version off its own tag. Taking
 		// them back is what stops the two halves reading different cookies.
@@ -87,6 +98,8 @@ class Consentio {
 				? Consentio.mergeConsents(Consentio._defaultConfig.consents, options.consents, logger)
 				: Consentio._defaultConfig.consents
 		};
+		// An address is behaviour, not a word, so it is checked rather than escaped - issue 37.
+		this.config.policyUrl = Consentio.policyUrl(this.config.policyUrl, logger);
 		this.cookies = [
 			...cookies
 		];

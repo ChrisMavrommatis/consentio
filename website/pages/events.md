@@ -18,7 +18,7 @@ Both are fired on `document`, and both carry the visitor's answers.
 
 | Event | When it fires |
 |---|---|
-| `consentio:consent-update` | Every time someone accepts all, or saves their choices |
+| `consentio:consent-update` | Every time someone accepts all, rejects all, or saves their choices |
 | `consentio:initialized` | Once, when the banner first appears — carrying whatever was already stored |
 
 ## 📄 Loading something only when it is allowed {#loading-something-only-when-it-is-allowed}

@@ -9,6 +9,7 @@ import floatingButtonTemplate from '../templates/consentio-floating-button.html'
 import ConsentioGTM from '../lib/gtm.js';
 import FocusTrap from '../lib/focus.js';
 import { showElement, hideElement } from '../lib/dom.js';
+import { safeUrl } from '../lib/url.js';
 
 import type ConsentioBarElement from './consentio-bar.js';
 import type ConsentioModalElement from './consentio-modal.js';
@@ -47,6 +48,7 @@ class ConsentioAppElement extends HTMLElement {
 		this._handlers = [
 			['consentio:open-settings', this.openSettings.bind(this)],
 			['consentio:accept-all-consents', this.acceptAll.bind(this)],
+			['consentio:reject-all-consents', this.rejectAll.bind(this)],
 			['consentio:cancel-settings', this.cancelSettings.bind(this)],
 			['consentio:save-settings', this.saveSettings.bind(this)]
 		];
@@ -147,8 +149,10 @@ class ConsentioAppElement extends HTMLElement {
 			barTitle: this.config.texts.barTitle,
 			barDescription: this.config.texts.barDescription,
 			buttonSettings: this.config.texts.buttonSettings,
+			buttonRejectAll: this.config.texts.buttonRejectAll,
 			buttonAcceptAll: this.config.texts.buttonAcceptAll,
 		});
+		this.renderPolicyLink(newBar);
 
 		const cookieTableHeaders: CookieTableHeaders = {
 			cookieName: this.config.texts.cookieTableHeaderName,
@@ -190,6 +194,7 @@ class ConsentioAppElement extends HTMLElement {
 			buttonSave: this.config.texts.buttonSave,
 			buttonCancel: this.config.texts.buttonCancel,
 		});
+		this.renderPolicyLink(newModal);
 		const consentList = newModal.querySelector('consentio-consent-items');
 		this.consentItems.forEach(consentItem => {
 			consentList!.appendChild(consentItem);
@@ -206,6 +211,30 @@ class ConsentioAppElement extends HTMLElement {
 			});
 			this._shadow.appendChild(this.floatingButton);
 		}
+	}
+
+	/**
+	 * An href is an attribute, and TemplateRenderer only protects a text node - issue 29.
+	 * So the anchor is built here, and a URL that is not http, https or a path on this
+	 * site never reaches setAttribute. No URL leaves no empty paragraph behind.
+	 */
+	renderPolicyLink(host: Element): void {
+		const slot = host.querySelector('.policy');
+		if (!slot) {
+			return;
+		}
+		const url = safeUrl(this.config.policyUrl);
+		if (!url) {
+			slot.remove();
+			return;
+		}
+		const link = document.createElement('a');
+		link.className = 'link';
+		link.textContent = this.config.texts.policyLinkLabel;
+		link.setAttribute('target', '_blank');
+		link.setAttribute('rel', 'noopener noreferrer');
+		link.setAttribute('href', url);
+		slot.appendChild(link);
 	}
 
 	initState(): void {
@@ -253,6 +282,17 @@ class ConsentioAppElement extends HTMLElement {
 	acceptAll(event: Event): void {
 		event.stopImmediatePropagation();
 		this.state.acceptAll();
+		this.answered();
+	}
+
+	rejectAll(event: Event): void {
+		event.stopImmediatePropagation();
+		this.state.rejectAll();
+		this.answered();
+	}
+
+	// Whichever button gave the answer, storing it and getting out of the way is the same.
+	answered(): void {
 		this.consentItems.forEach((consentItem) => {
 			consentItem.updateState(this.state.consents[consentItem.id]);
 			consentItem.reset();
