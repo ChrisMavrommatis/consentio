@@ -15,7 +15,7 @@ test('on a first visit the bar is the only thing showing', () => {
 });
 
 test('opening the settings swaps the bar for the modal', () => {
-	app.openSettings(new CustomEvent('consentio:open-settings'));
+	app.openSettings();
 	assert.equal(shown(app.modal), true);
 	assert.equal(shown(app.bar), false);
 	assert.equal(shown(app.floatingButton), false);

@@ -29,6 +29,7 @@ class Consentio {
 		version: 1,
 		consentRequired: false,
 		policyUrl: '',
+		hideFloatingButton: false,
 		// alwaysOn and defaultState stay here: they are behaviour, not words.
 		texts: { ...english.texts },
 		consents: [
@@ -100,6 +101,10 @@ class Consentio {
 		};
 		// An address is behaviour, not a word, so it is checked rather than escaped - issue 37.
 		this.config.policyUrl = Consentio.policyUrl(this.config.policyUrl, logger);
+		if (this.config.hideFloatingButton) {
+			// Warned, not thrown: the site may well have its own link, and nothing here can see it.
+			logger?.warn('[Consentio] hideFloatingButton is set - the site now owes the visitor a link of its own calling window.ConsentioInstance.openSettings()');
+		}
 		this.cookies = [
 			...cookies
 		];
@@ -136,6 +141,23 @@ class Consentio {
 		document.addEventListener('DOMContentLoaded', () => {
 			document.body.appendChild(this.el!);
 		}, { once: true });
+	}
+
+
+	/**
+	 * The page's supported way into the settings panel - a footer link, a cookie policy
+	 * page. Issue 40.
+	 *
+	 * A call made before the banner is in the document is ignored rather than queued:
+	 * the panel it would open has not been built yet, and the only caller that early is
+	 * a script in `<head>`, which has no visitor to open it for.
+	 */
+	openSettings(): void {
+		if (!this.el?.isRendered) {
+			this.logger?.log('[Consentio] openSettings ignored - the banner is not on the page yet', 'warn');
+			return;
+		}
+		this.el.openSettings();
 	}
 
 

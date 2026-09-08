@@ -159,6 +159,8 @@ const config = {
   version: version,
   debug: data.debug,
   consentRequired: data.consentRequired,
+  // The site owes its own settings link once this is on. The banner warns; it cannot check.
+  hideFloatingButton: data.hideFloatingButton,
   // An address, not a word, so it is a field of its own rather than one of the texts. The
   // banner checks the scheme; nothing here is put in an href.
   policyUrl: data.policyUrl,

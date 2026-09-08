@@ -46,7 +46,7 @@ class ConsentioAppElement extends HTMLElement {
 		this._onKeydown = this.onKeydown.bind(this);
 		// Bound once: a fresh bind() never matches what addEventListener was given. Issue 7.
 		this._handlers = [
-			['consentio:open-settings', this.openSettings.bind(this)],
+			['consentio:open-settings', this.onOpenSettings.bind(this)],
 			['consentio:accept-all-consents', this.acceptAll.bind(this)],
 			['consentio:reject-all-consents', this.rejectAll.bind(this)],
 			['consentio:cancel-settings', this.cancelSettings.bind(this)],
@@ -205,7 +205,11 @@ class ConsentioAppElement extends HTMLElement {
 		this.modal.logger = this.logger;
 
 
-		if (!this.isRendered) {
+		// A site with its own settings link hides this and owes the visitor that link - issue 40.
+		if (this.config.hideFloatingButton) {
+			this.floatingButton?.remove();
+			this.floatingButton = null;
+		} else if (!this.floatingButton) {
 			this.floatingButton = this.renderNode<ConsentioFloatingButtonElement>(floatingButtonTemplate, {
 
 			});
@@ -241,9 +245,9 @@ class ConsentioAppElement extends HTMLElement {
 		hideElement(this.required!);
 		hideElement(this.bar!);
 		hideElement(this.modal!);
-		hideElement(this.floatingButton!);
+		hideElement(this.floatingButton);
 		if (this.state.consentGiven) {
-			showElement(this.floatingButton!);
+			showElement(this.floatingButton);
 			return;
 		}
 		showElement(this.bar!);
@@ -269,10 +273,20 @@ class ConsentioAppElement extends HTMLElement {
 		}
 	}
 
-	openSettings(event: Event): void {
+	onOpenSettings(event: Event): void {
 		event.stopImmediatePropagation();
+		this.openSettings();
+	}
+
+	// No event: a page link calls this through Consentio.openSettings - issue 40.
+	openSettings(): void {
+		// The bar's button cannot be pressed while the panel is up; a page link can.
+		// Re-entering the trap would drag focus off whatever the visitor had reached.
+		if (this.modal!.style.display !== 'none') {
+			return;
+		}
 		hideElement(this.bar!);
-		hideElement(this.floatingButton!);
+		hideElement(this.floatingButton);
 		showElement(this.modal!);
 		if (this.config.consentRequired) {
 			showElement(this.required!);
@@ -299,7 +313,7 @@ class ConsentioAppElement extends HTMLElement {
 		});
 		hideElement(this.bar!);
 		hideElement(this.required!);
-		showElement(this.floatingButton!);
+		showElement(this.floatingButton);
 		this._focus.leave(this.floatingButton);
 		this.emit('consentio:consent-update', this.state.consents);
 		this.gtm?.updateConsent(this.state.consents);
@@ -321,7 +335,7 @@ class ConsentioAppElement extends HTMLElement {
 		}
 		hideElement(this.bar!);
 		hideElement(this.required!);
-		showElement(this.floatingButton!);
+		showElement(this.floatingButton);
 		this._focus.leave(this.floatingButton);
 	}
 
@@ -344,7 +358,7 @@ class ConsentioAppElement extends HTMLElement {
 		}
 		hideElement(this.bar!);
 		hideElement(this.required!);
-		showElement(this.floatingButton!);
+		showElement(this.floatingButton);
 		this._focus.leave(this.floatingButton);
 		this.emit('consentio:consent-update', this.state.consents);
 		this.gtm?.updateConsent(this.state.consents);

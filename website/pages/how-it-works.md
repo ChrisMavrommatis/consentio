@@ -48,8 +48,9 @@ The template's entry point into the bundle:
 Consentio.Create(config, cookies);
 ```
 
-`Create` does not record the instance on `window` itself, so a template has to set
-`window.ConsentioInstance` after calling it if it wants the run-once guard to work.
+`Create` puts the instance on `window.ConsentioInstance` itself, so there is nothing to assign afterwards.
+That is what the template's run-once guard reads, and what your own page calls to
+[reopen the settings]({{ '/events/' | relative_url }}#reopening-the-settings-from-your-own-link).
 
 **The cookie is a contract, not an implementation detail.** The template reads it a second time, in a
 different language, in Tag Manager's sandbox. Its name, its `version` field, its shape and what "no stored

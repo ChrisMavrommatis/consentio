@@ -98,6 +98,27 @@ test('issue 37 - the config carries the checked address, not the one supplied', 
 	assert.equal(instance.config.policyUrl, '');
 });
 
+// --- defect 40 -------------------------------------------------------------
+//
+// A site that hides the button and forgets its own link has left the visitor no way to
+// change their answer. Nothing here can see the link, so the console is all there is.
+
+test('issue 40 - hiding the floating button says what the site now owes', () => {
+	const warnings: string[] = [];
+	const logger = { warn: (message: string) => { warnings.push(message); } } as unknown as Console;
+	new Consentio({ hideFloatingButton: true }, [], logger);
+	assert.equal(warnings.length, 1);
+	assert.match(warnings[0], /openSettings/);
+});
+
+test('issue 40 - leaving it alone is the default and warns about nothing', () => {
+	const warnings: string[] = [];
+	const logger = { warn: (message: string) => { warnings.push(message); } } as unknown as Console;
+	const instance = new Consentio({}, [], logger);
+	assert.equal(instance.config.hideFloatingButton, false);
+	assert.deepEqual(warnings, []);
+});
+
 test('the default order is preserved', () => {
 	const merged = Consentio.mergeConsents(DEFAULTS, [{ key: 'strictly_necessary', title: 'First' }]);
 	assert.deepEqual(keys(merged), keys(DEFAULTS));

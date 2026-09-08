@@ -8,7 +8,7 @@ import { boot } from '../../helpers.mjs';
 const app = boot({ consentRequired: true });
 
 test('issue 14 - Escape closes the settings', () => {
-	app.openSettings(new CustomEvent('consentio:open-settings'));
+	app.openSettings();
 	app.dispatchEvent(new globalThis.window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
 	assert.equal(app.modal!.style.display, 'none', 'nothing listens for a key anywhere in the component');
 });

@@ -2,7 +2,7 @@
 title: Events
 anchor: events
 permalink: /events/
-description: How to run your own code when a visitor answers the banner - loading a script only once it is allowed.
+description: How to run your own code when a visitor answers the banner, and how to reopen the settings from a link of your own.
 ---
 
 **You do not need this page to make consent work.** Consentio already tells
@@ -71,3 +71,34 @@ function onAllowed(consents) {
 ```
 
 There are no other events and no callback options in the settings. These two are all of it.
+
+## ⚙️ Reopening the settings from your own link {#reopening-the-settings-from-your-own-link}
+
+A visitor who has answered gets a round button in the bottom right corner, and that is the only way back in
+until you add one. **`window.ConsentioInstance.openSettings()` opens the panel from anywhere on the page** —
+a footer link, a line in your cookie policy.
+
+**Guard on `window.ConsentioInstance`.** The banner is fetched in the background, so a link clicked in the
+first moment of a page load can run before it exists. Without the guard that click is a console error and no
+panel.
+
+```html
+<a href="#" id="cookie-settings">Cookie settings</a>
+
+<script>
+  document.getElementById('cookie-settings').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (window.ConsentioInstance) window.ConsentioInstance.openSettings();
+  });
+</script>
+```
+
+Calling it while the panel is already open does nothing, so a second click cannot disturb where the visitor
+has tabbed to.
+
+<div class="callout callout--warn" markdown="1">
+**If you turn the round button off, this link is the only way back in.** Set
+[`hideFloatingButton`]({{ '/configuration/' | relative_url }}#top-level) — or tick **Hide Floating Button**
+on the tag — only once your own link is on every page. Consentio warns on the console when the option is
+set, because it cannot see whether you added one.
+</div>

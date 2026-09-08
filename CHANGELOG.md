@@ -37,6 +37,20 @@ release body, so write these entries for the people using Consentio, not for the
   `https://` or a single `/` — anything else is dropped with a warning on the console rather than put into
   a link.
 
+- **A way back into the settings from your own link.** `window.ConsentioInstance.openSettings()` opens the
+  panel from anywhere on the page — a footer link, a line in your cookie policy. Guard on
+  `window.ConsentioInstance`, because the banner is fetched in the background and a very early click can
+  land before it exists.
+
+  ```js
+  if (window.ConsentioInstance) window.ConsentioInstance.openSettings();
+  ```
+
+  With that link in place you can drop the round button in the bottom right corner: set
+  `"hideFloatingButton": true`, or tick **Hide Floating Button** on the tag. Consentio warns on the console
+  when you do, because it cannot see whether your link is really there — and with the button hidden and no
+  link of your own, a visitor has no way to change their answer.
+
 - **Greek, and a way to ship any other language.** The banner's words now live in one file per language, and
   each is published as a json file you hand straight to `Consentio.Create`. `en.json` and `el.json` are
   attached to this release.

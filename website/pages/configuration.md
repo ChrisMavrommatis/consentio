@@ -23,6 +23,7 @@ Every top-level option, with something in it. Nothing here is required.
   "debug": false,
   "consentRequired": false,
   "policyUrl": "/privacy/",
+  "hideFloatingButton": false,
   "texts": {
     "barTitle": "Cookies on this site",
     "barDescription": "We use cookies to run the site and, with your permission, to measure how it is used.",
@@ -50,6 +51,7 @@ two categories not named, every default — is untouched and keeps working.
 | `version` | number | `1` | Raise it to throw away every stored answer and ask everyone again. **Ignored if you also set `data-version` on the tag.** See [Asking everyone again]({{ '/versioning/' | relative_url }}#versioning-stored-consent) |
 | `consentRequired` | boolean | `false` | Shows a full-screen blocking overlay behind the bar and modal until the visitor answers |
 | `policyUrl` | string | none | Where the banner's privacy policy link points, on the bar and in the panel. Leave it out and no link is shown. It must start with `http://`, `https://` or a single `/` for a page on your own site — anything else is dropped with a warning on the console, because the address goes into an `href` and is not escaped the way a text is |
+| `hideFloatingButton` | boolean | `false` | Removes the round settings button the banner leaves in the bottom right corner. **Only set it once your own link is on every page** — see [Reopening the settings]({{ '/events/' | relative_url }}#reopening-the-settings-from-your-own-link). With it on and no link, a visitor cannot change their answer, and Consentio says so on the console |
 | `texts` | object | see below | Every string in the UI |
 | `consents` | array | the four categories | Copy changes to the four. The set is fixed |
 

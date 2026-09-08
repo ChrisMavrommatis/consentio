@@ -29,6 +29,7 @@ Consentio directly in your HTML instead.
 | Version | The version of your consent question. Raise it and every visitor is asked again |
 | Debug | Logs what the tag decided to the console |
 | Consent Required | Shows the banner as a full-screen overlay the visitor has to answer |
+| Hide Floating Button | Removes the round settings button in the bottom right corner. Only tick it if your site has its own link calling `window.ConsentioInstance.openSettings()` |
 | Preferences / Statistics / Marketing Default State | What each category starts at in the settings panel |
 | Text source | Where the banner's wording comes from - see below |
 | Texts | Every string it shows, filled in with the English text. Shown when Text source is *Custom* |

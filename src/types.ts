@@ -52,6 +52,8 @@ export interface ConsentioConfig {
 	consentRequired: boolean;
 	/** Address of the site's privacy policy, or '' for no link. Checked, not escaped - issue 37. */
 	policyUrl: string;
+	/** Drops the round reopen button, for a site that has its own link - issue 40. */
+	hideFloatingButton: boolean;
 	texts: ConsentioTexts;
 	consents: ConsentCategory[];
 }

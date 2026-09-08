@@ -5,7 +5,7 @@ permalink: /try-it/
 # that demonstrates the direct install, and the only place the two routes can be seen
 # answering for one visitor.
 loader: true
-description: The banner on this site is the real thing, running the direct install route. Clear the cookie here and it asks again.
+description: The banner on this site is the real thing, running the direct install route. Clear the cookie here and it asks again, or reopen the settings from this page's own link.
 ---
 
 **The banner on this site is not a screenshot.** Every page here loads `consentio-loader.min.js` as a
@@ -17,10 +17,11 @@ blocking overlay that a visitor has to answer before they can reach the page. If
 clear the cookie below and it comes back.
 
 <div class="fixture" markdown="1">
-### 🍪 Clear your answer and start again {#clear-your-answer-and-start-again}
+### 🍪 Your answer, and how to change it {#your-answer-and-how-to-change-it}
 
 <div class="fixture__actions" markdown="0">
 <button type="button" class="button" id="consentio-reset">Clear the cookie and reload</button>
+<button type="button" class="button button--quiet" id="consentio-open">Open the settings panel</button>
 <button type="button" class="button button--quiet" id="consentio-refresh">Refresh the readout</button>
 </div>
 
@@ -37,6 +38,11 @@ clear the cookie below and it comes back.
   value, decoded — [the cookie]({{ '/cookie/' | relative_url }}#the-cookie-contract) explains what is in it.
 - **`window.ConsentioDefault`** in the console holds what the very first message to Google was built from,
   before anything had been downloaded.
+- **Open the settings panel** above is an ordinary page button calling
+  `window.ConsentioInstance.openSettings()` — the same
+  [link a site adds to its footer]({{ '/events/' | relative_url }}#reopening-the-settings-from-your-own-link).
+  It works whether or not you have answered, and pressing it twice leaves one panel with focus where you
+  put it.
 
 ## 🏷️ The other route, on the same site {#the-other-route-on-the-same-site}
 
@@ -61,7 +67,8 @@ document.addEventListener('consentio:consent-update', (e) => console.log(e.detai
 		var readout = document.getElementById('consentio-readout');
 		var reset = document.getElementById('consentio-reset');
 		var refresh = document.getElementById('consentio-refresh');
-		if (!readout || !reset || !refresh) return;
+		var openPanel = document.getElementById('consentio-open');
+		if (!readout || !reset || !refresh || !openPanel) return;
 
 		// The banner publishes the name it actually used. Reading it back beats hard-coding
 		// the default here and quietly drifting from the page that documents it.
@@ -102,6 +109,17 @@ document.addEventListener('consentio:consent-update', (e) => console.log(e.detai
 			// adding a second cookie the banner never sees.
 			document.cookie = cookieName() + '=; path=/; max-age=0; SameSite=Lax';
 			window.location.reload();
+		});
+
+		openPanel.addEventListener('click', function () {
+			// The guard the events page asks every site for: the bundle is injected by the
+			// loader, so a click in the first moment of a page load can arrive before it.
+			if (!window.ConsentioInstance) {
+				readout.textContent = 'The banner has not loaded yet. That is what the guard around '
+					+ 'openSettings() is for.';
+				return;
+			}
+			window.ConsentioInstance.openSettings();
 		});
 
 		refresh.addEventListener('click', show);

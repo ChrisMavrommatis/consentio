@@ -11,6 +11,6 @@ test('consentRequired shows the blocking overlay alongside the bar', () => {
 });
 
 test('the overlay stays up while the settings are open', () => {
-	app.openSettings(new CustomEvent('consentio:open-settings'));
+	app.openSettings();
 	assert.equal(app.required!.style.display, 'block');
 });

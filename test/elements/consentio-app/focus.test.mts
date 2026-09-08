@@ -35,7 +35,7 @@ test('shift+Tab wraps the other way', () => {
 });
 
 test('opening the settings hands focus to the modal', () => {
-	app.openSettings(new CustomEvent('consentio:open-settings'));
+	app.openSettings();
 	assert.ok(app.modal!.contains(app._focus.activeElement));
 });
 
