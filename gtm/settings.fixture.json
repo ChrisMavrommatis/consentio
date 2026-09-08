@@ -1,0 +1,55 @@
+{
+	"what": "One worked settings object and one worked language pack, with what both readers must make of them. The banner's suite asserts against this file; the tag's tests.yaml carries the same values by hand. Nothing can span the two - only the tag manager runs the second one - so this file is what stands in for a shared test.",
+	"settings": {
+		"cookieName": "consentio",
+		"version": 1,
+		"debug": false,
+		"consentRequired": true,
+		"policyUrl": "/privacy/",
+		"hideFloatingButton": false,
+		"consents": {
+			"strictly_necessary": { "defaultState": "granted" },
+			"preferences_functionality": { "defaultState": "denied" },
+			"statistics_performance": { "defaultState": "granted" },
+			"marketing_advertising": { "defaultState": "denied" }
+		}
+	},
+	"language": {
+		"note": "A published pack, cut down to what this fixture asserts. The shape is the emitted <locale>.json exactly: words under texts, the four categories keyed under consents.",
+		"locale": "el",
+		"name": "Ελληνικά",
+		"policyUrl": "/el/privacy/",
+		"texts": {
+			"barTitle": "Πολιτική Cookies"
+		},
+		"consents": {
+			"strictly_necessary": {
+				"title": "Απολύτως απαραίτητα",
+				"description": "Χωρίς αυτά ο ιστότοπος δεν λειτουργεί."
+			}
+		}
+	},
+	"expected": {
+		"locale": "el",
+		"barTitle": "Πολιτική Cookies",
+		"strictlyNecessaryTitle": "Απολύτως απαραίτητα",
+		"strictlyNecessaryDescription": "Χωρίς αυτά ο ιστότοπος δεν λειτουργεί.",
+		"buttonSave": {
+			"note": "The pack says nothing about it, so the banner keeps its English and the tag sends nothing at all. A missing key is a fallback; a blank one would not be.",
+			"banner": "Save",
+			"tag": null
+		},
+		"policyUrl": {
+			"note": "The pack's address wins over the settings, because a Greek site links a Greek policy page.",
+			"value": "/el/privacy/",
+			"whenPackIsBlank": "",
+			"whenPackHasNoKey": "/privacy/"
+		},
+		"consents": [
+			{ "key": "strictly_necessary", "alwaysOn": true, "defaultState": "granted" },
+			{ "key": "preferences_functionality", "alwaysOn": false, "defaultState": "denied" },
+			{ "key": "statistics_performance", "alwaysOn": false, "defaultState": "granted" },
+			{ "key": "marketing_advertising", "alwaysOn": false, "defaultState": "denied" }
+		]
+	}
+}

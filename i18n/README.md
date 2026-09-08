@@ -19,7 +19,12 @@ npm run build:site     # -> website/data/i18n/<code>.json, what the site hands o
 npm run publish:i18n   # -> dist/i18n/<code>.json. The release workflow's
 ```
 
-All three write the same file: `{ texts, consents: [...] }`, which is what `Consentio.Create` takes.
+All three write the same file: **the yaml, parsed, with nothing done to it.** `locale`, `name`, an optional
+`policyUrl`, `texts`, and the four categories keyed under `consents`.
+
+That one file is read three ways, which is the point of it: it is argument two of `Consentio.Create`, it is
+what `data-language-url` fetches on the direct route, and it is what a **Language pack variable** holds on
+the tag manager route. A pack that had to be edited before one of the three would accept it was defect 34.
 
 `node scripts/i18n.mjs --check` reads the language files and writes nothing.
 
@@ -44,7 +49,13 @@ so it shows as an empty title rather than as the English. Leaving the key out is
 
 ## What is not in here
 
-**`alwaysOn` and `defaultState`.** They are behaviour, not words, and live in `src/consentio.ts`.
+**`defaultState`.** It is behaviour, not words, and it lives in the settings file - `src/consentio.ts` holds
+the default. **`alwaysOn` is not anywhere:** only `strictly_necessary` is ever always on, so it is derived
+from the key rather than written down.
+
+**`policyUrl` is the one address that may be here**, because a Greek site links a Greek policy page. It is
+optional: leave it out and the settings file's address is used, and a blank one means this language has no
+link at all.
 
 **The cookie table.** The rows are one site's own cookies, not a translation. Only the four column headings
 are here.

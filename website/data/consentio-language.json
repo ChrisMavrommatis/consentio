@@ -1,0 +1,10 @@
+---
+layout: null
+---
+{
+	"locale": "en",
+	"name": "English",
+	"texts": {
+		"policyLinkLabel": "The cookie this site sets"
+	}
+}

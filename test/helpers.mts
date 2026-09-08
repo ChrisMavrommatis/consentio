@@ -10,7 +10,7 @@
 import { JSDOM } from 'jsdom';
 
 import TemplateRenderer from '../src/lib/template-renderer.js';
-import type { ConsentioOptions, CookieDescriptor } from '../src/types.js';
+import type { CookieTableRow, LanguageInput, LegacyConfig, SettingsInput } from '../src/types.js';
 import Consentio from '../src/consentio.js';
 import type ConsentioAppElement from '../src/elements/consentio-app.js';
 
@@ -79,8 +79,12 @@ export function click(el: Element): void {
  * throws - which is why the element tests are split one scenario per file, each getting
  * its own process and its own registry from node:test.
  */
-export function boot(options: ConsentioOptions = {}, cookies: CookieDescriptor[] = []): ConsentioAppElement {
-	return new Consentio(options, cookies, null).el!;
+export function boot(
+	settings: SettingsInput | LegacyConfig = {},
+	language: LanguageInput = {},
+	cookies: CookieTableRow[] = []
+): ConsentioAppElement {
+	return new Consentio(settings, language, cookies, null).el!;
 }
 
 /**

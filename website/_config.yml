@@ -29,7 +29,14 @@ docs_version            : "0.1.0"
 #
 # A page can force the direct route with `loader: true` in its front matter, or force it off
 # with `loader: false`, whatever the route says. That is how one site shows both.
+#
+# consentio_language: which language file the loader fetches. It is a whole language pack,
+#                     so pointing it at /data/i18n/el.json runs the site's banner in Greek -
+#                     which is how a published pack is checked without a container. Empty
+#                     means no language file at all, and the built-in English is used.
+#                     /data/consentio-language.json is this site's own, and overrides one word.
 consentio_route         : "direct"
+consentio_language      : "/data/i18n/en.json"
 gtm_container_id        : ""
 
 ############################################################

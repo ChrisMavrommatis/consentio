@@ -9,7 +9,7 @@
  *
  * Nothing here may import from src/consentio.js or from src/elements/.
  */
-import type { ConsentCategory, ConsentRecord, CookieTableHeaders } from '../src/types.js';
+import type { ConsentCategory, ConsentRecord } from '../src/types.js';
 
 /**
  * The seven signals Google actually reads. Defect 2 is that the map emits an eighth,
@@ -82,11 +82,12 @@ export const FULL_CONSENT: ConsentRecord = {
 	marketing_advertising: 'denied'
 };
 
-export const TABLE_HEADERS: CookieTableHeaders = {
-	cookieName: 'Cookie Name',
-	cookiePurpose: 'Cookie Purpose',
-	cookieProvenance: 'Provenance',
-	cookieDuration: 'Duration'
+/** The four column headings, under the names the texts give them - there is no second set. */
+export const TABLE_HEADERS = {
+	cookieTableHeaderName: 'Cookie Name',
+	cookieTableHeaderPurpose: 'Cookie Purpose',
+	cookieTableHeaderProvenance: 'Provenance',
+	cookieTableHeaderDuration: 'Duration'
 };
 
 /** Every `{{ name }}` a template asks for, in order of appearance. */

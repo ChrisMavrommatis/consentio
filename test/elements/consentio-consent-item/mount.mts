@@ -1,18 +1,18 @@
 import ConsentioConsentItemElement from '../../../src/elements/consentio-consent-item.js';
 import consentItemTemplate from '../../../src/templates/consentio-consent-item.html';
-import type { CookieDescriptor } from '../../../src/types.js';
+import type { CookieTableRow } from '../../../src/types.js';
 import { TABLE_HEADERS, nodeFrom } from '../../helpers.mjs';
 
 customElements.define('consentio-consent-item', ConsentioConsentItemElement);
 
-export const COOKIES: CookieDescriptor[] = [
+export const COOKIES: CookieTableRow[] = [
 	{ name: 'analytics_id', purpose: 'Usage data', provenance: 'Third-party', duration: '1 Year', category: 'statistics_performance' },
 	{ name: 'session_id', purpose: 'Session', provenance: 'First-party', duration: 'Session', category: 'statistics_performance' }
 ];
 
 export interface MountOptions {
 	alwaysOn?: string;
-	cookies?: CookieDescriptor[];
+	cookies?: CookieTableRow[];
 	tableHeaders?: typeof TABLE_HEADERS | null;
 }
 

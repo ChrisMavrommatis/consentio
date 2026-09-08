@@ -24,7 +24,7 @@ reads the cookie and pushes the signals in its first pass, and only then fetches
 
 **The tag manager route never loads the loader.** A custom template cannot inject a blocking script —
 `injectScript` is always async — so the template pushes the default itself through the tag manager's own
-consent API, then injects `consentio.min.js` and calls `Consentio.Create(config, cookies)`. That is why
+consent API, then injects `consentio.min.js` and calls `Consentio.Create` itself. That is why
 the banner is a named UMD library and the loader is not: one of them is called by name from outside.
 
 ## ⚖️ Three modules are in both bundles, twice
@@ -49,7 +49,7 @@ src/
 ├── consentio-loader.ts    # entry point 1 - the blocking loader
 ├── consentio.ts           # entry point 2 - the banner, and Consentio.Create. Its English
 │                          #   comes from ../i18n/en.yaml, the one import outside src/
-├── types.ts               # the config shape, shared
+├── types.ts               # the settings, language and cookie shapes, shared
 ├── globals.d.ts           # the .scss, .html and .yaml import declarations, and the version constant
 ├── elements/              # the six custom elements. They extend HTMLElement at module load
 ├── lib/                   # the modules above, plus state, logging, focus, the DOM helpers

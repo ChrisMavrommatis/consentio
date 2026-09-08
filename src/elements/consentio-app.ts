@@ -18,16 +18,16 @@ import type ConsentioRequiredElement from './consentio-required.js';
 import type ConsentioFloatingButtonElement from './consentio-floating-button.js';
 import type ConsentioLogger from '../lib/logger.js';
 import type ConsentioState from '../lib/state.js';
-import type { ConsentioConfig, ConsentRecord, CookieDescriptor, CookieTableHeaders } from '../types.js';
+import type { ConsentCategory, ConsentRecord, CookieTableRow, ResolvedConfig } from '../types.js';
 
 class ConsentioAppElement extends HTMLElement {
 
 	declare _shadow: ShadowRoot;
 	declare isRendered: boolean;
 	declare isVisible: boolean;
-	declare _config: ConsentioConfig;
+	declare _config: ResolvedConfig;
 	declare _state: ConsentioState;
-	declare _cookies: CookieDescriptor[];
+	declare _cookies: CookieTableRow[];
 	declare _logger: ConsentioLogger | null;
 	declare required: ConsentioRequiredElement | null;
 	declare bar: ConsentioBarElement | null;
@@ -55,7 +55,7 @@ class ConsentioAppElement extends HTMLElement {
 		this.isRendered = false;
 		this.isVisible = false;
 		// Placeholders until Consentio.init assigns the real config and state.
-		this._config = {} as ConsentioConfig;
+		this._config = {} as ResolvedConfig;
 		this._state = {} as ConsentioState;
 		this._cookies = [];
 		this._logger = null;
@@ -67,11 +67,11 @@ class ConsentioAppElement extends HTMLElement {
 		this.gtm = null;
 	}
 
-	get config(): ConsentioConfig {
+	get config(): ResolvedConfig {
 		return this._config;
 	}
 
-	set config(value: Partial<ConsentioConfig>) {
+	set config(value: Partial<ResolvedConfig>) {
 		this._config = { ...this._config, ...value };
 		if (this.isRendered) {
 			this.render();
@@ -88,11 +88,11 @@ class ConsentioAppElement extends HTMLElement {
 		this._state = value;
 	}
 
-	get cookies(): CookieDescriptor[] {
+	get cookies(): CookieTableRow[] {
 		return this._cookies;
 	}
 
-	set cookies(value: CookieDescriptor[]) {
+	set cookies(value: CookieTableRow[]) {
 		this._cookies = [...value];
 	}
 
@@ -154,12 +154,6 @@ class ConsentioAppElement extends HTMLElement {
 		});
 		this.renderPolicyLink(newBar);
 
-		const cookieTableHeaders: CookieTableHeaders = {
-			cookieName: this.config.texts.cookieTableHeaderName,
-			cookiePurpose: this.config.texts.cookieTableHeaderPurpose,
-			cookieProvenance: this.config.texts.cookieTableHeaderProvenance,
-			cookieDuration: this.config.texts.cookieTableHeaderDuration
-		};
 		this.addOrReplace(newBar, this.bar);
 		this.bar = newBar;
 		this.bar.logger = this.logger;
@@ -169,7 +163,7 @@ class ConsentioAppElement extends HTMLElement {
 			this.bar.setAttribute('aria-modal', 'true');
 		}
 
-		this.consentItems = this.config.consents.map(consent => {
+		this.consentItems = this.config.consents.map((consent: ConsentCategory) => {
 			const consentItem = this.renderNode<ConsentioConsentItemElement>(consentItemTemplate, {
 				consentKey: consent.key,
 				consentTitle: consent.title,
@@ -178,7 +172,8 @@ class ConsentioAppElement extends HTMLElement {
 			if (consent.alwaysOn) {
 				consentItem.alwaysOn = this.config.texts.alwaysOnLabel;
 			}
-			consentItem.tableHeaders = cookieTableHeaders;
+			// The four column headings are texts like any other - there is no second name for them.
+			consentItem.tableHeaders = this.config.texts;
 			consentItem.cookies = this.cookies.filter(cookie => cookie.category === consent.key);
 			if (this.state.consentGiven) {
 				consentItem.itemState = this.state.consents[consentItem.id];

@@ -19,9 +19,10 @@ without it. Put it on exactly one tag.
 : The two files are not in the same folder. The small one works out where the big one is by looking next to
 itself, so moving one without the other breaks it. Put them back together.
 
-**A 404 on your config or cookies file**
-: Check `data-config-url` and `data-cookies-url` are paths your site actually serves. Both are optional — if
-you remove them the banner still runs on built-in defaults, which is a quick way to prove the rest works.
+**A 404 on your settings, language or cookies file**
+: Check `data-settings-url`, `data-language-url` and `data-cookies-url` are paths your site actually serves.
+All three are optional — if you remove them the banner still runs on built-in defaults and built-in English,
+which is a quick way to prove the rest works.
 
 **Nothing on the console at all**
 : The tag is probably not running. View source on the built page and confirm the tag is really in the

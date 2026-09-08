@@ -14,10 +14,17 @@ class TemplateRenderer {
 		});
 	}
 
+	/**
+	 * A text node escapes `&`, `<` and `>` and nothing else, so a value carrying a quote
+	 * could close an attribute it was substituted into - issue 29. Both quotes are escaped
+	 * here as well, which is what lets `{{ }}` sit inside an attribute value at all.
+	 */
 	static domSanitize(value: string): string {
 		const div = document.createElement('div');
 		div.appendChild(document.createTextNode(value));
 		return div.innerHTML
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#39;');
 	}
 
 	static regexSanitize(value: string, replacement: string): string {

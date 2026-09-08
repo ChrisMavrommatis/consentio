@@ -37,8 +37,10 @@ only reason the answer arrives in time.
 
 The one that matters is **Text source**. Leave it at *Built-in English* and the banner uses its own wording.
 Set it to *Custom* and every string appears in a box, already filled in with that English — change what you
-want, or paste a translation over it. Set it to *From a variable* and the whole set comes from a Tag Manager
-variable, which is how you switch wording by language.
+want, or paste a translation over it. Set it to *From a variable* and the wording comes from a **Language
+pack variable** — any Tag Manager variable holding a language pack. A pack downloaded from a release
+(`en.json`, `el.json`) goes in unedited, and a Lookup Table keyed on the page's language is how you switch
+wording by language.
 
 For the cookie table, download `consentio-tag-cookies.tpl` from the same release and import it the same way -
 under **Variable Templates** rather than Tag Templates. Make a variable from it, fill in your rows, and pick

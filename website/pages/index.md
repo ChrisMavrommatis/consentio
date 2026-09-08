@@ -20,7 +20,7 @@ the answer, and tells your tracking tags what to do about it.</p>
 
 </div>
 
-You host it yourself. It is one script file and a settings file — no account, no server, nothing running
+You host it yourself. It is one script file and the settings files it reads — no account, no server, nothing running
 anywhere but the visitor's browser. It suits a static site, or any site whose HTML you can edit.
 
 **There is no npm package and nothing to import.** You copy two files into your site, or serve them from a

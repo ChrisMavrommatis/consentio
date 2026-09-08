@@ -27,7 +27,7 @@ it is written for.
 |---|---|---|
 | What you add | `consentio-loader.min.js` as a plain **blocking** `<script>` in `<head>`, above the tag manager snippet | the Consentio tag, on the **Consent Initialization - All Pages** trigger |
 | What pushes the consent default | the loader, on its first pass, before it fetches or injects anything | the template's own sandboxed code, before it calls `injectScript` |
-| Where settings come from | two JSON files, fetched by URL | the template's own fields |
+| Where settings come from | JSON files, fetched by URL | the template's own fields |
 | Uses the loader | yes | **no — never** |
 | The cost | it blocks. 4.6 KB has to download before the page paints | **it only covers tags in that container** |
 
@@ -37,7 +37,7 @@ anything pasted straight into the page fires regardless of what the visitor answ
 banner, because it looks compliant.
 
 > **Do not install both.** The template never loads the loader; it injects `consentio.min.js` itself and
-> calls `Consentio.Create(config, cookies)`. Run both and the visitor gets two banners that do not know about
+> calls `Consentio.Create` on its own. Run both and the visitor gets two banners that do not know about
 > each other.
 
 ## 🚀 Direct install
@@ -52,7 +52,8 @@ relative to its own `src` — then:
   <!-- 1. Consentio. Blocking, and first. -->
   <script src="/js/consentio-loader.min.js"
           data-consentio-loader
-          data-config-url="/data/consentio-config.json"
+          data-settings-url="/data/consentio-settings.json"
+          data-language-url="/data/en.json"
           data-cookies-url="/data/consentio-cookies.json"></script>
 
   <!-- 2. The tag manager container snippet, unchanged, AFTER the loader. -->

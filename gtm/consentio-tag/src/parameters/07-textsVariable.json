@@ -1,7 +1,7 @@
 {
 	"type": "SELECT",
 	"name": "textsVariable",
-	"displayName": "Texts Variable",
+	"displayName": "Language pack variable",
 	"macrosInSelect": true,
 	"selectItems": [
 		{
@@ -17,5 +17,5 @@
 			"type": "EQUALS"
 		}
 	],
-	"help": "Any Tag Manager variable returning the whole set of strings - a Custom JavaScript variable, or a Lookup Table keyed on the page's language. Anything it leaves out falls back to the built-in English."
+	"help": "Any Tag Manager variable returning a whole language pack - a Custom JavaScript variable, or a Lookup Table keyed on the page's language. It takes a published pack (en.json, el.json) exactly as downloaded: the words under texts, the four categories keyed under consents, and optionally policyUrl. Anything it leaves out falls back to the built-in English."
 }

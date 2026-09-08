@@ -52,6 +52,9 @@ import { BASELINE_CONSENTS, readConsents } from './lib/consent-store.js';
 
 	const loaderSrc = loaderScript.getAttribute('src');
 
+	// Three files, one per concern. `data-config-url` is 0.1.0's merged one and still works.
+	const settingsUrl = loaderScript.dataset.settingsUrl || null;
+	const languageUrl = loaderScript.dataset.languageUrl || null;
 	const configUrl = loaderScript.dataset.configUrl || null;
 	const cookiesUrl = loaderScript.dataset.cookiesUrl || null;
 
@@ -119,40 +122,44 @@ import { BASELINE_CONSENTS, readConsents } from './lib/consent-store.js';
 			return;
 		}
 
-		let config = {};
+		let settings = {};
+		let language = {};
 		let cookies: unknown[] = [];
-		let resources: string[] = [];
 
+		// Name and url, so what came back is read by name rather than by counting.
+		const resources: [string, string][] = [];
+		const add = function (name: string, url: string | null): void {
+			if (!url) {
+				return;
+			}
+			debug && logger.info(`[Consentio Loader] ${name} URL:`, url);
+			resources.push([name, url]);
+		};
 
-		if (configUrl) {
-			debug && logger.info('[Consentio Loader] Config URL:', configUrl);
-			resources.push(configUrl);
+		if (settingsUrl && configUrl) {
+			logger.warn('[Consentio Loader] both data-config-url and data-settings-url are set - data-settings-url wins');
 		}
-		if (cookiesUrl) {
-			debug && logger.info('[Consentio Loader] Cookies URL:', cookiesUrl);
-			resources.push(cookiesUrl);
-		}
+		add('settings', settingsUrl || configUrl);
+		add('language', languageUrl);
+		add('cookies', cookiesUrl);
 
 
 		try {
 
 			if (resources.length > 0) {
-				const results = await getResources(resources);
-				let resultIndex = 0;
-				if (configUrl) {
-					config = results[resultIndex++];
-					debug && logger.info('[Consentio Loader] Config loaded:', config);
-				}
-				if (cookiesUrl) {
-					cookies = results[resultIndex++];
-					debug && logger.info('[Consentio Loader] Cookies loaded:', cookies);
-				}
-				if (results.length > resultIndex) {
-					logger.warn('[Consentio Loader] More resources loaded than expected');
-				}
+				const results = await getResources(resources.map(([, url]) => url));
+				resources.forEach(([name], index) => {
+					const loaded = results[index];
+					debug && logger.info(`[Consentio Loader] ${name} loaded:`, loaded);
+					if (name === 'settings') { settings = loaded; }
+					if (name === 'language') { language = loaded; }
+					if (name === 'cookies') { cookies = loaded; }
+				});
 			}
 
-			global.ConsentioInstance = new global.Consentio(config, cookies, logger);
+			// A settings file carrying `texts`, or `consents` as an array, is 0.1.0's config
+			// and the banner splits it. That is what keeps a site on two files working.
+			global.ConsentioInstance = new global.Consentio(settings, language, cookies, logger);
 			logger.info('[Consentio Loader] Initialized successfully');
 		} catch (error) {
 			logger.error('[Consentio Loader] Initialization failed:', error);

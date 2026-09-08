@@ -1,14 +1,19 @@
-// Builds each language into the json a site passes to Consentio.Create. See i18n/README.md.
+// Builds each language into the json a site publishes. See i18n/README.md.
 //
 // One destination per verb: build/i18n/ by default, website/data/i18n/ under `--website`
 // beside the site's other json, dist/i18n/ under `--dist`. All three get the same thing:
-// `<code>.json`, in the shape Consentio.Create takes.
+// `<code>.json`, the parsed yaml with nothing done to it - argument two of
+// Consentio.Create, the file `data-language-url` fetches, and what the tag's language
+// pack variable reads. One shape, three readers - issue 34.
 
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { parse } from 'yaml';
 
 const ROOT = new URL('../', import.meta.url);
 const SOURCE = new URL('i18n/', ROOT);
+
+// The whole file is published, so a key nobody reads is a key that will mislead someone.
+const TOP_LEVEL_KEYS = ['locale', 'name', 'policyUrl', 'texts', 'consents'];
 
 // A pack may change every string but no key: a fifth would reach no Google signal.
 const CATEGORY_KEYS = [
@@ -41,6 +46,14 @@ function readPacks() {
 		}
 		for (const key of ['locale', 'name']) {
 			if (typeof pack[key] !== 'string' || pack[key].trim() === '') { fail(name, `needs a ${key}`); }
+		}
+		for (const key of Object.keys(pack)) {
+			if (!TOP_LEVEL_KEYS.includes(key)) { fail(name, `${key} is not a key the banner reads`); }
+		}
+		// An address, not a word, so the blank rule below does not apply to it: '' is a
+		// language with no policy page, and no key at all falls back to the settings.
+		if ('policyUrl' in pack && typeof pack.policyUrl !== 'string') {
+			fail(name, 'policyUrl must be a string - leave the key out to fall back to the settings');
 		}
 		for (const [key, value] of Object.entries(pack.texts)) {
 			checkString(fail, name, `texts.${key}`, value);
@@ -86,18 +99,6 @@ function checkString(fail, name, path, value) {
 }
 
 
-// What Consentio.Create takes.
-function bannerPack(pack) {
-	return {
-		texts: pack.texts,
-		consents: CATEGORY_KEYS.map((key) => ({
-			key,
-			title: pack.consents[key].title,
-			description: pack.consents[key].description
-		}))
-	};
-}
-
 // ## Run ##
 
 const checkOnly = process.argv.includes('--check');
@@ -122,7 +123,8 @@ if (checkOnly) {
 	mkdirSync(outDir, { recursive: true });
 
 	for (const pack of packs.values()) {
-		writeFileSync(new URL(`${pack.locale}.json`, outDir), `${JSON.stringify(bannerPack(pack), null, '\t')}\n`);
+		// The pack itself, unchanged. Reshaping it here is what defect 34 was.
+		writeFileSync(new URL(`${pack.locale}.json`, outDir), `${JSON.stringify(pack, null, '\t')}\n`);
 	}
 
 	process.stdout.write(`i18n: ${packs.size} languages (${locales}) -> ${outDir.pathname.replace(ROOT.pathname, '')}\n`);

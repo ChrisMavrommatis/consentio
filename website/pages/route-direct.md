@@ -5,7 +5,7 @@ permalink: /install/direct/
 description: Add Consentio to your site with one script tag. Four steps, then the detail.
 ---
 
-You are adding **one `<script>` tag** to the top of every page, and two small settings files it reads. This
+You are adding **one `<script>` tag** to the top of every page, and the small settings files it reads. This
 route covers everything on the page, not just what a tag manager loads.
 
 ## 🚀 Four steps {#four-steps}
@@ -20,15 +20,15 @@ itself, and it decides which one to ask for from its own filename: `consentio-lo
 `consentio.min.js`, and `consentio-loader.js` loads `consentio.js`. Rename one, move one, or mix a minified
 file with an unminified one, and nothing loads.
 
-**2. Make two settings files.**
+**2. Make your settings files.**
 
-`/data/consentio-config.json` — your wording and options. Start with this and change it later:
+`/data/consentio-settings.json` — how the banner behaves. Start with this and change it later:
 
 ```json
 {
   "consentRequired": false,
-  "texts": {
-    "barTitle": "Cookies on this site"
+  "consents": {
+    "statistics_performance": { "defaultState": "denied" }
   }
 }
 ```
@@ -36,14 +36,19 @@ file with an unminified one, and nothing loads.
 `/data/consentio-cookies.json` — the cookies you actually set, listed for visitors who open the settings.
 An empty array `[]` is a valid start.
 
-[Settings]({{ '/configuration/' | relative_url }}#configuration) lists every option in both files.
+`/data/en.json` — the words, and **optional**. Leave it out and the banner uses its built-in English. To
+change the wording or to run in another language, download a language pack from a
+[release]({{ site.repository_url }}/releases/latest), put it beside the other two, and point
+`data-language-url` at it.
+
+[Settings]({{ '/configuration/' | relative_url }}#configuration) lists every option in all three files.
 
 **3. Paste the tag into `<head>`, above everything else.**
 
 ```html
 <script src="/js/consentio-loader.min.js"
         data-consentio-loader
-        data-config-url="/data/consentio-config.json"
+        data-settings-url="/data/consentio-settings.json"
         data-cookies-url="/data/consentio-cookies.json"></script>
 ```
 
@@ -66,7 +71,8 @@ With a tag manager underneath it, in the order it has to go:
   <!-- 1. Consentio. Blocking, and first. -->
   <script src="/js/consentio-loader.min.js"
           data-consentio-loader
-          data-config-url="/data/consentio-config.json"
+          data-settings-url="/data/consentio-settings.json"
+          data-language-url="/data/el.json"
           data-cookies-url="/data/consentio-cookies.json"></script>
 
   <!-- 2. The tag manager container snippet, exactly as Google gives it, AFTER Consentio. -->
@@ -81,7 +87,8 @@ This site is built with Jekyll and does exactly that. Its own layout file is a w
 ```liquid
 <script src="{{ '/js/consentio-loader.min.js' | relative_url }}" data-consentio-loader
         data-debug="false"
-        data-config-url="{{ '/data/consentio-config.json' | relative_url }}"
+        data-settings-url="{{ '/data/consentio-settings.json' | relative_url }}"
+        data-language-url="{{ '/data/consentio-language.json' | relative_url }}"
         data-cookies-url="{{ '/data/consentio-cookies.json' | relative_url }}"></script>
 ```
 {% endraw %}
@@ -100,12 +107,12 @@ So `consentio-loader.min.js` does one thing before anything else: it reads the c
 the visitor allows. It does that by putting a message on `dataLayer` — the list of messages a tag manager
 reads — and Google calls that first message the **consent default**.
 
-It sends that message before it fetches your settings, before it loads the main file, and before the banner
-exists. The message needs no settings at all, which is exactly what lets it be sent with nothing downloaded
+It sends that message before it fetches any of your files, before it loads the main file, and before the
+banner exists. The message needs no settings at all, which is exactly what lets it be sent with nothing downloaded
 yet.
 
-Everything after that — loading the main file, fetching your two settings files, drawing the banner —
-happens in the background, well after the tag manager has started.
+Everything after that — loading the main file, fetching your settings files, drawing the banner — happens
+in the background, well after the tag manager has started.
 
 [What it tells Google]({{ '/datalayer/' | relative_url }}#what-reaches-the-datalayer) shows the message
 itself.
@@ -145,8 +152,10 @@ These go on the tag itself, because the script needs them before it can fetch an
 | Attribute | Required | Default | What it does |
 |---|---|---|---|
 | `data-consentio-loader` | **yes** | — | Marks the tag so the script can find itself. Without it you get `script not found` on the console and nothing happens. Put it on exactly one tag |
-| `data-config-url` | no | none | Where your settings file is. Leave it out and the built-in defaults are used |
+| `data-settings-url` | no | none | Where your settings file is. Leave it out and the built-in defaults are used |
+| `data-language-url` | no | none | Where your language file is — a published language pack, or one of your own. Leave it out and the banner uses its built-in English |
 | `data-cookies-url` | no | none | Where your cookie list is. Leave it out and the tables in the settings panel are empty |
+| `data-config-url` | no | none | The older single settings file, carrying `texts` and a `consents` array. Still read, and still works. Use `data-settings-url` and `data-language-url` in new sites |
 | `data-cookie-name` | no | `consentio` | Name of the cookie the answer is stored in |
 | `data-version` | no | `1` | Which stored answers are still valid. See [Versioning stored consent]({{ '/versioning/' | relative_url }}#versioning-stored-consent) |
 | `data-debug` | no | `false` | `"true"` prints what it is doing to the console. Errors and the async/defer warning are always printed |

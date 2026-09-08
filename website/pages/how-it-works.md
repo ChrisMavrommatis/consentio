@@ -22,7 +22,7 @@ anything at all.
    blocks. Nothing has been fetched yet; it does not need anything to have been.
 4. **It publishes `window.ConsentioDefault`** — what that push was built from.
 5. Everything after this point is asynchronous and the page carries on: it injects `consentio.min.js`,
-   fetches your two settings files, builds the banner, and inserts it.
+   fetches your settings, language and cookie files, builds the banner, and inserts it.
 
 Steps 1 to 4 are why `async` and `defer` break it. Both let the browser run the tag after your tag manager
 has already read consent, and there is no way to correct that afterwards — a tag manager reads consent once,
@@ -34,8 +34,8 @@ at load.
    other trigger in the container.
 2. The template reads the same cookie, by the same rules, in sandboxed template code, and **sets the consent
    default through Tag Manager's own consent API.**
-3. It calls `injectScript` for `consentio.min.js` at a pinned version, then `Consentio.Create(config,
-   cookies)` from its own fields.
+3. It calls `injectScript` for `consentio.min.js` at a pinned version, then `Consentio.Create` from its
+   own fields.
 
 `injectScript` is always asynchronous, which is why step 2 cannot be handed to the file it loads — by the
 time that file runs, Tag Manager has already decided what it may do.
@@ -43,10 +43,13 @@ time that file runs, Tag Manager has already decided what it may do.
 The template's entry point into the bundle:
 
 ```js
-// `config` is a ConsentioOptions object and `cookies` an array of cookie descriptors -
-// the same two shapes the JSON files hold on the other route.
-Consentio.Create(config, cookies);
+// Three objects, one per concern - the same three the JSON files hold on the other route.
+Consentio.Create(settings, language, cookies);
 ```
+
+The template sends the settings and the wording as one object, which `Create` takes apart itself. That is
+deliberate: the template pins an exact version of the bundle, so it has to call the bundle it pins in a way
+an older one also understands.
 
 `Create` puts the instance on `window.ConsentioInstance` itself, so there is nothing to assign afterwards.
 That is what the template's run-once guard reads, and what your own page calls to

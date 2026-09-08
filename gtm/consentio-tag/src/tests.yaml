@@ -162,20 +162,52 @@ scenarios:
     assertThat(config.texts.barTitle).isEqualTo('Cookies on this site');
     assertThat(config.texts.barDescription).isEqualTo(undefined);
     assertThat(config.consents[0].title).isEqualTo('Necessary');
-- name: a texts variable supplies the whole set
+- name: a language pack variable supplies the whole set
   code: |-
+    // A published <locale>.json, unedited: the words under texts, the categories keyed
+    // under consents. The values are gtm/settings.fixture.json - issue 34.
     mock('getCookieValues', () => []);
     mockData.textSource = 'variable';
-    mockData.textsVariable = {
-      barTitle: 'From a variable',
-      strictly_necessary: { title: 'Necessary', description: 'The ones the site cannot work without.' }
-    };
+    mockData.policyUrl = '/privacy/';
+    mockData.textsVariable = pack('/el/privacy/');
 
     const config = captureConfig();
 
-    assertThat(config.texts.barTitle).isEqualTo('From a variable');
-    assertThat(config.consents[0].title).isEqualTo('Necessary');
-    assertThat(config.consents[0].description).isEqualTo('The ones the site cannot work without.');
+    assertThat(config.texts.barTitle).isEqualTo('\u03a0\u03bf\u03bb\u03b9\u03c4\u03b9\u03ba\u03ae Cookies');
+    assertThat(config.consents[0].title).isEqualTo('\u0391\u03c0\u03bf\u03bb\u03cd\u03c4\u03c9\u03c2 \u03b1\u03c0\u03b1\u03c1\u03b1\u03af\u03c4\u03b7\u03c4\u03b1');
+    assertThat(config.consents[0].description).isEqualTo('\u03a7\u03c9\u03c1\u03af\u03c2 \u03b1\u03c5\u03c4\u03ac \u03bf \u03b9\u03c3\u03c4\u03cc\u03c4\u03bf\u03c0\u03bf\u03c2 \u03b4\u03b5\u03bd \u03bb\u03b5\u03b9\u03c4\u03bf\u03c5\u03c1\u03b3\u03b5\u03af.');
+    assertThat(config.policyUrl).isEqualTo('/el/privacy/');
+- name: what a pack leaves out falls back rather than arriving blank
+  code: |-
+    mock('getCookieValues', () => []);
+    mockData.textSource = 'variable';
+    mockData.textsVariable = pack('/el/privacy/');
+
+    const config = captureConfig();
+
+    // Absent, not empty: the banner keeps its built-in English for these.
+    assertThat(config.texts.buttonSave).isEqualTo(undefined);
+    assertThat(config.consents[1].title).isEqualTo(undefined);
+- name: a pack with no policy address of its own falls back to the field
+  code: |-
+    mock('getCookieValues', () => []);
+    mockData.textSource = 'variable';
+    mockData.policyUrl = '/privacy/';
+    mockData.textsVariable = pack(undefined);
+
+    const config = captureConfig();
+
+    assertThat(config.policyUrl).isEqualTo('/privacy/');
+- name: a blank policy address in a pack means no link in that language
+  code: |-
+    mock('getCookieValues', () => []);
+    mockData.textSource = 'variable';
+    mockData.policyUrl = '/privacy/';
+    mockData.textsVariable = pack('');
+
+    const config = captureConfig();
+
+    assertThat(config.policyUrl).isEqualTo('');
 setup: |-
   const mockData = {
     version: 1,
@@ -186,6 +218,27 @@ setup: |-
     marketingAdvertisingDefaultState: 'denied',
     textSource: 'builtin',
     cookies: 'none'
+  };
+
+  // gtm/settings.fixture.json's language pack, which the banner's own tests assert
+  // against. The Greek is escaped so this file stays ascii; the editor unescapes it.
+  const pack = (policyUrl) => {
+    const value = {
+      locale: 'el',
+      name: '\u0395\u03bb\u03bb\u03b7\u03bd\u03b9\u03ba\u03ac',
+      texts: { barTitle: '\u03a0\u03bf\u03bb\u03b9\u03c4\u03b9\u03ba\u03ae Cookies' },
+      consents: {
+        strictly_necessary: {
+          title: '\u0391\u03c0\u03bf\u03bb\u03cd\u03c4\u03c9\u03c2 \u03b1\u03c0\u03b1\u03c1\u03b1\u03af\u03c4\u03b7\u03c4\u03b1',
+          description: '\u03a7\u03c9\u03c1\u03af\u03c2 \u03b1\u03c5\u03c4\u03ac \u03bf \u03b9\u03c3\u03c4\u03cc\u03c4\u03bf\u03c0\u03bf\u03c2 \u03b4\u03b5\u03bd \u03bb\u03b5\u03b9\u03c4\u03bf\u03c5\u03c1\u03b3\u03b5\u03af.'
+        }
+      }
+    };
+    // A pack that names no address at all has no key, which is not the same as a blank one.
+    if (policyUrl !== undefined) {
+      value.policyUrl = policyUrl;
+    }
+    return value;
   };
 
   // injectScript does nothing in the test sandbox, so the success callback - and with it

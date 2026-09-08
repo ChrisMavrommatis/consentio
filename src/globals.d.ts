@@ -18,6 +18,7 @@ declare module '*.yaml' {
 	const pack: {
 		locale: string;
 		name: string;
+		policyUrl?: string;
 		texts: import('./types.js').ConsentioTexts;
 		consents: Record<string, { title: string; description: string }>;
 	};
@@ -27,6 +28,6 @@ declare module '*.yaml' {
 interface Window {
 	dataLayer?: unknown[];
 	ConsentioDefault?: import('./types.js').ConsentioDefaultState;
-	Consentio?: new (options?: object, cookies?: unknown[], logger?: Console) => unknown;
+	Consentio?: new (settings?: object, language?: object | unknown[], cookies?: unknown[], logger?: Console) => unknown;
 	ConsentioInstance?: unknown;
 }

@@ -21,6 +21,25 @@ test('domSanitize escapes angle brackets and ampersands', () => {
 	assert.equal(TemplateRenderer.domSanitize('<b>&</b>'), '&lt;b&gt;&amp;&lt;/b&gt;');
 });
 
+// --- defect 29 -------------------------------------------------------------
+//
+// A text node escapes &, < and > and nothing else, so a value carrying a quote could close
+// the attribute it was substituted into. Both quotes are escaped, which is what lets a
+// placeholder sit inside an attribute value at all.
+
+test('issue 29 - domSanitize escapes both quotes', () => {
+	assert.equal(TemplateRenderer.domSanitize(`a "b" and 'c'`), 'a &quot;b&quot; and &#39;c&#39;');
+});
+
+test('issue 29 - a value cannot break out of the attribute it is placed in', () => {
+	const rendered = TemplateRenderer.render('<div title="{{ v }}"></div>', { v: '" onmouseover="alert(1)' });
+	const host = document.createElement('div');
+	host.innerHTML = rendered;
+	const child = host.firstElementChild!;
+	assert.equal(child.getAttribute('onmouseover'), null, 'the value stayed inside the attribute');
+	assert.equal(child.getAttribute('title'), '" onmouseover="alert(1)');
+});
+
 test('regexSanitize strips path-hostile characters', () => {
 	assert.equal(TemplateRenderer.regexSanitize('a/b:c*d', '-'), 'a-b-c-d');
 });

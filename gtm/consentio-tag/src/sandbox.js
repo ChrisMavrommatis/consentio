@@ -137,17 +137,38 @@ const hasCookiesVariable = hasSelectedVariable(data.cookies);
 // later correction to them.
 const fromFields = data.textSource === 'custom';
 const fromVariable = data.textSource === 'variable' && hasSelectedVariable(data.textsVariable);
-const supplied = fromVariable ? data.textsVariable : data;
+
+// A language pack variable holds a published <locale>.json unchanged - the words under
+// `texts`, the four categories keyed under `consents`. The custom fields are flat on
+// `data` and are tag fields that cannot move, so the two paths are read differently.
+// Reading a pack as if it were flat is what defect 34 was.
+const pack = fromVariable ? data.textsVariable : null;
+const packTexts = pack && pack.texts ? pack.texts : {};
+const packConsents = pack && pack.consents ? pack.consents : {};
 
 function text(key) {
-  return fromFields || fromVariable ? supplied[key] : null;
+  if (fromVariable) {
+    return packTexts[key];
+  }
+  if (fromFields) {
+    return data[key];
+  }
+  return null;
 }
 
 function category(key, titleField, descriptionField) {
-  const title = fromVariable ? (supplied[key] ? supplied[key].title : null) : text(titleField);
-  const description = fromVariable ? (supplied[key] ? supplied[key].description : null) : text(descriptionField);
-  return { title: title, description: description };
+  if (!fromVariable) {
+    return { title: text(titleField), description: text(descriptionField) };
+  }
+  const words = packConsents[key];
+  return { title: words ? words.title : null, description: words ? words.description : null };
 }
+
+// A pack may name a policy page in its own language. A blank one there means this
+// language has no link; no key at all falls back to the tag's own field.
+const policyUrl = pack && pack.policyUrl !== undefined && pack.policyUrl !== null
+  ? pack.policyUrl
+  : data.policyUrl;
 
 const strictlyNecessary = category('strictly_necessary', 'strictlyNecessaryTitle', 'strictlyNecessaryDescription');
 const preferencesFunctionality = category('preferences_functionality', 'preferencesFunctionalityTitle', 'preferencesFunctionalityDescription');
@@ -163,7 +184,7 @@ const config = {
   hideFloatingButton: data.hideFloatingButton,
   // An address, not a word, so it is a field of its own rather than one of the texts. The
   // banner checks the scheme; nothing here is put in an href.
-  policyUrl: data.policyUrl,
+  policyUrl: policyUrl,
   texts: {
     barTitle: text('barTitle'),
     barDescription: text('barDescription'),
@@ -226,6 +247,9 @@ log('cookies =', cookies);
 // ## load script ##
 
 const scriptLoaded = function () {
+  // Two arguments, and the merged shape, on purpose: the URL above pins the release
+  // before this template's own, so the bundle that answers this call may be an older one.
+  // The banner splits a config carrying `texts` into a settings and a language itself.
   const consentioInstance = callInWindow('Consentio.Create', config, cookies);
   // The banner sets this too. Setting it here as well is what makes the guard above work
   // against an older pinned bundle.

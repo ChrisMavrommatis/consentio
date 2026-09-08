@@ -1,11 +1,18 @@
 import { isHidden, showElement, hideElement } from '../lib/dom.js';
-import type { ConsentState, CookieDescriptor, CookieTableHeaders } from '../types.js';
+import type { ConsentioTexts, ConsentState, CookieTableRow } from '../types.js';
+
+/**
+ * The four of the banner's texts this element reads. A view of ConsentioTexts rather than
+ * a type of its own: two names for the same four strings is what defect 34's cleanup removed.
+ */
+type TableHeaderTexts = Pick<ConsentioTexts,
+	'cookieTableHeaderName' | 'cookieTableHeaderPurpose' | 'cookieTableHeaderProvenance' | 'cookieTableHeaderDuration'>;
 
 class ConsentioConsentItemElement extends HTMLElement {
 
 	declare _alwaysOn: string | null;
-	declare _cookies: CookieDescriptor[];
-	declare _tableHeaders: CookieTableHeaders | null;
+	declare _cookies: CookieTableRow[];
+	declare _tableHeaders: TableHeaderTexts | null;
 	declare _itemState: ConsentState | null;
 	declare _onClick: (event: Event) => void;
 	declare _onKeydown: (event: Event) => void;
@@ -45,19 +52,19 @@ class ConsentioConsentItemElement extends HTMLElement {
 		return this._alwaysOn;
 	}
 
-	get cookies(): CookieDescriptor[] {
+	get cookies(): CookieTableRow[] {
 		return this._cookies;
 	}
 
-	set cookies(value: CookieDescriptor[]) {
+	set cookies(value: CookieTableRow[]) {
 		this._cookies = value;
 	}
 
-	set tableHeaders(value: CookieTableHeaders | null) {
+	set tableHeaders(value: TableHeaderTexts | null) {
 		this._tableHeaders = value;
 	}
 
-	get tableHeaders(): CookieTableHeaders | null {
+	get tableHeaders(): TableHeaderTexts | null {
 		return this._tableHeaders;
 	}
 
@@ -154,9 +161,16 @@ class ConsentioConsentItemElement extends HTMLElement {
 		thead.appendChild(headerRow);
 
 
-		Array.from(Object.keys(this.tableHeaders)).forEach(key => {
+		// Named one by one, and in this order: the columns below are built in the same order.
+		const headings = [
+			this.tableHeaders.cookieTableHeaderName,
+			this.tableHeaders.cookieTableHeaderPurpose,
+			this.tableHeaders.cookieTableHeaderProvenance,
+			this.tableHeaders.cookieTableHeaderDuration
+		];
+		headings.forEach(heading => {
 			const th = document.createElement('th');
-			th.appendChild(document.createTextNode(this.tableHeaders![key as keyof CookieTableHeaders]));
+			th.appendChild(document.createTextNode(heading));
 			headerRow.appendChild(th);
 		});
 

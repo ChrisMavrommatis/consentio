@@ -20,7 +20,8 @@
 	{%- if use_loader %}
 	<script src="{{ '/js/consentio-loader.min.js' | relative_url }}" data-consentio-loader
 		data-debug="{{ site.consentio_debug | default: false }}"
-		data-config-url="{{ '/data/consentio-config.json' | relative_url }}"
+		data-settings-url="{{ '/data/consentio-settings.json' | relative_url }}"
+		data-language-url="{{ site.consentio_language | default: '/data/consentio-language.json' | relative_url }}"
 		data-cookies-url="{{ '/data/consentio-cookies.json' | relative_url }}"></script>
 	{%- endif %}
 	{% gtm_head site.gtm_container_id %}

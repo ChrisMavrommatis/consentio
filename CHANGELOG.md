@@ -56,18 +56,58 @@ release body, so write these entries for the people using Consentio, not for the
   attached to this release.
 
   ```js
-  const texts = await fetch('/i18n/el.json').then((r) => r.json());
-  Consentio.Create({ ...texts, consentRequired: true }, cookies);
+  const language = await fetch('/data/el.json').then((r) => r.json());
+  Consentio.Create({ consentRequired: true }, language, cookies);
   ```
 
-  On the tag manager route the same file goes into a variable and the tag's *Text source* is set to *From a
+  On the direct route you can point `data-language-url` at that file instead and fetch nothing yourself. On
+  the tag manager route the same file goes into a variable and the tag's *Text source* is set to *From a
   variable*, which is how you switch wording by page language.
 
 - **A translation is a file you own.** Nothing is fetched from us at run time, so a language cannot fail to
   load. To add one, copy `i18n/en.yaml`, translate the values, and run `npm test` — it refuses a file that
   is missing a key, carries one English does not have, or leaves a value blank.
 
+- **Settings, words and cookies are three files, and each has its own attribute on the tag.**
+  `data-settings-url` is how the banner behaves, `data-language-url` is every word the visitor reads, and
+  `data-cookies-url` is the cookie table it already was. `Consentio.Create(settings, language, cookies)`
+  takes the same three.
+
+  ```html
+  <script src="/js/consentio-loader.min.js"
+          data-consentio-loader
+          data-settings-url="/data/consentio-settings.json"
+          data-language-url="/data/el.json"
+          data-cookies-url="/data/consentio-cookies.json"></script>
+  ```
+
+  **Words and behaviour change on different days, usually by different people.** Splitting them means a
+  translator can be handed one file that contains nothing else, and it means a published language pack is
+  the language file — no editing, no reshaping. The **Settings** page of the documentation has every key in
+  all three.
+
 ### 🔀 Changed
+
+- **A published language pack works as a Tag Manager variable, unedited.** It never did: the pack put the
+  words under `texts` and the categories under `consents`, and the tag looked for the strings flat with the
+  categories beside them, found nothing, and quietly showed English. A site that supplied a complete Greek
+  translation got an English banner and nothing on the console. **Set *Text source* to *From a variable*,
+  point it at a pack, and re-publish.** The field is now called **Language pack variable**, which is what it
+  always took.
+
+- **The settings file has no `texts` and no `consents` array; the language file has the words.** Your old
+  single file is still read — `data-config-url` still works, and a file carrying `texts` or a `consents`
+  array is taken apart for you — so **nothing has to change today**. New sites should write the three files
+  instead.
+
+  **`alwaysOn` is gone from the settings surface.** Only `strictly_necessary` was ever always on and only
+  it ever can be, so it is decided by the category key rather than by a field you could set. If you were
+  setting `alwaysOn` on some other category it was already being ignored everywhere it mattered; it is now
+  ignored on the way in.
+
+- **A language can name its own privacy policy address.** `policyUrl` in a language file wins over the one
+  in the settings, because a Greek site links a Greek policy page. A blank one means this language has no
+  link; leaving the key out is what falls back to the settings.
 
 - **The tag manager templates are downloaded and imported by hand.** Both are attached to this release as
   `consentio-tag.tpl` and `consentio-tag-cookies.tpl`. In Tag Manager go to **Templates → New**, open the
@@ -90,7 +130,18 @@ release body, so write these entries for the people using Consentio, not for the
 - **The banner's English has one source**, and the tag's pre-filled text fields are built from it. The words
   in those fields are now exactly the words the banner falls back to, so the two cannot drift apart.
 
-- Your stored answer and the cookie are unchanged. **Nobody is asked again by this release.**
+- Your stored answer and the cookie are unchanged. **Nobody is asked again by this release.** The settings
+  files were reorganised, not the value in the cookie: it is still
+  `{"version":1,"consents":{...}}`, read by exactly the same rules on both routes. There is no reason to
+  raise `version`, and raising it would ask every visitor again for nothing.
+
+### 🛠️ Fixed
+
+- **A quote in your own wording can no longer break out of the markup it is placed in.** Text substituted
+  into the banner's templates escaped `&`, `<` and `>` but not `"` or `'`. Nothing shipped could reach a
+  spot where it mattered — every one of them is a category key, and those are fixed — but a title or a
+  button label with an apostrophe in it was one template edit away from being a hole. Both quotes are
+  escaped now.
 
 ## [0.1.0] - 2026-08-25
 

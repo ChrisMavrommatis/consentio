@@ -2,19 +2,33 @@
 title: Settings
 anchor: configuration
 permalink: /configuration/
-description: Every option in Consentio's settings file and cookie list, with defaults and a complete example.
+description: Every option in Consentio's settings file, language file and cookie list, with defaults and a complete example.
 ---
 
-Two files, both optional. The settings file holds your wording and options; the cookie list holds the rows
-shown to a visitor who opens the panel. On the Tag Manager route there are no files — the same options are
-fields you fill in.
+Three files, all optional, one per concern. The settings file holds how the banner behaves; the language
+file holds every word the visitor reads; the cookie list holds the rows shown to a visitor who opens the
+panel. On the Tag Manager route there are no files — the same options are fields you fill in.
 
-**You only write what you want to change.** `texts` is merged key by key over the defaults, and `consents`
-entry by entry, matched on `key`. Leave a key out and you get the default.
+| File | On the tag | Holds |
+|---|---|---|
+| settings | `data-settings-url` | behaviour: the cookie, the version, whether an answer is required |
+| language | `data-language-url` | the words. A [language pack](https://github.com/ChrisMavrommatis/consentio/releases/latest) as published, or one of your own |
+| cookies | `data-cookies-url` | the cookie table, one row per cookie your site sets |
+
+**Words and behaviour are separate files because they change on different days, and often by different
+people.** A translator gets the language file and can break nothing else; the language file a release
+publishes — `en.json`, `el.json` — is exactly the file this route fetches, and exactly the file the Tag
+Manager route reads from a variable.
+
+**You only write what you want to change.** Every key is merged over the defaults on its own, so leaving one
+out gives you the default. A blank string is not the same as a missing key: `""` is a value you asked for
+and shows as an empty string.
 
 ## 📄 A complete example {#a-complete-example}
 
 Every top-level option, with something in it. Nothing here is required.
+
+`/data/consentio-settings.json` — behaviour:
 
 ```json
 {
@@ -24,25 +38,38 @@ Every top-level option, with something in it. Nothing here is required.
   "consentRequired": false,
   "policyUrl": "/privacy/",
   "hideFloatingButton": false,
-  "texts": {
-    "barTitle": "Cookies on this site",
-    "barDescription": "We use cookies to run the site and, with your permission, to measure how it is used.",
-    "buttonSettings": "Choose",
-    "buttonSave": "Save my choice",
-    "buttonAcceptAll": "Allow all",
-    "buttonRejectAll": "Allow none"
-  },
-  "consents": [
-    { "key": "statistics_performance", "title": "Measurement", "defaultState": "denied" },
-    { "key": "marketing_advertising", "title": "Advertising" }
-  ]
+  "consents": {
+    "statistics_performance": { "defaultState": "denied" },
+    "marketing_advertising": { "defaultState": "denied" }
+  }
 }
 ```
 
-That file changes six strings and two category titles. Everything else — the other nine `texts` keys, the
-two categories not named, every default — is untouched and keeps working.
+`/data/el.json` — the words, in the shape a published language pack has:
 
-## 🔧 Top level {#top-level}
+```json
+{
+  "locale": "el",
+  "name": "Ελληνικά",
+  "policyUrl": "/el/privacy/",
+  "texts": {
+    "barTitle": "Πολιτική Cookies",
+    "buttonAcceptAll": "Αποδοχή όλων"
+  },
+  "consents": {
+    "statistics_performance": {
+      "title": "Στατιστικά",
+      "description": "Μας δείχνουν πώς χρησιμοποιείται ο ιστότοπος."
+    }
+  }
+}
+```
+
+Between them those files change two strings, one category's copy, one category's default state and the
+policy address. Everything else — the other thirteen `texts` keys, the three categories not named, every
+default — is untouched and keeps working.
+
+## 🔧 The settings file {#top-level}
 
 | Key | Type | Default | What it does |
 |---|---|---|---|
@@ -50,10 +77,22 @@ two categories not named, every default — is untouched and keeps working.
 | `debug` | boolean | `false` | Turns on the banner's informational logging |
 | `version` | number | `1` | Raise it to throw away every stored answer and ask everyone again. **Ignored if you also set `data-version` on the tag.** See [Asking everyone again]({{ '/versioning/' | relative_url }}#versioning-stored-consent) |
 | `consentRequired` | boolean | `false` | Shows a full-screen blocking overlay behind the bar and modal until the visitor answers |
-| `policyUrl` | string | none | Where the banner's privacy policy link points, on the bar and in the panel. Leave it out and no link is shown. It must start with `http://`, `https://` or a single `/` for a page on your own site — anything else is dropped with a warning on the console, because the address goes into an `href` and is not escaped the way a text is |
+| `policyUrl` | string | none | Where the banner's privacy policy link points, on the bar and in the panel. Leave it out and no link is shown. A language file may name its own address instead — see below. It must start with `http://`, `https://` or a single `/` for a page on your own site — anything else is dropped with a warning on the console, because the address goes into an `href` and is not escaped the way a text is |
 | `hideFloatingButton` | boolean | `false` | Removes the round settings button the banner leaves in the bottom right corner. **Only set it once your own link is on every page** — see [Reopening the settings]({{ '/events/' | relative_url }}#reopening-the-settings-from-your-own-link). With it on and no link, a visitor cannot change their answer, and Consentio says so on the console |
-| `texts` | object | see below | Every string in the UI |
-| `consents` | array | the four categories | Copy changes to the four. The set is fixed |
+| `consents` | object | the four categories | Keyed by category. The only thing in it is `defaultState` |
+
+## 🌍 The language file {#the-language-file}
+
+| Key | Type | What it does |
+|---|---|---|
+| `locale` | string | The language's code, `en`, `el`. It becomes the `lang` of the banner |
+| `name` | string | The language's name in its own language. Nothing reads it at run time — it is there so the file says what it is |
+| `policyUrl` | string | Optional. The privacy policy address **for this language**, which wins over the settings file. `""` means this language has no link at all; leaving the key out is what falls back |
+| `texts` | object | Every string in the UI. See below |
+| `consents` | object | Keyed by category, each with a `title` and a `description` |
+
+**A released pack is a valid language file exactly as downloaded.** `en.json` and `el.json` are attached to
+every release; point `data-language-url` at one, or copy it and edit the strings.
 
 ## 💬 `texts` {#texts}
 
@@ -75,38 +114,61 @@ two categories not named, every default — is untouched and keeps working.
 | `cookieTableHeaderProvenance` | `Provenance` |
 | `cookieTableHeaderDuration` | `Duration` |
 
-## 📋 `consents` {#consents}
+## 📋 The four categories {#consents}
 
-Each entry describes one category and one row in the settings modal.
+Each category is one row in the settings modal, and both files may name it — the settings file for what it
+does, the language file for what it says.
 
-| Key | Type | What it does |
+| Key | In which file | What it does |
 |---|---|---|
-| `key` | string | Which of the four categories the entry changes. It is also the cookie's JSON key and the value the cookies JSON matches on. **Required in every entry** |
-| `title` | string | Heading in the modal |
-| `description` | string | Body text under the heading |
-| `alwaysOn` | boolean | `true` replaces the switch with the `alwaysOnLabel` text and forces the category granted |
-| `defaultState` | `"granted"` \| `"denied"` | What the switch shows to a visitor with no stored answer |
+| `defaultState` | settings | `"granted"` or `"denied"` — what the switch shows to a visitor with no stored answer |
+| `title` | language | Heading in the modal |
+| `description` | language | Body text under the heading |
 
-**The four categories are fixed. You can change every string, not the set.** An entry whose `key` is not one
-of the four is ignored, with a warning on the console, and the banner still runs. You cannot add a category,
-remove one, or point one at a different Google permission. The reason is timing: the answer has to reach
-Google before this file has been downloaded, so the four have to be known in advance.
+**The four categories are fixed. You can change every string, not the set.** A key that is not one of the
+four is ignored, with a warning on the console, and the banner still runs. You cannot add a category, remove
+one, or point one at a different Google permission. The reason is timing: the answer has to reach Google
+before either file has been downloaded, so the four have to be known in advance.
 
-The four categories are `strictly_necessary` (`alwaysOn: true`, `defaultState: "granted"`),
-`preferences_functionality`, `statistics_performance` and `marketing_advertising` (all `alwaysOn: false`,
-`defaultState: "denied"`).
+The four are `strictly_necessary`, `preferences_functionality`, `statistics_performance` and
+`marketing_advertising`. `strictly_necessary` starts granted and is always on — it shows the `alwaysOnLabel`
+text instead of a switch, and no file can change that. The other three start denied.
 
-**Overriding a built-in category:** give its `key` and only the fields you are changing.
+**Changing one category:** name its key, and only the fields you are changing.
+
+```json
+{
+  "consentRequired": true,
+  "consents": { "marketing_advertising": { "defaultState": "denied" } }
+}
+```
+
+```json
+{
+  "texts": { "barTitle": "Cookies on this site" },
+  "consents": { "marketing_advertising": { "title": "Advertising" } }
+}
+```
+
+## 🗂️ The older single settings file {#the-older-single-file}
+
+Before the language file existed, `data-config-url` fetched one file carrying the behaviour, a `texts`
+object and a `consents` **array**:
 
 ```json
 {
   "consentRequired": true,
   "texts": { "barTitle": "Cookies on this site" },
-  "consents": [
-    { "key": "marketing_advertising", "title": "Advertising" }
-  ]
+  "consents": [{ "key": "marketing_advertising", "title": "Advertising" }]
 }
 ```
+
+**That still works and is not going away in this version.** `data-config-url` is still read, and a file in
+that shape is taken apart into a settings and a language for you. `alwaysOn` in such a file is ignored —
+only `strictly_necessary` is ever always on, and it is now decided by the key rather than by a field.
+
+If you are writing a file today, write the three above instead: a translator can then be given one file that
+contains nothing but words.
 
 ## 🍪 The cookies JSON {#the-cookies-json}
 
