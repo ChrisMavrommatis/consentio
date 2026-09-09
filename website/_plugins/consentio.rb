@@ -7,6 +7,10 @@ module Jekyll
     COOKIES_PATH = '/data/consentio-cookies.json'.freeze
     LANGUAGE_FALLBACK = '/data/consentio-language.json'.freeze
 
+    # The loader reads the cookie in <head>, before any settings file has been fetched, so
+    # these two reach the banner off the tag and are warned about in a settings file.
+    TAG_ATTRIBUTES = { 'cookieName' => 'data-cookie-name', 'version' => 'data-version' }.freeze
+
     def self.config(site)
       site.config['consentio'] || {}
     end
@@ -30,10 +34,22 @@ module Jekyll
       relative_url(site, language.empty? ? LANGUAGE_FALLBACK : language)
     end
 
+    def self.settings(config)
+      config['settings'] || {}
+    end
+
+    def self.tag_settings(settings)
+      TAG_ATTRIBUTES.filter_map do |key, attribute|
+        %(#{attribute}="#{settings[key]}") if settings.key?(key)
+      end
+    end
+
     # The settings file is fetched by the page, so an address in it needs the same prefix
     # the loader tag's URLs get.
     def self.settings_json(site, settings)
       resolved = settings.each_with_object({}) do |(key, value), out|
+        next if TAG_ATTRIBUTES.key?(key)
+
         out[key] = key.end_with?('Url') ? relative_url(site, value) : value
       end
       JSON.pretty_generate(resolved)
@@ -53,7 +69,7 @@ module Jekyll
         %(data-settings-url="#{Consentio.relative_url(site, Consentio::SETTINGS_PATH)}"),
         %(data-language-url="#{Consentio.language_url(site, config)}"),
         %(data-cookies-url="#{Consentio.relative_url(site, Consentio::COOKIES_PATH)}")
-      ]
+      ] + Consentio.tag_settings(Consentio.settings(config))
       "<script #{attributes.join(' ')}></script>"
     end
   end

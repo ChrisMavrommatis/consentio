@@ -38,18 +38,37 @@ docs_version            : "0.1.0"
 #
 # debug     the loader's console logging.
 #
-# settings  becomes /data/consentio-settings.json, the file the loader fetches - how the
-#           banner behaves. Write policyUrl site-relative; the build puts baseurl in front
-#           of it, and in front of every other address the page fetches.
+# settings  how the banner behaves - one flat mapping, and the build decides where each
+#           key has to arrive. Most of it becomes /data/consentio-settings.json, the file
+#           the loader fetches. Write policyUrl site-relative; the build puts baseurl in
+#           front of it, and in front of every other address the page fetches.
+#
+#           cookieName and version are the two that cannot travel in that file. The loader
+#           reads the cookie in the page head, before any file has been fetched, so the
+#           banner takes both off the loader tag and warns on the console about a settings
+#           file naming either. The build puts them on the tag, so write them here with
+#           the rest. Changing the version discards every answer already stored.
+#
+#           hideFloatingButton drops the round reopen button. Turn it on and the site owes
+#           the visitor a way back in - the banner says so on the console. This one has
+#           "Open the settings panel" on /try-it/.
+#
+#           consents is the only nested key and needs no special handling - write
+#           `consents:` with a category under it and a defaultState under that, and it
+#           reaches the file as typed. Left out here so the four defaults have one home,
+#           which is the banner.
 consentio:
   route                 : "direct"
   language              : "/data/i18n/en.json"
   debug                 : false
   settings:
+    cookieName          : "consentio"
+    version             : 1
     consentRequired     : true
     policyUrl           : "/cookie/"
     cookieLifetime      : 90
     shareAcrossSubdomains : true
+    hideFloatingButton  : true
 
 # The Google Tag Manager container. Empty here, so a local build emits no snippet at all.
 gtm_container_id        : ""
