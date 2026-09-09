@@ -157,14 +157,22 @@ These go on the tag itself, because the script needs them before it can fetch an
 | `data-cookies-url` | no | none | Where your cookie list is. Leave it out and the tables in the settings panel are empty |
 | `data-config-url` | no | none | The older single settings file, carrying `texts` and a `consents` array. Still read, and still works. Use `data-settings-url` and `data-language-url` in new sites |
 | `data-cookie-name` | no | `consentio` | Name of the cookie the answer is stored in |
+| `data-cookie-lifetime` | no | `90` | Days an answer is kept before the visitor is asked again. See [How long it lasts]({{ '/cookie/' | relative_url }}#how-long-it-lasts) |
+| `data-share-across-subdomains` | no | `false` | `"true"` stores one answer for every hostname your site answers on, instead of one each. There is no domain to type — Consentio works out the one they share. See [One answer across subdomains]({{ '/cookie/' | relative_url }}#one-answer-across-subdomains) |
 | `data-version` | no | `1` | Which stored answers are still valid. See [Versioning stored consent]({{ '/versioning/' | relative_url }}#versioning-stored-consent) |
 | `data-debug` | no | `false` | `"true"` prints what it is doing to the console. Errors and the async/defer warning are always printed |
 | `data-wait-for-update` | no | `500` | Milliseconds tags should wait for an answer before giving up. Only sent to a visitor who has not answered yet |
 
-**Two of these can also be set in the settings file, and the tag wins.** If you put `cookieName` or
-`version` in both places, the value on the tag is the one used — everywhere, including inside the banner. You
-cannot end up with the tag reading one cookie and the banner writing another. The settings-file versions of
-those two exist for the Tag Manager route, which has no tag.
+**Four of these can also be set in the settings file, and the tag wins.** If you put `cookieName`,
+`version`, `cookieLifetime` or `shareAcrossSubdomains` in both places, the value on the tag is the one used —
+everywhere, including inside the banner. You cannot end up with the tag reading one cookie and the banner
+writing another. The settings-file versions exist for the Tag Manager route, which has no tag.
+
+**`cookieName` and `version` are decided by the tag even when it does not name them**, because the script
+has to read the cookie before any file has been fetched: leave them off the tag and you get `consentio` and
+`1`, not what the settings file says. **Putting either in a settings file on this route does nothing at
+all**, and Consentio says so on the console rather than leaving you to find it. The other two are not read
+that early, so leaving them off the tag is what lets the settings file name them.
 
 ## 🔍 What you can check in the console {#what-the-loader-leaves-behind}
 

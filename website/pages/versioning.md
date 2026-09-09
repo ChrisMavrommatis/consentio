@@ -44,7 +44,8 @@ Raise it when **an old answer is no longer an answer to the question you are now
   with its own version change.
 - **Releasing a new version of your site.** Unrelated.
 - **Because answers feel stale.** They already expire on their own after 90 days from the last time the
-  visitor answered.
+  visitor answered, and [`cookieLifetime`]({{ '/cookie/' | relative_url }}#how-long-it-lasts) sets that
+  number if 90 is wrong for you.
 
 If you are unsure, leave it alone. Asking again costs your visitors something, and asking too often trains
 people to click whatever makes the banner go away.

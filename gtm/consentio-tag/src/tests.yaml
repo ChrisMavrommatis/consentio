@@ -18,8 +18,25 @@ scenarios:
     });
 - name: returning visitor, accepted everything
   code: |-
-    // every category granted
+    // every category granted, and no date - the shape written before dates existed
     mock('getCookieValues', () => ['{"version":1,"consents":{"strictly_necessary":"granted","preferences_functionality":"granted","statistics_performance":"granted","marketing_advertising":"granted"}}']);
+
+    runCode(mockData);
+
+    assertApi('setDefaultConsentState').wasCalledWith({
+      ad_storage: 'granted',
+      ad_user_data: 'granted',
+      ad_personalization: 'granted',
+      analytics_storage: 'granted',
+      functionality_storage: 'granted',
+      personalization_storage: 'granted',
+      security_storage: 'granted'
+    });
+- name: returning visitor, answered on a date
+  code: |-
+    // The same answer with the date it was given beside it. Nothing here reads the date;
+    // the point is that a value carrying one is still the same answer.
+    mock('getCookieValues', () => ['{"version":1,"consents":{"strictly_necessary":"granted","preferences_functionality":"granted","statistics_performance":"granted","marketing_advertising":"granted"},"date":"2026-09-09T10:00:00.000Z"}']);
 
     runCode(mockData);
 
@@ -165,7 +182,7 @@ scenarios:
 - name: a language pack variable supplies the whole set
   code: |-
     // A published <locale>.json, unedited: the words under texts, the categories keyed
-    // under consents. The values are gtm/settings.fixture.json - issue 34.
+    // under consents. The values are gtm/settings.fixture.json.
     mock('getCookieValues', () => []);
     mockData.textSource = 'variable';
     mockData.policyUrl = '/privacy/';
@@ -208,6 +225,27 @@ scenarios:
     const config = captureConfig();
 
     assertThat(config.policyUrl).isEqualTo('');
+- name: the cookie lifetime and the subdomain setting reach the banner
+  code: |-
+    // The banner writes the cookie, so both are config fields rather than anything this
+    // template does. The banner works out the shared domain from the page it is on.
+    mock('getCookieValues', () => []);
+    mockData.cookieLifetime = 365;
+    mockData.shareAcrossSubdomains = true;
+
+    const config = captureConfig();
+
+    assertThat(config.cookieLifetime).isEqualTo(365);
+    assertThat(config.shareAcrossSubdomains).isEqualTo(true);
+- name: untouched cookie fields send nothing and the banner keeps its own defaults
+  code: |-
+    // The field's own default is 90 days; cleared, it is left out rather than sent blank.
+    mock('getCookieValues', () => []);
+
+    const config = captureConfig();
+
+    assertThat(config.cookieLifetime).isEqualTo(undefined);
+    assertThat(config.shareAcrossSubdomains).isEqualTo(undefined);
 setup: |-
   const mockData = {
     version: 1,

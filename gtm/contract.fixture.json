@@ -2,6 +2,7 @@
   "what": "Worked consent cookie values. The banner's tests assert against this file; each template's tests carry the same values by hand. A mismatch between the two readers of the cookie shows up as a diff here.",
   "cookieName": "consentio",
   "version": 1,
+  "date": "ISO 8601 in UTC, as Date.prototype.toISOString writes it. Stored beside version and consents from 9 Sep 2026; nothing reads it, and a value without one is a valid answer.",
   "baseline": {
     "strictly_necessary": "granted"
   },
@@ -42,8 +43,30 @@
     },
     {
       "name": "returning visitor, accepted everything",
-      "note": "every category granted",
+      "note": "every category granted, and no date - the shape written before this release",
       "cookie": "{\"version\":1,\"consents\":{\"strictly_necessary\":\"granted\",\"preferences_functionality\":\"granted\",\"statistics_performance\":\"granted\",\"marketing_advertising\":\"granted\"}}",
+      "consents": {
+        "strictly_necessary": "granted",
+        "preferences_functionality": "granted",
+        "statistics_performance": "granted",
+        "marketing_advertising": "granted"
+      },
+      "signals": {
+        "ad_storage": "granted",
+        "ad_user_data": "granted",
+        "ad_personalization": "granted",
+        "analytics_storage": "granted",
+        "functionality_storage": "granted",
+        "personalization_storage": "granted",
+        "security_storage": "granted"
+      },
+      "waitForUpdate": null,
+      "adsDataRedaction": false
+    },
+    {
+      "name": "returning visitor, answered on a date",
+      "note": "the same answer with the date it was given beside it. The date is stored and nothing reads it: a value with one and a value without one are the same answer",
+      "cookie": "{\"version\":1,\"consents\":{\"strictly_necessary\":\"granted\",\"preferences_functionality\":\"granted\",\"statistics_performance\":\"granted\",\"marketing_advertising\":\"granted\"},\"date\":\"2026-09-09T10:00:00.000Z\"}",
       "consents": {
         "strictly_necessary": "granted",
         "preferences_functionality": "granted",

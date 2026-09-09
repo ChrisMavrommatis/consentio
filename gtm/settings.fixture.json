@@ -2,6 +2,8 @@
 	"what": "One worked settings object and one worked language pack, with what both readers must make of them. The banner's suite asserts against this file; the tag's tests.yaml carries the same values by hand. Nothing can span the two - only the tag manager runs the second one - so this file is what stands in for a shared test.",
 	"settings": {
 		"cookieName": "consentio",
+		"cookieLifetime": 365,
+		"shareAcrossSubdomains": true,
 		"version": 1,
 		"debug": false,
 		"consentRequired": true,
@@ -30,6 +32,13 @@
 		}
 	},
 	"expected": {
+		"cookie": {
+			"note": "How long the answer is kept and whether the site's hosts share it are behaviour, so they arrive in the settings on both routes. A site that names neither gets 90 days on this host only. The shared domain itself is never configured - the banner asks the browser which domain it will take.",
+			"lifetime": 365,
+			"shared": true,
+			"defaultLifetime": 90,
+			"defaultShared": false
+		},
 		"locale": "el",
 		"barTitle": "Πολιτική Cookies",
 		"strictlyNecessaryTitle": "Απολύτως απαραίτητα",

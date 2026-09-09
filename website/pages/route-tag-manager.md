@@ -77,6 +77,10 @@ The cookie's name is always `consentio` on this route — a Tag Manager template
 reads when it is published, so it cannot be a field. If you changed the name on the other route, change it
 back before you run both.
 
+**How long it lasts and what it covers are fields**: **Cookie Lifetime (days)**, 90 unless you change it, and
+**Share the answer across subdomains**, off unless your site answers on more than one hostname. The banner
+writes the cookie on this route too, so they behave exactly as they do on the other one.
+
 [The cookie]({{ '/cookie/' | relative_url }}#the-cookie-contract) is the full description — what is in it,
 how long it lasts, and what it looks like when nobody has answered yet.
 

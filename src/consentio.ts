@@ -16,17 +16,19 @@ import ConsentioFloatingButtonElement from './elements/consentio-floating-button
 import ConsentioConsentItemElement from './elements/consentio-consent-item.js';
 import ConsentioModalElement from './elements/consentio-modal.js';
 import ConsentioState from './lib/state.js'
+import { DEFAULT_LIFETIME_DAYS } from './lib/consent-store.js'
 import ConsentioLogger from './lib/logger.js'
 import { safeUrl } from './lib/url.js'
 import english from '../i18n/en.yaml'
 import type {
-	CategoryTexts, ConsentCategory, ConsentioLanguage, ConsentioSettings, ConsentioTexts,
-	CookieTableRow, LanguageInput, LegacyConfig, ResolvedConfig, SettingsInput
+	CategoryTexts, ConsentCategory, ConsentioDefaultState, ConsentioLanguage, ConsentioSettings,
+	ConsentioTexts, CookieTableRow, LanguageInput, LegacyConfig, ResolvedConfig, SettingsInput
 } from './types.js'
 
 /** The behaviour keys a settings file may carry. Anything else in it is ignored. */
 const SETTINGS_KEYS = [
-	'cookieName', 'debug', 'version', 'consentRequired', 'policyUrl', 'hideFloatingButton'
+	'cookieName', 'cookieLifetime', 'shareAcrossSubdomains', 'debug', 'version', 'consentRequired',
+	'policyUrl', 'hideFloatingButton'
 ] as const;
 
 /** The words a pack may carry, taken from en.yaml so there is one key list. */
@@ -41,6 +43,8 @@ class Consentio {
 	/** Behaviour only. The words live in _defaultLanguage and nowhere else. */
 	static _defaultSettings: ConsentioSettings = {
 		cookieName: 'consentio',
+		cookieLifetime: DEFAULT_LIFETIME_DAYS,
+		shareAcrossSubdomains: false,
 		debug: false,
 		version: 1,
 		consentRequired: false,
@@ -184,6 +188,8 @@ class Consentio {
 		const address = language.policyUrl === undefined ? settings.policyUrl : language.policyUrl;
 		return {
 			cookieName: settings.cookieName,
+			cookieLifetime: settings.cookieLifetime,
+			shareAcrossSubdomains: settings.shareAcrossSubdomains,
 			debug: settings.debug,
 			version: settings.version,
 			consentRequired: settings.consentRequired,
@@ -200,6 +206,22 @@ class Consentio {
 				defaultState: settings.consents[key].defaultState
 			}))
 		};
+	}
+
+	/**
+	 * A settings file cannot name the cookie or the version, because the loader has already
+	 * read the cookie by the time the file arrives. Said out loud rather than dropped. Issue 43.
+	 */
+	static warnLoaderWins(supplied: SettingsInput, fromLoader: ConsentioDefaultState, logger: Console | null = null): void {
+		const attributes: [keyof ConsentioDefaultState & keyof SettingsInput, string][] = [
+			['cookieName', 'data-cookie-name'],
+			['version', 'data-version']
+		];
+		for (const [key, attribute] of attributes) {
+			if (supplied[key] !== undefined && supplied[key] !== fromLoader[key]) {
+				logger?.warn(`[Consentio] "${key}" in the settings file is ignored - the loader tag reads the cookie before the file arrives. Set ${attribute} on the tag instead.`);
+			}
+		}
 	}
 
 	static policyUrl(value: string, logger: Console | null = null): string {
@@ -246,8 +268,16 @@ class Consentio {
 		// them back is what stops the two halves reading different cookies.
 		const fromLoader = typeof window === 'undefined' ? undefined : window.ConsentioDefault;
 		if (fromLoader) {
+			Consentio.warnLoaderWins(settingsInput, fromLoader, logger);
 			this.settings.cookieName = fromLoader.cookieName;
 			this.settings.version = fromLoader.version;
+			// Published only when the tag names them, so a settings file still gets to.
+			if (fromLoader.cookieLifetime !== undefined) {
+				this.settings.cookieLifetime = fromLoader.cookieLifetime;
+			}
+			if (fromLoader.shareAcrossSubdomains !== undefined) {
+				this.settings.shareAcrossSubdomains = fromLoader.shareAcrossSubdomains;
+			}
 		}
 
 		this.config = Consentio.resolve(this.settings, this.language, logger);
@@ -272,7 +302,9 @@ class Consentio {
 		this.state = new ConsentioState(
 			this.config.cookieName,
 			this.config.version,
-			this.config.consents
+			this.config.consents,
+			{ lifetime: this.config.cookieLifetime, shared: this.config.shareAcrossSubdomains },
+			this.logger.logger
 		);
 		this.el = document.createElement("consentio-app") as ConsentioAppElement;
 		// The pack says which language its words are in, so the banner can say so too.

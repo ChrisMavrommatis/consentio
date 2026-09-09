@@ -4,9 +4,9 @@ import type { CookieAttributes, CookieConverter } from '../types.js';
 
 class Cookies {
 
+	// No expiry: how long an answer lasts is a setting, and consent-store.ts owns the number.
 	static defaultAttributes: CookieAttributes = {
 		path: '/',
-		expires: 90,
 		sameSite: 'Lax'
 	};
 
@@ -97,8 +97,9 @@ class Cookies {
 		return key ? jar[key] : jar;
 	}
 
-	static remove(name: string): void {
-		this.set(name, '', { expires: -1 });
+	// A cookie is only removed by a call carrying the domain it was written with. Issue 39.
+	static remove(name: string, attributes?: CookieAttributes): void {
+		this.set(name, '', this.assign({}, attributes, { expires: -1 }));
 	}
 
 }

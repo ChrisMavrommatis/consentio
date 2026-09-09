@@ -58,8 +58,8 @@ npm run test:plain    # the cookie, saved-state and Google-signal tests again, w
 
 The second one is not a duplicate. Those tests need no page, and the second run is what keeps it that
 way — they once acquired a DOM by accident through a shared helper and died without one for no reason. A
-test that needs no page imports from `test/basics.mts`, never from `test/helpers.mts`, and gets added to
-the `test:plain` glob in `package.json`.
+test that needs no page imports from `test/basics.mts`, never from `test/helpers.mts`, and is named
+`*.plain.test.mts` — the second command globs that name, so there is no list to remember.
 
 **Some tests are marked `todo`, and the run still exits 0.** That is correct. They describe behaviour the
 code does not have yet, and deleting the flag is how a fix proves itself. Do not delete a `todo` flag

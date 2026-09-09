@@ -1,0 +1,13 @@
+{
+	"type": "TEXT",
+	"name": "cookieLifetime",
+	"displayName": "Cookie Lifetime (days)",
+	"simpleValueType": true,
+	"defaultValue": 90,
+	"valueValidators": [
+		{
+			"type": "POSITIVE_NUMBER"
+		}
+	],
+	"help": "How long an answer is kept before the visitor is asked again. Leave it at 90 unless you have a reason: a longer life asks less often, a shorter one keeps the answer fresher. It does not change what is stored, only how long the browser keeps it."
+}

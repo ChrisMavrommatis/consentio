@@ -42,9 +42,15 @@ If a choice does not stick on `http://localhost`, that is a fault, not the desig
 **You changed `version` or `data-version`.** Raising it deliberately throws away every stored answer. That
 is what it is for. See [Versioning stored consent]({{ '/versioning/' | relative_url }}#versioning-stored-consent).
 
-**The two halves are reading different cookie names.** On the HTML route, `data-cookie-name` on the tag wins
-over `cookieName` in the settings file. The Tag Manager route always uses `consentio` and cannot be changed.
-If you are running the same site through both — do not — and you renamed the cookie, they will disagree.
+**The two halves are reading different cookie names.** On the HTML route, `data-cookie-name` on the tag is
+the only place the name is read from — `cookieName` in a settings file does nothing there, and Consentio says
+so on the console. The Tag Manager route always uses `consentio` and cannot be changed. If you are running
+the same site through both — do not — and you renamed the cookie, they will disagree.
+
+**Something else is refusing the cookie.** Consentio reads the cookie back after writing it and prints
+`the answer did not read back` when it is not there, whatever `data-debug` says. Nothing Consentio asks the
+browser for should be refused, so this points at something else on the page: another consent tool, an
+extension, or a browser set to block cookies for the site.
 
 **Something else is clearing cookies.** A consent tool, a privacy extension, or a `Clear-Site-Data` header
 will take this cookie with the rest.
@@ -111,8 +117,10 @@ Errors and the async/defer warning are printed either way.
 decodeURIComponent(document.cookie.split('; ').find(c => c.startsWith('consentio=')).slice(10))
 ```
 
-You should get `{"version":1,"consents":{...}}` with all four categories. Anything else — no cookie, broken
-JSON, a different `version`, no `consents` key — reads as *no stored answer* and the banner shows again.
+You should get `{"version":1,"consents":{...},"date":"..."}` with all four categories. Anything else — no
+cookie, broken JSON, a different `version`, no `consents` key — reads as *no stored answer* and the banner
+shows again. A cookie with no `date` is not one of those: it was written before dates existed and is still a
+good answer.
 [The cookie page]({{ '/cookie/' | relative_url }}#reading-it-four-rules-in-order) has the rules in order.
 
 **3. Read what the first message to Google was built from.**

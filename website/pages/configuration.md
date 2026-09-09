@@ -33,6 +33,8 @@ Every top-level option, with something in it. Nothing here is required.
 ```json
 {
   "cookieName": "consentio",
+  "cookieLifetime": 90,
+  "shareAcrossSubdomains": false,
   "version": 1,
   "debug": false,
   "consentRequired": false,
@@ -73,9 +75,11 @@ default — is untouched and keeps working.
 
 | Key | Type | Default | What it does |
 |---|---|---|---|
-| `cookieName` | string | `consentio` | Name of the cookie the answer is stored in. **Ignored if you also set `data-cookie-name` on the tag** — the tag wins. **The Tag Manager route always uses `consentio`**: a template has to name the cookie it reads when it is published, so it cannot be a field |
+| `cookieName` | string | `consentio` | Name of the cookie the answer is stored in. **Not read on the HTML route at all** — set `data-cookie-name` on the tag instead, and Consentio says so on the console if you put it here. **The Tag Manager route always uses `consentio`**: a template has to name the cookie it reads when it is published, so it cannot be a field |
+| `cookieLifetime` | number | `90` | Days an answer is kept before the visitor is asked again. **Ignored if you also set `data-cookie-lifetime` on the tag.** Anything that is not a positive number falls back to 90. See [How long it lasts]({{ '/cookie/' | relative_url }}#how-long-it-lasts) |
+| `shareAcrossSubdomains` | boolean | `false` | One answer for every hostname your site answers on, instead of one each. There is no domain to type: Consentio works out the one your hosts share by asking the browser. **Ignored if you also set `data-share-across-subdomains` on the tag.** See [One answer across subdomains]({{ '/cookie/' | relative_url }}#one-answer-across-subdomains) |
 | `debug` | boolean | `false` | Turns on the banner's informational logging |
-| `version` | number | `1` | Raise it to throw away every stored answer and ask everyone again. **Ignored if you also set `data-version` on the tag.** See [Asking everyone again]({{ '/versioning/' | relative_url }}#versioning-stored-consent) |
+| `version` | number | `1` | Raise it to throw away every stored answer and ask everyone again. **Not read on the HTML route at all** — set `data-version` on the tag instead, and Consentio says so on the console if you put it here. See [Asking everyone again]({{ '/versioning/' | relative_url }}#versioning-stored-consent) |
 | `consentRequired` | boolean | `false` | Shows a full-screen blocking overlay behind the bar and modal until the visitor answers |
 | `policyUrl` | string | none | Where the banner's privacy policy link points, on the bar and in the panel. Leave it out and no link is shown. A language file may name its own address instead — see below. It must start with `http://`, `https://` or a single `/` for a page on your own site — anything else is dropped with a warning on the console, because the address goes into an `href` and is not escaped the way a text is |
 | `hideFloatingButton` | boolean | `false` | Removes the round settings button the banner leaves in the bottom right corner. **Only set it once your own link is on every page** — see [Reopening the settings]({{ '/events/' | relative_url }}#reopening-the-settings-from-your-own-link). With it on and no link, a visitor cannot change their answer, and Consentio says so on the console |

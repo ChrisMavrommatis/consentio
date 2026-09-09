@@ -15,6 +15,7 @@ const fixture = JSON.parse(readFileSync(new URL('../../gtm/settings.fixture.json
 	settings: SettingsInput;
 	language: LanguageInput & { note?: string };
 	expected: {
+		cookie: { lifetime: number; shared: boolean; defaultLifetime: number; defaultShared: boolean };
 		locale: string;
 		barTitle: string;
 		strictlyNecessaryTitle: string;
@@ -47,6 +48,16 @@ test('the words come from the pack', () => {
 
 test('what the pack leaves out falls back to the built-in English', () => {
 	assert.equal(resolved.texts.buttonSave, fixture.expected.buttonSave.banner);
+});
+
+test('the cookie lifetime and the subdomain setting come from the settings', () => {
+	assert.equal(resolved.cookieLifetime, fixture.expected.cookie.lifetime);
+	assert.equal(resolved.shareAcrossSubdomains, fixture.expected.cookie.shared);
+});
+
+test('a site that names neither gets 90 days on this host only', () => {
+	assert.equal(Consentio._defaultSettings.cookieLifetime, fixture.expected.cookie.defaultLifetime);
+	assert.equal(Consentio._defaultSettings.shareAcrossSubdomains, fixture.expected.cookie.defaultShared);
 });
 
 test('the behaviour comes from the settings, and alwaysOn from neither', () => {

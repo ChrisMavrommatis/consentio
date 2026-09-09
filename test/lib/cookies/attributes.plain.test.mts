@@ -13,12 +13,10 @@ test('set returns the serialised cookie with the default attributes', () => {
 	assert.match(serialised, /^a=b;/);
 	assert.match(serialised, /; path=\//);
 	assert.match(serialised, /; sameSite=Lax/);
-	assert.match(serialised, /; expires=/);
 });
 
-test('the default expiry is 90 days out', () => {
-	const days = (expiryOf(Cookies.set('a', 'b')).getTime() - Date.now()) / 864e5;
-	assert.ok(days > 89.9 && days < 90.1, `expected ~90 days, got ${days}`);
+test('no expiry is defaulted here, so a bare set is a session cookie', () => {
+	assert.doesNotMatch(Cookies.set('a', 'b'), /; expires=/);
 });
 
 test('a numeric expires is read as a number of days', () => {
@@ -39,4 +37,17 @@ test('a falsy attribute is omitted rather than serialised', () => {
 
 test('a boolean attribute is serialised as a bare flag', () => {
 	assert.match(Cookies.set('a', 'b'), /; secure(;|$)/);
+});
+
+// A cookie is only removed by a call carrying the domain it was written with. Issue 39.
+test('remove carries the attributes it is given, with an expiry in the past', () => {
+	let serialised = '';
+	const set = Cookies.set;
+	Cookies.set = (key, value, attributes) => (serialised = set.call(Cookies, key, value, attributes));
+	Cookies.remove('a', { domain: 'example.test' });
+	Cookies.set = set;
+
+	assert.match(serialised, /^a=;/);
+	assert.match(serialised, /; domain=example\.test/);
+	assert.ok(expiryOf(serialised).getTime() < Date.now(), 'the expiry is not in the past');
 });

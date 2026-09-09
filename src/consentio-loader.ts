@@ -19,6 +19,7 @@
 
 import { ADS_DATA_REDACTION, needsAdsDataRedaction, toConsentDefault, toGoogleSignals } from './lib/consent-signals.js';
 import { BASELINE_CONSENTS, readConsents } from './lib/consent-store.js';
+import type { ConsentioDefaultState } from './types.js';
 
 (function (global: Window & typeof globalThis, doc: Document, logger: Console, customElementsRegistry: CustomElementRegistry) {
 
@@ -98,7 +99,17 @@ import { BASELINE_CONSENTS, readConsents } from './lib/consent-store.js';
 		gtag('consent', 'default', toConsentDefault(signals, stored ? null : waitForUpdate));
 		gtag('set', ADS_DATA_REDACTION, needsAdsDataRedaction(signals));
 
-		global.ConsentioDefault = { cookieName, version, consents, consentGiven: stored !== null };
+		const publish: ConsentioDefaultState = { cookieName, version, consents, consentGiven: stored !== null };
+
+		// Carried across, not used: an attribute the tag leaves out must not beat a settings file.
+		if (loaderScript.dataset.cookieLifetime) {
+			publish.cookieLifetime = Number(loaderScript.dataset.cookieLifetime);
+		}
+		if (loaderScript.dataset.shareAcrossSubdomains !== undefined) {
+			publish.shareAcrossSubdomains = loaderScript.dataset.shareAcrossSubdomains === 'true';
+		}
+
+		global.ConsentioDefault = publish;
 		debug && logger.info('[Consentio Loader] Consent default pushed:', consents);
 	}
 

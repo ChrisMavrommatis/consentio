@@ -9,8 +9,8 @@ Consentio sets **one cookie**, and only after a visitor answers. Nothing is stor
 
 <div class="callout" markdown="1">
 **For your cookie policy.** It is a first-party cookie called `consentio`, it stores the visitor's own choice
-and nothing else — no identifier, no tracking value — it lasts 90 days, and it is strictly necessary. You set
-it, so list it.
+and the date they made it — no identifier, no tracking value — it lasts 90 days unless you change that, and
+it is strictly necessary. You set it, so list it.
 </div>
 
 ## 🍪 What is in it {#what-is-in-it}
@@ -18,38 +18,81 @@ it, so list it.
 | | |
 |---|---|
 | **Name** | `consentio`, unless you changed it |
-| **What it holds** | the visitor's answer for each of the four categories, plus a version number |
-| **How long** | 90 days, counted from the last time they answered |
-| **Scope** | this hostname only. `example.com` and `shop.example.com` ask separately |
-| **Size** | about 220 bytes |
+| **What it holds** | the visitor's answer for each of the four categories, a version number, and the date they answered |
+| **How long** | 90 days by default, counted from the last time they answered. `cookieLifetime` changes it |
+| **Scope** | this hostname only, unless you turn on `shareAcrossSubdomains`. `example.com` and `shop.example.com` otherwise ask separately |
+| **Size** | about 265 bytes |
 | **Sent to** | your own server, on every request, like any other cookie |
 
 The value is a small piece of JSON, encoded the way anything in a cookie has to be — so what you see in the
 browser's cookie inspector has `%22` where a `"` should be. Decoded, it is:
 
 ```json
-{"version":1,"consents":{"strictly_necessary":"granted","preferences_functionality":"denied","statistics_performance":"denied","marketing_advertising":"denied"}}
+{"version":1,"consents":{"strictly_necessary":"granted","preferences_functionality":"denied","statistics_performance":"denied","marketing_advertising":"denied"},"date":"2026-09-09T10:00:00.000Z"}
 ```
 
 Every answer is the word `granted` or `denied`. All four categories are always present.
 
+**`date` is when the visitor answered**, in UTC, and it is rewritten every time they answer again. Nothing in
+Consentio reads it yet — it is stored so that something can later, and because the only way to put a date on
+a cookie that already exists is to throw the cookie away and ask everyone again.
+
+**A cookie with no `date` is a perfectly good answer.** Every one written before this release has none, and
+they are all still honoured. If you read this cookie yourself, do not require the key.
+
 ## ⚙️ The exact attributes {#the-exact-attributes}
 
-`path=/`, `expires` 90 days from the write, `SameSite=Lax`, and `Secure` **over `https` only**.
+`path=/`, `expires` from the lifetime you set, `SameSite=Lax`, `Secure` **over `https` only**, and `Domain`
+only if you asked for one answer across your subdomains.
 
 Over plain `http` the cookie is written without `Secure`, so a choice persists on `http://localhost` and
 local development behaves like the deployed site.
 
-**No `Domain` attribute is set**, so the cookie belongs to one hostname. An answer given on `example.com` is
-not sent to `shop.example.com`. If you need one answer to cover subdomains, that is a change to the source
-rather than a setting you can turn on.
+**The expiry runs from each write, not from the first one.** Answering again pushes it out again. A visitor
+who answers once and never opens the settings after that is asked again a lifetime later.
 
-**The 90 days run from each write, not from the first one.** Answering again pushes the expiry out again. A
-visitor who answers once and never opens the settings after that is asked again 90 days later.
-
-**Size: about 220 bytes.** 161 bytes of JSON, and the rest is the encoding — `"` and `,` survive as `%22` and
+**Size: about 265 bytes.** 195 bytes of JSON, and the rest is the encoding — `"` and `,` survive as `%22` and
 `%2C`. Renaming your categories in the settings does not change it; only the four fixed keys are stored, never
 your wording.
+
+## ⏳ How long it lasts {#how-long-it-lasts}
+
+**90 days, unless you say otherwise.** Set `cookieLifetime` in your settings file — a number of days — or
+`data-cookie-lifetime` on the tag, or fill in **Cookie Lifetime (days)** on the Tag Manager route.
+
+```json
+{ "cookieLifetime": 365 }
+```
+
+A longer life asks the visitor less often; a shorter one keeps their answer fresher. It changes nothing about
+what is stored. A value that is not a positive number is ignored and you get the 90 days.
+
+## 🌐 One answer across subdomains {#one-answer-across-subdomains}
+
+**By default no `Domain` is set**, so the cookie belongs to one hostname: an answer given on
+`www.example.com` is not sent to `shop.example.com`, and the same person is asked on each.
+
+Turn on `shareAcrossSubdomains` and one answer covers all of them:
+
+```json
+{ "shareAcrossSubdomains": true }
+```
+
+On the tag it is `data-share-across-subdomains="true"`; on the Tag Manager route it is the
+**Share the answer across subdomains** checkbox.
+
+**There is no domain to type, and that is the point.** A domain the browser will not take is dropped **with
+no error at all** — nothing stored, and the banner back on every page load — so the one thing worth removing
+is the chance of typing a wrong one. Consentio finds the right domain by asking the browser: from
+`www.example.co.uk` it offers `co.uk`, then `example.co.uk`, and keeps the first one accepted, deleting each
+short-lived probe cookie as it goes. `co.uk` is refused and `example.co.uk` is kept. The same walk gets
+`example.com` from `www.example.com`.
+
+**`localhost` and an IP address stay on the one host**, because neither can carry a shared domain. Turning
+the setting on there changes nothing and says nothing.
+
+**Turn it off again and the shared cookie goes.** Every write clears the answer at both scopes before storing
+it at the one in use, so you never end up with two cookies of the same name and a browser sending both.
 
 ## 🧩 Why the answers sit under `consents` {#why-the-answers-sit-under-consents}
 

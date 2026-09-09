@@ -141,7 +141,6 @@ const fromVariable = data.textSource === 'variable' && hasSelectedVariable(data.
 // A language pack variable holds a published <locale>.json unchanged - the words under
 // `texts`, the four categories keyed under `consents`. The custom fields are flat on
 // `data` and are tag fields that cannot move, so the two paths are read differently.
-// Reading a pack as if it were flat is what defect 34 was.
 const pack = fromVariable ? data.textsVariable : null;
 const packTexts = pack && pack.texts ? pack.texts : {};
 const packConsents = pack && pack.consents ? pack.consents : {};
@@ -233,6 +232,14 @@ const config = {
     }
   ]
 };
+// The banner writes the cookie, so these are config fields rather than anything done here.
+if (data.cookieLifetime) {
+  config.cookieLifetime = makeNumber(data.cookieLifetime);
+}
+if (data.shareAcrossSubdomains) {
+  config.shareAcrossSubdomains = true;
+}
+
 const cookies = hasCookiesVariable ? data.cookies : [];
 
 removeEmptyValues(config.texts);

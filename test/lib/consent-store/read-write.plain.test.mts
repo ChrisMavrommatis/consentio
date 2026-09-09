@@ -48,3 +48,34 @@ test('the cookie name is honoured, so two banners can coexist', () => {
 	assert.equal(readConsents('two', 1), null);
 	assert.deepEqual(readConsents('one', 1), { a: 'granted' });
 });
+
+// The date the answer was given, added in this release. Nothing reads it yet - it is here
+// because the only way to put one on a cookie that already exists is to throw the cookie
+// away, which asks every visitor again. Issue 38.
+
+test('a written answer carries the date it was given', () => {
+	writeConsents('consentio', 1, { statistics_performance: 'granted' });
+
+	const stored = JSON.parse(Cookies.get('consentio')!);
+	assert.match(stored.date, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+	assert.ok(Math.abs(Date.parse(stored.date) - Date.now()) < 5000, 'the date is not now');
+});
+
+test('the date sits beside the answer rather than inside it', () => {
+	writeConsents('consentio', 1, { statistics_performance: 'granted' });
+	assert.deepEqual(readConsents('consentio', 1), { statistics_performance: 'granted' });
+});
+
+test('a value stored before dates existed is still honoured', () => {
+	Cookies.set('consentio', JSON.stringify({ version: 1, consents: { statistics_performance: 'granted' } }));
+	assert.deepEqual(readConsents('consentio', 1), { statistics_performance: 'granted' });
+});
+
+test('a date on a value at the wrong version does not rescue it', () => {
+	Cookies.set('consentio', JSON.stringify({
+		version: 2,
+		consents: { statistics_performance: 'granted' },
+		date: new Date().toISOString()
+	}));
+	assert.equal(readConsents('consentio', 1), null);
+});

@@ -20,3 +20,10 @@ test('numeric options are coerced out of their string attributes', () => {
 	assert.equal(pushes()[0].payload.wait_for_update, 250);
 	assert.equal(typeof window.ConsentioDefault!.version, 'number');
 });
+
+// The lifetime and the subdomain setting are only published when the tag names them. The
+// loader never writes the cookie, so an absent attribute has to leave the settings file alone.
+test('a tag that names neither of the cookie options publishes neither', () => {
+	assert.ok(!('cookieLifetime' in window.ConsentioDefault!), 'a lifetime was published from nowhere');
+	assert.ok(!('shareAcrossSubdomains' in window.ConsentioDefault!), 'a subdomain setting was published from nowhere');
+});

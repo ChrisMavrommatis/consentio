@@ -11,7 +11,10 @@ import { readFileSync } from 'node:fs';
 const root = new URL('../../', import.meta.url);
 const fixture = JSON.parse(readFileSync(new URL('gtm/settings.fixture.json', root), 'utf8')) as {
 	language: { locale: string; policyUrl: string; texts: Record<string, string>; consents: Record<string, { title: string; description: string }> };
-	expected: { policyUrl: { value: string; whenPackIsBlank: string } };
+	expected: {
+		policyUrl: { value: string; whenPackIsBlank: string };
+		cookie: { lifetime: number; shared: boolean };
+	};
 };
 
 const code = readFileSync(new URL('gtm/consentio-tag/src/sandbox.js', root), 'utf8');
@@ -40,4 +43,9 @@ test("the template's own tests cover all three ways a pack can name an address",
 	assert.match(tests, /pack\('\/el\/privacy\/'\)/, 'a pack that names its own address');
 	assert.match(tests, /pack\(undefined\)/, 'a pack with no address key, which falls back to the field');
 	assert.match(tests, /pack\(''\)/, 'a blank address, which means no link in that language');
+});
+
+test("the template's own tests carry the fixture's cookie lifetime and subdomain setting", () => {
+	assert.match(tests, new RegExp(`cookieLifetime = ${fixture.expected.cookie.lifetime}\\b`));
+	assert.ok(tests.includes(`shareAcrossSubdomains = ${fixture.expected.cookie.shared}`));
 });

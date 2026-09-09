@@ -52,6 +52,10 @@ export interface CategorySettings {
 /** Behaviour: how the banner acts and what it stores. Argument one of Create. */
 export interface ConsentioSettings {
 	cookieName: string;
+	/** Days a stored answer lasts. Defaults to DEFAULT_LIFETIME_DAYS - issue 38. */
+	cookieLifetime: number;
+	/** Binds the answer to the domain the site's hosts share, not this one - issue 39. */
+	shareAcrossSubdomains: boolean;
 	debug: boolean;
 	version: number;
 	consentRequired: boolean;
@@ -97,6 +101,8 @@ export type LanguageInput =
  */
 export interface ResolvedConfig {
 	cookieName: string;
+	cookieLifetime: number;
+	shareAcrossSubdomains: boolean;
 	debug: boolean;
 	version: number;
 	consentRequired: boolean;
@@ -116,12 +122,17 @@ export interface ConsentCategory {
 	defaultState: ConsentState;
 }
 
-/** What the loader leaves on the page once it has pushed the consent default. */
+/**
+ * What the loader leaves on the page once it has pushed the consent default. The last two
+ * are optional: the loader publishes each only when its attribute is on the tag.
+ */
 export interface ConsentioDefaultState {
 	cookieName: string;
 	version: number;
 	consents: ConsentRecord;
 	consentGiven: boolean;
+	cookieLifetime?: number;
+	shareAcrossSubdomains?: boolean;
 }
 
 /**

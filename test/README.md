@@ -9,8 +9,8 @@ Test files mirror `src/`. A module with more than a handful of tests gets a fold
 files inside are named for the category of behaviour they cover:
 
 ```text
-src/lib/cookies.ts        ->  test/lib/cookies/{read-write,attributes,secure-flag}.test.mts
-src/lib/logger.ts         ->  test/lib/logger.test.mts          (few enough to stay one file)
+src/lib/cookies.ts        ->  test/lib/cookies/{read-write,attributes}.plain.test.mts, secure-flag.test.mts
+src/lib/logger.ts         ->  test/lib/logger.plain.test.mts    (few enough to stay one file)
 src/elements/…            ->  test/elements/…
 ```
 
@@ -48,8 +48,15 @@ imports nothing from `src/consentio.js` or `src/elements/`; `helpers.mts` holds 
 `test:plain` is not a second suite — every file in it also runs under `npm test`. It is a guard. A test that
 reaches for a real page fails there instead of passing under jsdom and hiding the coupling.
 
-`lib/cookies/secure-flag.test.mts` is the one cookie test that stays on jsdom: it swaps the page origin, which
-the stand-in cannot do.
+**A test says which it is in its own name.** `*.plain.test.mts` runs under both commands; anything else runs
+under `npm test` alone. There is no list in `package.json` to keep in step, so a page-free test cannot be
+added and left out of the guard by forgetting one.
+
+Two cookie tests stay on jsdom, and neither carries `.plain.`. `lib/cookies/secure-flag.test.mts` swaps the
+page origin, which the stand-in cannot do, and `lib/consent-store/cookie-domain.test.mts` needs a jar that
+refuses a domain the way a browser does — the shared cookie domain is found by offering candidates until one
+is accepted, and a jar that keeps whatever it is given accepts the first one every time. It puts the page on
+a different hostname per test, which the stand-in cannot do either.
 
 ## ⚙️ `resolve.mjs` and `register.mjs`
 

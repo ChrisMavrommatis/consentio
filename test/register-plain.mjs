@@ -46,5 +46,7 @@ install('document', doc);
 install('window', { dataLayer: [] });
 // https, so the secure flag behaves as it does on a real site. Defect 12 - the flag being
 // set on plain http too - is checked in cookies/secure-flag.test.mts, which swaps the
-// origin and therefore needs jsdom.
-install('location', { protocol: 'https:' });
+// origin and therefore needs jsdom. The hostname is here because the shared cookie domain
+// is derived from it; the jar above takes any domain, so which one the walk arrives at is
+// jsdom's to check, in consent-store/cookie-domain.test.mts.
+install('location', { protocol: 'https:', hostname: 'consentio.test' });

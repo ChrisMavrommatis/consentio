@@ -13,6 +13,49 @@ release body, so write these entries for the people using Consentio, not for the
 
 ### ✨ Added
 
+- **The stored answer now carries the date it was given.** A new `date` key sits beside `version` and
+  `consents` in the cookie, in UTC, and is rewritten each time the visitor answers.
+
+  **Nobody is asked to answer again by this release.** A cookie written before today has no date, and it is
+  still a valid answer — Consentio reads `version` and `consents` and ignores everything else, on both
+  routes. **Do not raise your `version` because of this entry**: that would throw away every stored answer
+  and ask every visitor again, for nothing.
+
+  Nothing reads the date yet. It is stored now because the only way to put one on a cookie that already
+  exists is to throw the cookie away.
+
+- **How long an answer lasts is yours to set.** It was 90 days, chosen by nobody and changeable by no one.
+  It is still 90 days if you say nothing, and `cookieLifetime` is a number of days:
+
+  ```json
+  { "cookieLifetime": 365 }
+  ```
+
+  On the tag it is `data-cookie-lifetime`; on the Tag Manager route it is the **Cookie Lifetime (days)**
+  field.
+
+- **One answer can cover your subdomains.** A visitor who answered on `www.example.com` used to be asked
+  again on `shop.example.com`, and the two answers could disagree. Turn on `shareAcrossSubdomains` and there
+  is one answer for all of them:
+
+  ```json
+  { "shareAcrossSubdomains": true }
+  ```
+
+  `data-share-across-subdomains="true"` on the tag, **Share the answer across subdomains** on the Tag Manager
+  route.
+
+  **There is no domain to type.** Consentio works out the one your hostnames share by asking the browser
+  which it will accept, so `www.example.co.uk` gets `example.co.uk` and not the `co.uk` that taking the first
+  label off would give — a domain the browser refuses is dropped **silently**, and that would leave nothing
+  stored and the banner returning on every page load. On `localhost` or an IP address there is no shared
+  domain to have, and the setting changes nothing.
+
+  **Turning it off again removes the shared cookie.** Every write clears the answer at both scopes first, so
+  two cookies of one name cannot pile up and be sent together.
+
+  **Nobody is asked to answer again by this.** What is stored does not change — only where it is kept.
+
 - **A Reject All button, beside Accept All on the first screen.** Refusing used to mean opening the
   settings, leaving three switches alone and pressing Save — three actions against one. It is now one, and
   it is the same size and the same style as accepting.
@@ -136,6 +179,13 @@ release body, so write these entries for the people using Consentio, not for the
   raise `version`, and raising it would ask every visitor again for nothing.
 
 ### 🛠️ Fixed
+
+- **A settings file that names `cookieName` or `version` now says so on the console instead of being
+  ignored in silence.** On the HTML route the script tag decides both, because it reads the cookie in
+  `<head>` before your settings file has been fetched — and it always has. The documentation said they were
+  ignored only when the matching attribute was also on the tag, which was wrong. Put either in a settings
+  file and Consentio names the attribute to set instead. A file that names neither, or that names the same
+  value the tag already resolved, is left alone.
 
 - **A quote in your own wording can no longer break out of the markup it is placed in.** Text substituted
   into the banner's templates escaped `&`, `<` and `>` but not `"` or `'`. Nothing shipped could reach a
