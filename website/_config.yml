@@ -18,25 +18,40 @@ repository_url          : "https://github.com/ChrisMavrommatis/consentio"
 # The version this documentation describes. Shown in the header and in the release note.
 docs_version            : "0.1.0"
 
-# How this build loads Consentio, and which container it uses.
+# How this build loads Consentio, and how the banner behaves once it is loaded.
 #
-# Both are empty or "direct" here so a local build and a pull-request build load no Google
+# The route is "direct" here so a local build and a pull-request build load no Google
 # Tag Manager at all and drive the banner from the bundle this repository just built.
-# _config.prod.yml overlays the published values, and only the publish build passes it.
+# _config.prod.yml overlays the published route, and only the publish build passes it.
 #
-# consentio_route: "direct"      the blocking <script> in the page head - what this repo builds
-#                  "tag-manager" no script tag; the container's Consentio Tag loads the banner
+# route     "direct"      the blocking <script> in the page head - what this repo builds
+#           "tag-manager" no script tag; the container's Consentio Tag loads the banner
 #
-# A page can force the direct route with `loader: true` in its front matter, or force it off
-# with `loader: false`, whatever the route says. That is how one site shows both.
+#           A page forces the direct route on with `loader: true` in its front matter and
+#           off with `loader: false`, whatever the route says. That is how one site shows
+#           both.
 #
-# consentio_language: which language file the loader fetches. It is a whole language pack,
-#                     so pointing it at /data/i18n/el.json runs the site's banner in Greek -
-#                     which is how a published pack is checked without a container. Empty
-#                     means no language file at all, and the built-in English is used.
-#                     /data/consentio-language.json is this site's own, and overrides one word.
-consentio_route         : "direct"
-consentio_language      : "/data/i18n/en.json"
+# language  which language file the loader fetches. It is a whole language pack, so
+#           pointing it at /data/i18n/el.json runs the site's banner in Greek - which is
+#           how a published pack is checked without a container. Empty falls back to
+#           /data/consentio-language.json, this site's own, which overrides one word.
+#
+# debug     the loader's console logging.
+#
+# settings  becomes /data/consentio-settings.json, the file the loader fetches - how the
+#           banner behaves. Write policyUrl site-relative; the build puts baseurl in front
+#           of it, and in front of every other address the page fetches.
+consentio:
+  route                 : "direct"
+  language              : "/data/i18n/en.json"
+  debug                 : false
+  settings:
+    consentRequired     : true
+    policyUrl           : "/cookie/"
+    cookieLifetime      : 90
+    shareAcrossSubdomains : true
+
+# The Google Tag Manager container. Empty here, so a local build emits no snippet at all.
 gtm_container_id        : ""
 
 ############################################################

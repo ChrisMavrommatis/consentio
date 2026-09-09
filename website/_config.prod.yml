@@ -21,4 +21,8 @@ gtm_container_id        : ""
 # All Pages. Until it is, a publish with this set leaves the live site with no banner.
 #
 # /try-it/ carries `loader: true` so one page keeps the direct route whatever this says.
-consentio_route         : "tag-manager"
+#
+# Only the route moves. Jekyll deep-merges these files, so the language, the debug flag
+# and the whole settings block come from _config.yml unchanged.
+consentio:
+  route                 : "tag-manager"

@@ -1,8 +1,0 @@
----
-layout: null
----
-{
-	"debug": false,
-	"consentRequired": true,
-	"policyUrl": "{{ '/cookie/' | relative_url }}"
-}

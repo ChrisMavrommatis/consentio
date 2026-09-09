@@ -13,17 +13,7 @@
 	<link rel="icon" href="{{ '/favicon.ico' | relative_url }}" />
 	<link rel="apple-touch-icon" href="{{ '/apple-touch-icon.png' | relative_url }}" />
 
-	{%- assign use_loader = false -%}
-	{%- if page.loader == true -%}{%- assign use_loader = true -%}
-	{%- elsif page.loader != false and site.consentio_route != "tag-manager" -%}{%- assign use_loader = true -%}
-	{%- endif -%}
-	{%- if use_loader %}
-	<script src="{{ '/js/consentio-loader.min.js' | relative_url }}" data-consentio-loader
-		data-debug="{{ site.consentio_debug | default: false }}"
-		data-settings-url="{{ '/data/consentio-settings.json' | relative_url }}"
-		data-language-url="{{ site.consentio_language | default: '/data/consentio-language.json' | relative_url }}"
-		data-cookies-url="{{ '/data/consentio-cookies.json' | relative_url }}"></script>
-	{%- endif %}
+	{% consentio_head %}
 	{% gtm_head site.gtm_container_id %}
 </head>
 
