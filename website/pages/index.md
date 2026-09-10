@@ -2,7 +2,6 @@
 title: Consentio
 layout: home
 permalink: /
-description: A cookie banner you can add to your own site. It asks visitors what they allow, remembers the answer, and tells your tracking tags what to do about it.
 ---
 
 <div class="hero" markdown="1">

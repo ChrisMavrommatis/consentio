@@ -1,8 +1,16 @@
 # Consentio
 
-A small, frontend-only consent banner for static sites. It renders a bar and a settings modal inside a
-closed shadow root, stores the visitor's answer in one cookie, and pushes Google Consent Mode signals to
-`dataLayer`.
+**A tag manager reads consent as it loads.** Whatever the visitor answered has to be on the page before that
+moment — a banner that renders afterwards gates nothing while looking like it does. Consentio puts the answer
+there first: one blocking `<script>` in `<head>` above the tag manager snippet, or a Tag Manager template on
+the Consent Initialization trigger.
+
+It is a cookie consent banner for static sites — a bar and a settings modal in a closed shadow root, the
+visitor's answer in one cookie, and Google Consent Mode signals on `dataLayer`.
+
+**What it is not.** Not an npm package. No account, no server, nothing to keep running. Four consent
+categories, fixed — a site changes their wording, not the set. Google Consent Mode is the only thing it
+speaks. If what you need is a consent platform, this is not one.
 
 No runtime dependencies. Apache-2.0.
 

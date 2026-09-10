@@ -2,9 +2,11 @@
 # Site settings
 ############################################################
 title                   : "Consentio"
+# The meta description for every page that does not set its own, which since 10 Sep 2026
+# means the home page. Kept under 155 characters so a search result does not cut it.
 description             : >-
-  A small, frontend-only consent banner for static sites. Two install routes, one cookie,
-  Google Consent Mode signals on the dataLayer.
+  A cookie consent banner for static sites. A tag manager reads consent as it loads, so
+  Consentio puts the answer on the page before it.
 
 author:
   name                  : "Chris Mavrommatis"
