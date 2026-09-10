@@ -24,15 +24,15 @@ on:
         type: boolean
         default: true
 
-permissions:
-  contents: write
-
 jobs:
   # Seconds, and it runs alone. A missing changelog section and an already-used version
   # are both cheap to find, and a tag is permanent - there is no fixing one afterwards.
   gate:
     name: gate
     runs-on: ubuntu-latest
+    # Reads only. The write is on `release` below, which is the job that commits, tags and publishes.
+    permissions:
+      contents: read
     steps:
       - name: The dispatch ref is main
         if: github.ref_name != 'main'
@@ -96,6 +96,9 @@ jobs:
     name: release
     needs: gate
     runs-on: ubuntu-latest
+    # Commits dist/ to main, pushes a tag and publishes the release. The only job that needs the write.
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -107,7 +110,7 @@ jobs:
           node-version: '24'
           cache: npm
 
-      - run: npm ci
+      - run: npm ci --ignore-scripts
       - run: npm run typecheck
       - run: npm run publish:i18n
       - run: npm run publish:gtm

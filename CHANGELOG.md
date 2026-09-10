@@ -11,6 +11,8 @@ release body, so write these entries for the people using Consentio, not for the
 
 ## [Unreleased]
 
+## [0.2.0]
+
 ### ✨ Added
 
 - **The stored answer now carries the date it was given.** A new `date` key sits beside `version` and

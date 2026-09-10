@@ -15,8 +15,12 @@ const FILE = process.env.CHANGELOG_FILE
 	: new URL('../CHANGELOG.md', import.meta.url);
 
 // `## 3.0.0`, `## [3.0.0]`, `## [Unreleased]`, any of them with a trailing ` - 2026-08-25`.
+// Prerelease and build metadata are two separate optional groups, never one repeated group: `-` is
+// inside the class as well as in front of it, so `(?:[-+][0-9A-Za-z.-]+)*` can divide `-a-b` more
+// than one way and backtracks exponentially on a heading that nearly matches. Semver introduces
+// each suffix exactly once, so splitting them accepts the same language with nothing to backtrack.
 const VERSION_HEADING =
-	/^##[ \t]+\[?(Unreleased|\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)*)\]?(?:[ \t]+[-–—][ \t]+(\S.*?))?[ \t]*$/i;
+	/^##[ \t]+\[?(Unreleased|\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?)\]?(?:[ \t]+[-–—][ \t]+(\S.*?))?[ \t]*$/i;
 
 const HEADING = /^(#{1,6})([ \t]+\S.*)$/;
 const FENCE = /^[ \t]{0,3}(```+|~~~+)/;
