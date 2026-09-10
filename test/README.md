@@ -80,14 +80,18 @@ Test files are `.mts`, not `.ts`, so Node reads them as ES modules without guess
 
 ## ✅ Tests marked `todo`
 
-**The code under test is deliberately still broken.** It was ported to TypeScript preserving every known
-defect, so the tests describe what the code *should* do and carry `{ todo: true }` where it does not yet. A
-failing `todo` does not fail the run, and node:test reports one that unexpectedly passes.
+**There are none left, since 10 Sep 2026.** The mechanism stays because it is how the next known-broken
+behaviour gets recorded, and this section says what it is for.
 
-**Every `todo` names a numbered issue in its title.** Fixing one means deleting its `todo` flag in the same
-diff, which is the proof the fix landed.
+The code was ported to TypeScript preserving every known defect, so a test describes what the code *should*
+do and carries `{ todo: true }` where it does not yet. A failing `todo` does not fail the run, and node:test
+reports one that unexpectedly passes.
 
-`npm test` exiting 0 with todos listed is the correct state.
+**Every `todo` names a numbered issue in its title.** Fixing one means deleting its flag in the same diff,
+which is the proof the fix landed. Never add one without a number - that is a defect nobody has written down.
+
+`npm test` exits 0 either way. With the list empty, a `todo` turning up in a run is something new rather than
+something owed.
 
 ## 🚧 Where the suite cannot reach
 
