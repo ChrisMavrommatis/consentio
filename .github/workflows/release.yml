@@ -1,5 +1,10 @@
 name: Release
 
+# A dispatch is listed against main, because the tag does not exist until the release job.
+# Without this the Actions list shows the commit message and nothing says which release a
+# run was - or whether it was the dry run.
+run-name: Release v${{ inputs.version }}${{ inputs.dry_run && ' (dry run)' || '' }}
+
 # One dispatch does the whole thing, including making the tag.
 #
 # It cannot be a tag trigger. jsDelivr serves the git tree at the tag, so
@@ -176,11 +181,14 @@ jobs:
             dist/consentio-tag.tpl dist/consentio-tag-cookies.tpl
             dist/i18n/en.json dist/i18n/el.json
           )
+          # The title carries the v and the tag never does. jsDelivr serves the git tree at
+          # the tag, so consentio@0.2.0 is the URL a template pins - a tag named v0.2.0
+          # would 404 every container that imported one.
           if gh release view "$VERSION" >/dev/null 2>&1; then
-            gh release edit "$VERSION" --notes-file "$RUNNER_TEMP/notes.md"
+            gh release edit "$VERSION" --title "v$VERSION" --notes-file "$RUNNER_TEMP/notes.md"
             gh release upload "$VERSION" "${files[@]}" --clobber
           else
-            gh release create "$VERSION" --title "$VERSION" --notes-file "$RUNNER_TEMP/notes.md" "${files[@]}"
+            gh release create "$VERSION" --title "v$VERSION" --notes-file "$RUNNER_TEMP/notes.md" "${files[@]}"
           fi
 
       - name: Dry run - what did not happen
