@@ -43,7 +43,7 @@ jobs:
           bundler-cache: true
           working-directory: website
 
-      - run: npm ci
+      - run: npm ci --ignore-scripts
 
       # GitHub Pages cannot build this itself - jekyll-tidy is not on its plugin allowlist -
       # so the site is built here and only the output is handed over.
