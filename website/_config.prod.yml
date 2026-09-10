@@ -11,7 +11,7 @@
 url                     : "https://chrismavrommatis.github.io"
 
 # The container. Filling this in emits Google's snippet on every page.
-gtm_container_id        : ""
+gtm_container_id        : "GTM-KRNXJG7D"
 
 # The published site installs Consentio the way most of its readers will: through the
 # Tag Manager template, not the blocking <script> this repository builds.

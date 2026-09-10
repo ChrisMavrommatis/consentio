@@ -18,7 +18,7 @@ url                     : "http://localhost:4001"
 repository_url          : "https://github.com/ChrisMavrommatis/consentio"
 
 # The version this documentation describes. Shown in the header and in the release note.
-docs_version            : "0.1.0"
+docs_version            : "0.2.0"
 
 # How this build loads Consentio, and how the banner behaves once it is loaded.
 #

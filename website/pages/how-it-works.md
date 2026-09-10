@@ -71,7 +71,7 @@ that is easiest to get wrong.
 | What pushes the consent default | the loader, on its first pass, before it fetches or injects anything | the template's own sandboxed code, before it calls `injectScript` |
 | Where settings come from | two JSON files, fetched by URL | the template's own fields |
 | Uses the loader | yes | **no — never** |
-| The cost | it blocks. 4.6 KB has to download before the page paints | **it only covers tags in that container** |
+| The cost | it blocks. 4.9 KB has to download before the page paints | **it only covers tags in that container** |
 
 ## 🔒 The banner is inside a closed shadow root {#the-banner-is-inside-a-closed-shadow-root}
 
@@ -89,8 +89,8 @@ Measured on the files this site is serving right now.
 
 | File | Minified | Compressed | When it loads |
 |---|---|---|---|
-| `consentio-loader.min.js` | 4.6 KB | about 2.0 KB | blocking, in `<head>`, before the page paints |
-| `consentio.min.js` | 36.3 KB | about 11.3 KB | in the background, after the default is already pushed |
+| `consentio-loader.min.js` | 4.9 KB | about 2.1 KB | blocking, in `<head>`, before the page paints |
+| `consentio.min.js` | 42.0 KB | about 12.9 KB | in the background, after the default is already pushed |
 
 The compressed column is gzip, which is what almost any server will do for you. **Only the first file is on
 the critical path**, and only because the answer has to reach your tag manager before it decides anything.

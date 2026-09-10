@@ -1,6 +1,8 @@
 // Pinned, never floating: the CDN serves the git tree at this exact tag, so a range would
-// let the bytes under a site change with no edit here. Tag first, then this.
-const url = 'https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@0.1.0/dist/consentio.min.js';
+// let the bytes under a site change with no edit here. `scripts/gtm.mjs` fills __VERSION__
+// in from package.json when it composes the .tpl, so a released template loads the release
+// it shipped in. Do not type a version here.
+const url = 'https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@__VERSION__/dist/consentio.min.js';
 
 const log = require('logToConsole');
 const injectScript = require('injectScript');

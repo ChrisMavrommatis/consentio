@@ -6,6 +6,15 @@ import { parse } from 'yaml';
 const ROOT = new URL('../', import.meta.url);
 const TEMPLATES = ['consentio-tag', 'consentio-tag-cookies'];
 
+// The CDN pin. `sandbox.js` writes `consentio@__VERSION__` and this fills it in from
+// package.json when the template is composed, so the .tpl a release attaches loads the
+// bundle of the release it is attached to. It used to be typed by hand, one release
+// behind, because the tag had to exist before the URL named it - and it does: the release
+// job pushes the tag before it uploads a single asset, so nobody can download a template
+// naming a tag that is not there. `decompose` puts the placeholder back.
+const VERSION = JSON.parse(readFileSync(new URL('package.json', ROOT), 'utf8')).version;
+const PIN = /consentio@(?:__VERSION__|\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?)/g;
+
 // A .tpl is these seven sections in this order, and the order is Google's, not ours.
 // `array` means every file under the directory, concatenated in filename order.
 const SECTIONS = [
@@ -102,7 +111,8 @@ function compose(template) {
 	const src = partsDir(template);
 	return assemble(SECTIONS.map(([, file, kind]) => {
 		if (kind === 'text') {
-			return readFileSync(SHARED[file] ?? new URL(file, src), 'utf8').replace(/\n$/, '');
+			const body = readFileSync(SHARED[file] ?? new URL(file, src), 'utf8').replace(/\n$/, '');
+			return body.replace(PIN, `consentio@${VERSION}`);
 		}
 		if (kind === 'json') {
 			return serialise(resolve(JSON.parse(readFileSync(new URL(file, src), 'utf8'))));
@@ -121,7 +131,11 @@ function decompose(from, template) {
 
 	SECTIONS.forEach(([, file, kind], i) => {
 		if (kind === 'text') {
-			if (!SHARED[file]) { writeFileSync(new URL(file, src), `${bodies[i]}\n`); }
+			// Back to the placeholder, so a decompose of a released .tpl does not freeze
+			// that release's version into the source it came from.
+			if (!SHARED[file]) {
+				writeFileSync(new URL(file, src), `${bodies[i].replace(PIN, 'consentio@__VERSION__')}\n`);
+			}
 			return;
 		}
 		if (kind === 'json') {

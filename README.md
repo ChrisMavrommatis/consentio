@@ -37,7 +37,7 @@ it is written for.
 | What pushes the consent default | the loader, on its first pass, before it fetches or injects anything | the template's own sandboxed code, before it calls `injectScript` |
 | Where settings come from | JSON files, fetched by URL | the template's own fields |
 | Uses the loader | yes | **no — never** |
-| The cost | it blocks. 4.6 KB has to download before the page paints | **it only covers tags in that container** |
+| The cost | it blocks. 4.9 KB has to download before the page paints | **it only covers tags in that container** |
 
 **The tag manager route's catch belongs in the open.** A template can only gate what the tag manager loads.
 Take that route and *every* tag and cookie-setting script on the site has to be managed from the container —
