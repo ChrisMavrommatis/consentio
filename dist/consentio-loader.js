@@ -48,11 +48,37 @@ function toConsentDefault(signals, waitForUpdate) {
 }
 
 ;// ./src/lib/cookies.ts
-/*! based on js-cookie v3.0.1 */
+/*!
+ * The cookie reader below is js-cookie v3.0.1, ported to TypeScript, cut down to what
+ * Consentio uses and changed where a consent cookie needs different defaults.
+ * https://github.com/js-cookie/js-cookie
+ *
+ * MIT License
+ *
+ * Copyright (c) 2018 Copyright 2018 Klaus Hartl, Fagner Brack, GitHub Contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 class Cookies {
+    // No expiry: how long an answer lasts is a setting, and consent-store.ts owns the number.
     static defaultAttributes = {
         path: '/',
-        expires: 90,
         sameSite: 'Lax'
     };
     // Read at set() time: at module load there is no page yet.
@@ -124,8 +150,9 @@ class Cookies {
         }
         return key ? jar[key] : jar;
     }
-    static remove(name) {
-        this.set(name, '', { expires: -1 });
+    // A cookie is only removed by a call carrying the domain it was written with. Issue 39.
+    static remove(name, attributes) {
+        this.set(name, '', this.assign({}, attributes, { expires: -1 }));
     }
 }
 /* harmony default export */ const cookies = (Cookies);
@@ -140,6 +167,57 @@ class Cookies {
 const BASELINE_CONSENTS = {
     strictly_necessary: 'granted'
 };
+/** How long a stored answer lasts when the site names none, in days. The one place it is written. */
+const DEFAULT_LIFETIME_DAYS = 90;
+/** Written and read back to ask the browser which domains it will take, then deleted. */
+const PROBE_COOKIE = 'consentio_probe';
+let probedHost = null;
+let probedDomain = '';
+/**
+ * The broadest Domain this browser accepts for the page it is on, or '' when there is none.
+ * Asked rather than computed: a label strip gets `co.uk` from `site.co.uk`, and doing it
+ * properly needs the public suffix list. Issue 39.
+ */
+function sharedDomain() {
+    const hostname = typeof location === 'undefined' ? '' : location.hostname;
+    if (typeof hostname !== 'string' || !hostname) {
+        return '';
+    }
+    if (hostname !== probedHost) {
+        probedHost = hostname;
+        probedDomain = probeSharedDomain(hostname);
+    }
+    return probedDomain;
+}
+function probeSharedDomain(hostname) {
+    // `localhost` and an IP address carry no shared domain, and probing one says so slowly.
+    if (hostname.indexOf('.') === -1 || hostname.indexOf(':') !== -1 || /^[\d.]+$/.test(hostname)) {
+        return '';
+    }
+    const labels = hostname.split('.');
+    for (let i = labels.length - 2; i >= 0; i--) {
+        const candidate = labels.slice(i).join('.');
+        // No expiry, so a probe the removal below somehow missed dies with the tab.
+        consent_store_Cookies.set(PROBE_COOKIE, '1', { domain: candidate });
+        const accepted = consent_store_Cookies.get(PROBE_COOKIE) === '1';
+        consent_store_Cookies.remove(PROBE_COOKIE, { domain: candidate });
+        if (accepted) {
+            return candidate;
+        }
+    }
+    return '';
+}
+function attributesFor(options) {
+    const lifetime = typeof options.lifetime === 'number' && options.lifetime > 0
+        ? options.lifetime
+        : DEFAULT_LIFETIME_DAYS;
+    const attributes = { expires: lifetime };
+    const domain = options.shared ? sharedDomain() : '';
+    if (domain) {
+        attributes.domain = domain;
+    }
+    return attributes;
+}
 /** The stored choice, or null when there is none to honour at this version. */
 function readConsents(cookieName, version) {
     const cookie = cookies.get(cookieName);
@@ -149,6 +227,7 @@ function readConsents(cookieName, version) {
     try {
         const stored = JSON.parse(cookie);
         // A flat value written before the nesting has no `consents`, and reads as no answer.
+        // Nothing tests the date: a value written before it existed is still an answer. Issue 38.
         if (stored === null || typeof stored !== 'object' || stored.version !== version || !stored.consents) {
             return null;
         }
@@ -158,11 +237,23 @@ function readConsents(cookieName, version) {
         return null;
     }
 }
-function writeConsents(cookieName, version, consents) {
-    consent_store_Cookies.set(cookieName, JSON.stringify({ version, consents }));
+/** Writes the answer. False means the browser did not keep it, which should not happen. Issue 39. */
+function writeConsents(cookieName, version, consents, options = {}) {
+    // Nothing reads the date yet, and a cookie that already exists cannot be given one. Issue 38.
+    const value = JSON.stringify({ version, consents, date: new Date().toISOString() });
+    // The other scope goes first, so flipping the setting cannot leave two cookies of one
+    // name for the browser to send together.
+    clearConsents(cookieName);
+    consent_store_Cookies.set(cookieName, value, attributesFor(options));
+    return consent_store_Cookies.get(cookieName) === value;
 }
+/** Both scopes, whichever is in use: a cookie is only removed at the Domain it was written at. Issue 39. */
 function clearConsents(cookieName) {
     consent_store_Cookies.remove(cookieName);
+    const domain = sharedDomain();
+    if (domain) {
+        consent_store_Cookies.remove(cookieName, { domain });
+    }
 }
 
 ;// ./src/consentio-loader.ts
@@ -210,6 +301,9 @@ function clearConsents(cookieName) {
     }
     const debug = loaderScript.dataset.debug === 'true';
     const loaderSrc = loaderScript.getAttribute('src');
+    // Three files, one per concern. `data-config-url` is 0.1.0's merged one and still works.
+    const settingsUrl = loaderScript.dataset.settingsUrl || null;
+    const languageUrl = loaderScript.dataset.languageUrl || null;
     const configUrl = loaderScript.dataset.configUrl || null;
     const cookiesUrl = loaderScript.dataset.cookiesUrl || null;
     if (global.ConsentioInstance) {
@@ -240,7 +334,15 @@ function clearConsents(cookieName) {
         // wait_for_update only helps a first-time visitor; a returning one already has an answer.
         gtag('consent', 'default', toConsentDefault(signals, stored ? null : waitForUpdate));
         gtag('set', ADS_DATA_REDACTION, needsAdsDataRedaction(signals));
-        global.ConsentioDefault = { cookieName, version, consents, consentGiven: stored !== null };
+        const publish = { cookieName, version, consents, consentGiven: stored !== null };
+        // Carried across, not used: an attribute the tag leaves out must not beat a settings file.
+        if (loaderScript.dataset.cookieLifetime) {
+            publish.cookieLifetime = Number(loaderScript.dataset.cookieLifetime);
+        }
+        if (loaderScript.dataset.shareAcrossSubdomains !== undefined) {
+            publish.shareAcrossSubdomains = loaderScript.dataset.shareAcrossSubdomains === 'true';
+        }
+        global.ConsentioDefault = publish;
         debug && logger.info('[Consentio Loader] Consent default pushed:', consents);
     }
     // A tag pasted inline rather than linked loses the banner and keeps the default. Issue 22.
@@ -259,34 +361,44 @@ function clearConsents(cookieName) {
             logger.error('[Consentio Loader] Constructor not found after script load');
             return;
         }
-        let config = {};
+        let settings = {};
+        let language = {};
         let cookies = [];
-        let resources = [];
-        if (configUrl) {
-            debug && logger.info('[Consentio Loader] Config URL:', configUrl);
-            resources.push(configUrl);
+        // Name and url, so what came back is read by name rather than by counting.
+        const resources = [];
+        const add = function (name, url) {
+            if (!url) {
+                return;
+            }
+            debug && logger.info(`[Consentio Loader] ${name} URL:`, url);
+            resources.push([name, url]);
+        };
+        if (settingsUrl && configUrl) {
+            logger.warn('[Consentio Loader] both data-config-url and data-settings-url are set - data-settings-url wins');
         }
-        if (cookiesUrl) {
-            debug && logger.info('[Consentio Loader] Cookies URL:', cookiesUrl);
-            resources.push(cookiesUrl);
-        }
+        add('settings', settingsUrl || configUrl);
+        add('language', languageUrl);
+        add('cookies', cookiesUrl);
         try {
             if (resources.length > 0) {
-                const results = await getResources(resources);
-                let resultIndex = 0;
-                if (configUrl) {
-                    config = results[resultIndex++];
-                    debug && logger.info('[Consentio Loader] Config loaded:', config);
-                }
-                if (cookiesUrl) {
-                    cookies = results[resultIndex++];
-                    debug && logger.info('[Consentio Loader] Cookies loaded:', cookies);
-                }
-                if (results.length > resultIndex) {
-                    logger.warn('[Consentio Loader] More resources loaded than expected');
-                }
+                const results = await getResources(resources.map(([, url]) => url));
+                resources.forEach(([name], index) => {
+                    const loaded = results[index];
+                    debug && logger.info(`[Consentio Loader] ${name} loaded:`, loaded);
+                    if (name === 'settings') {
+                        settings = loaded;
+                    }
+                    if (name === 'language') {
+                        language = loaded;
+                    }
+                    if (name === 'cookies') {
+                        cookies = loaded;
+                    }
+                });
             }
-            global.ConsentioInstance = new global.Consentio(config, cookies, logger);
+            // A settings file carrying `texts`, or `consents` as an array, is 0.1.0's config
+            // and the banner splits it. That is what keeps a site on two files working.
+            global.ConsentioInstance = new global.Consentio(settings, language, cookies, logger);
             logger.info('[Consentio Loader] Initialized successfully');
         }
         catch (error) {
