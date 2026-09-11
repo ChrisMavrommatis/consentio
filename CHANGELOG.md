@@ -11,6 +11,8 @@ release body, so write these entries for the people using Consentio, not for the
 
 ## [Unreleased]
 
+## [0.3.0]
+
 ### ✨ Added
 
 - **A script you mark waits for the visitor's answer.** A script pasted into the page — a chat widget, an
