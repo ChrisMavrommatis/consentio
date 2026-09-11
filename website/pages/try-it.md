@@ -105,9 +105,15 @@ document.addEventListener('consentio:consent-update', (e) => console.log(e.detai
 		}
 
 		reset.addEventListener('click', function () {
-			// Same path the banner writes on, so this clears the one it set rather than
-			// adding a second cookie the banner never sees.
-			document.cookie = cookieName() + '=; path=/; max-age=0; SameSite=Lax';
+			// A cookie is only removed at the Domain it was written at. With the answer shared
+			// across subdomains it sits on the domain the hostnames share, so this expires it
+			// host-only and at every parent domain the browser could have accepted.
+			var name = cookieName();
+			var labels = window.location.hostname.split('.');
+			document.cookie = name + '=; path=/; max-age=0; SameSite=Lax';
+			for (var i = 0; i <= labels.length - 2; i++) {
+				document.cookie = name + '=; path=/; max-age=0; SameSite=Lax; domain=' + labels.slice(i).join('.');
+			}
 			window.location.reload();
 		});
 
