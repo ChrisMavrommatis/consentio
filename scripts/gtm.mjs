@@ -7,11 +7,7 @@ const ROOT = new URL('../', import.meta.url);
 const TEMPLATES = ['consentio-tag', 'consentio-tag-cookies'];
 
 // The CDN pin. `sandbox.js` writes `consentio@__VERSION__` and this fills it in from
-// package.json when the template is composed, so the .tpl a release attaches loads the
-// bundle of the release it is attached to. It used to be typed by hand, one release
-// behind, because the tag had to exist before the URL named it - and it does: the release
-// job pushes the tag before it uploads a single asset, so nobody can download a template
-// naming a tag that is not there. `decompose` puts the placeholder back.
+// package.json, so the .tpl a release attaches loads that release's bundle.
 const VERSION = JSON.parse(readFileSync(new URL('package.json', ROOT), 'utf8')).version;
 const PIN = /consentio@(?:__VERSION__|\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?)/g;
 
@@ -65,8 +61,7 @@ function serialise(value) {
 
 // ## English comes from i18n/en.yaml ##
 
-// A pre-filled field carries the same words the banner falls back to, so it is a reference
-// rather than a copy: {"$text": "texts.barTitle"}.
+// A pre-filled field holds {"$text": "texts.barTitle"} rather than a copy of the words.
 function resolve(node) {
 	if (Array.isArray(node)) { return node.map(resolve); }
 	if (node && typeof node === 'object') {
@@ -157,8 +152,6 @@ function decompose(from, template) {
 const DECOMPOSE = process.argv.indexOf('--decompose');
 
 if (DECOMPOSE !== -1) {
-	// Takes the file the tag manager's editor exported. There is no committed .tpl to
-	// split, because the .tpl is built.
 	const [from, into] = process.argv.slice(DECOMPOSE + 1);
 	if (!from || !into) {
 		process.stderr.write(`usage: gtm.mjs --decompose <exported.tpl> <${TEMPLATES.join('|')}>\n`);
@@ -176,8 +169,7 @@ if (DECOMPOSE !== -1) {
 	for (const template of TEMPLATES) { compose(template); }
 	process.stdout.write(`gtm: ${TEMPLATES.length} templates compose\n`);
 } else {
-	// build/ mirrors dist/: one file per template, named after the template it is, so what
-	// a release ships can be looked at without writing dist/.
+	// build/ mirrors dist/, so what a release ships can be looked at without writing dist/.
 	const dest = process.argv.includes('--dist') ? 'dist' : 'build';
 	mkdirSync(new URL(`${dest}/`, ROOT), { recursive: true });
 

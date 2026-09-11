@@ -1,9 +1,6 @@
 /**
  * Consentio - a frontend-only consent banner for static sites.
  *
- * This is the asynchronous half. It renders the banner and pushes `consent update`.
- * The `consent default` belongs to consentio-loader.ts, which runs before the tag manager.
- *
  * @author ChrisMavrommatis
  * @license Apache-2.0
  */
@@ -91,7 +88,6 @@ class Consentio {
 		return 'texts' in settings || Array.isArray((settings as LegacyConfig).consents);
 	}
 
-	/** 0.1.0's one object, taken apart into the two it is now. */
 	static splitLegacy(config: LegacyConfig): { settings: SettingsInput; language: LanguageInput } {
 		const settings: SettingsInput = Consentio.copy<SettingsInput>({}, config, SETTINGS_KEYS);
 		const language: LanguageInput = {};
@@ -171,7 +167,6 @@ class Consentio {
 		return merged;
 	}
 
-	/** Two language inputs, the second winning. A supplied pack beats a legacy config's texts. */
 	static overlayLanguage(base: LanguageInput, over: LanguageInput): LanguageInput {
 		return {
 			...base,
@@ -181,7 +176,6 @@ class Consentio {
 		};
 	}
 
-	/** Settings and language into the one object the elements read. */
 	static resolve(settings: ConsentioSettings, language: ConsentioLanguage, logger: Console | null = null): ResolvedConfig {
 		// A language that names a policy page wins, blank included - '' is no link in this
 		// language. Leaving the key out is what falls back to the settings.

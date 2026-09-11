@@ -39,9 +39,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      # There was a second check here that rebuilt dist/ and diffed it. It demanded dist/
-      # match HEAD, which the release process forbids between releases - a dependency bump
-      # moves the bundle and only a release may write dist/. Dropped 7 Sep 2026.
       - name: only the release workflow writes dist/
         env:
           BEFORE: ${{ github.event.before }}

@@ -12,7 +12,6 @@ export const BASELINE_CONSENTS: ConsentRecord = {
 /** How long a stored answer lasts when the site names none, in days. The one place it is written. */
 export const DEFAULT_LIFETIME_DAYS = 90;
 
-/** What a site may say about where and how long the answer is kept. */
 export interface ConsentCookieOptions {
 	/** Days the answer lasts. Anything that is not a positive number falls back. */
 	lifetime?: number;

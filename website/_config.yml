@@ -2,8 +2,8 @@
 # Site settings
 ############################################################
 title                   : "Consentio"
-# The meta description for every page that does not set its own, which since 10 Sep 2026
-# means the home page. Kept under 155 characters so a search result does not cut it.
+# The fallback for a page that sets no description. Under 155 characters, so a search
+# result does not cut it.
 description             : >-
   A cookie consent banner for static sites. A tag manager reads consent as it loads, so
   Consentio puts the answer on the page before it.
@@ -22,55 +22,31 @@ docs_version            : "0.2.0"
 
 # How this build loads Consentio, and how the banner behaves once it is loaded.
 #
-# The route is "direct" here so a local build and a pull-request build load no Google
-# Tag Manager at all and drive the banner from the bundle this repository just built.
-# _config.prod.yml overlays the published route, and only the publish build passes it.
-#
 # route     "direct"      the blocking <script> in the page head - what this repo builds
 #           "tag-manager" no script tag; the container's Consentio Tag loads the banner
+#           A page overrides it with `loader: true` or `loader: false` in its front matter.
 #
-#           A page forces the direct route on with `loader: true` in its front matter and
-#           off with `loader: false`, whatever the route says. That is how one site shows
-#           both.
-#
-# language  which language file the loader fetches. It is a whole language pack, so
-#           pointing it at /data/i18n/el.json runs the site's banner in Greek - which is
-#           how a published pack is checked without a container. Empty falls back to
-#           /data/consentio-language.json, this site's own, which overrides one word.
+# language  a whole language pack: /data/i18n/el.json runs this site's banner in Greek.
+#           Empty falls back to /data/consentio-language.json, this site's own.
 #
 # debug     the loader's console logging.
 #
-# settings  how the banner behaves - one flat mapping, and the build decides where each
-#           key has to arrive. Most of it becomes /data/consentio-settings.json, the file
-#           the loader fetches. Write policyUrl site-relative; the build puts baseurl in
-#           front of it, and in front of every other address the page fetches.
-#
-#           cookieName and version are the two that cannot travel in that file. The loader
-#           reads the cookie in the page head, before any file has been fetched, so the
-#           banner takes both off the loader tag and warns on the console about a settings
-#           file naming either. The build puts them on the tag, so write them here with
-#           the rest. Changing the version discards every answer already stored.
-#
-#           hideFloatingButton drops the round reopen button. Turn it on and the site owes
-#           the visitor a way back in - the banner says so on the console. This one has
-#           "Open the settings panel" on /try-it/.
-#
-#           consents is the only nested key and needs no special handling - write
-#           `consents:` with a category under it and a defaultState under that, and it
-#           reaches the file as typed. Left out here so the four defaults have one home,
-#           which is the banner.
+# settings  one flat mapping; the build routes each key to where it works. Write policyUrl
+#           site-relative and the build puts baseurl in front of it. Changing version
+#           discards every answer already stored. Leaving consents out gives the four
+#           defaults one home, and it is the banner.
 consentio:
   route                 : "direct"
   language              : "/data/i18n/en.json"
   debug                 : false
   settings:
     cookieName          : "consentio"
-    version             : 1
+    version             : 3
     consentRequired     : true
     policyUrl           : "/cookie/"
     cookieLifetime      : 90
     shareAcrossSubdomains : true
-    hideFloatingButton  : true
+    hideFloatingButton  : false
 
 # The Google Tag Manager container. Empty here, so a local build emits no snippet at all.
 gtm_container_id        : ""

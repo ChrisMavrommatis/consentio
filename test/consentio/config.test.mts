@@ -32,10 +32,6 @@ test('categories the site says nothing about are untouched', () => {
 });
 
 // --- defect 28 -------------------------------------------------------------
-//
-// The four categories are fixed. Until 25 Aug 2026 an unrecognised key was appended, so
-// a site could invent a fifth category that no Google signal was ever routed to. Both
-// files can name a category now, so both have to refuse the same way.
 
 test('issue 28 - a category the defaults do not have is refused by a language pack', () => {
 	const merged = languageOf({ consents: { site_specific: { title: 'Ours' } } });
@@ -81,9 +77,6 @@ test('issue 28 - a category cannot re-point a Google signal', () => {
 });
 
 // --- defect 34 -------------------------------------------------------------
-//
-// Words come from the language, behaviour from the settings, and `alwaysOn` from neither -
-// only strictly_necessary is ever always-on, so it is derived from the key.
 
 test('issue 34 - a resolved category takes its words from one file and its behaviour from the other', () => {
 	const settings = settingsOf({ consents: { statistics_performance: { defaultState: 'granted' } } });
@@ -109,9 +102,6 @@ test('issue 34 - a blank string is a supplied value, and a missing key is not', 
 });
 
 // --- defect 37 -------------------------------------------------------------
-//
-// The address is an attribute, and TemplateRenderer only protects a text node. So the
-// scheme is checked here, before anything reaches setAttribute.
 
 test('issue 37 - a site address survives the check', () => {
 	assert.equal(Consentio.policyUrl('/privacy/'), '/privacy/');
@@ -142,8 +132,6 @@ test('issue 37 - the config carries the checked address, not the one supplied', 
 	assert.equal(instance.config.policyUrl, '');
 });
 
-// The address travels with policyLinkLabel, which is a word, so a language may name its own.
-
 test('a language that names a policy page wins over the settings', () => {
 	const resolved = Consentio.resolve(settingsOf({ policyUrl: '/privacy/' }), languageOf({ policyUrl: '/el/privacy/' }));
 	assert.equal(resolved.policyUrl, '/el/privacy/');
@@ -160,9 +148,6 @@ test('a language that says nothing about it falls back to the settings', () => {
 });
 
 // --- defect 40 -------------------------------------------------------------
-//
-// A site that hides the button and forgets its own link has left the visitor no way to
-// change their answer. Nothing here can see the link, so the console is all there is.
 
 test('issue 40 - hiding the floating button says what the site now owes', () => {
 	const warnings: string[] = [];

@@ -1,10 +1,4 @@
 // Builds each language into the json a site publishes. See i18n/README.md.
-//
-// One destination per verb: build/i18n/ by default, website/data/i18n/ under `--website`
-// beside the site's other json, dist/i18n/ under `--dist`. All three get the same thing:
-// `<code>.json`, the parsed yaml with nothing done to it - argument two of
-// Consentio.Create, the file `data-language-url` fetches, and what the tag's language
-// pack variable reads. One shape, three readers - issue 34.
 
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { parse } from 'yaml';
@@ -102,7 +96,6 @@ function checkString(fail, name, path, value) {
 // ## Run ##
 
 const checkOnly = process.argv.includes('--check');
-// dist/ and the site are both reached by a flag; build/ is what you get otherwise.
 const dest = process.argv.includes('--dist') ? 'dist'
 	: process.argv.includes('--website') ? 'website'
 	: 'build';

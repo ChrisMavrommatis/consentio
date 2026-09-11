@@ -86,17 +86,14 @@ strong {
 	font-weight: 650;
 }
 
-// Focus is a named deliverable of the banner's accessibility work; the page it demonstrates
-// on has to hold the same line.
 :focus-visible {
 	outline: 3px solid var(--focus);
 	outline-offset: 2px;
 	border-radius: 3px;
 }
 
-// Tables carry most of the reference material. display:block plus width:max-content is what
-// lets a wide one scroll on its own instead of pushing the whole page sideways; min-width
-// keeps a narrow one filling the column.
+// display:block plus width:max-content is what lets a wide table scroll on its own instead
+// of pushing the whole page sideways; min-width keeps a narrow one filling the column.
 table {
 	display: block;
 	width: max-content;

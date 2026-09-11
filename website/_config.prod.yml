@@ -2,9 +2,7 @@
 #
 #   bundle exec jekyll build --config _config.yml,_config.prod.yml
 #
-# npm run publish:site does that, and .github/workflows/site.yml runs it. Nothing else
-# does, so a local build and a pull-request build stay on localhost and load no Google Tag
-# Manager at all.
+# npm run publish:site does that, and .github/workflows/site.yml runs it. Nothing else does.
 
 # The published address, and the only place it is written down for the site. baseurl stays
 # in _config.yml so a local build exercises the same /consentio prefix the live site has.
@@ -13,12 +11,9 @@ url                     : "https://chrismavrommatis.github.io"
 # The container. Filling this in emits Google's snippet on every page.
 gtm_container_id        : "GTM-K6V53LMT"
 
-# The published site installs Consentio the way most of its readers will: through the
-# Tag Manager template, not the blocking <script> this repository builds.
-#
-# One thing must be true before this is deployed, and it is not checked anywhere: the
-# Consentio Tag template is imported into the container above, on Consent Initialization -
-# All Pages. Until it is, a publish with this set leaves the live site with no banner.
+# Nothing checks this, and it must be true before a deploy: the Consentio Tag template is
+# imported into the container above, on Consent Initialization - All Pages. Until it is, a
+# publish with this set leaves the live site with no banner.
 #
 # /try-it/ carries `loader: true` so one page keeps the direct route whatever this says.
 #

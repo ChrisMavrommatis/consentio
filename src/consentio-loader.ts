@@ -81,7 +81,6 @@ import type { ConsentioDefaultState } from './types.js';
 		const version = Number(loaderScript.dataset.version || 1);
 		const waitForUpdate = Number(loaderScript.dataset.waitForUpdate || 500);
 
-		// readConsents returns null when there is no stored answer to honour.
 		const stored = readConsents(cookieName, version);
 		const consents = stored || BASELINE_CONSENTS;
 		const signals = toGoogleSignals(consents);

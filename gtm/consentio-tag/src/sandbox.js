@@ -1,7 +1,5 @@
-// Pinned, never floating: the CDN serves the git tree at this exact tag, so a range would
-// let the bytes under a site change with no edit here. `scripts/gtm.mjs` fills __VERSION__
-// in from package.json when it composes the .tpl, so a released template loads the release
-// it shipped in. Do not type a version here.
+// `scripts/gtm.mjs` fills __VERSION__ in from package.json when it composes the .tpl, so a
+// released template loads the release it shipped in. Do not type a version here.
 const url = 'https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@__VERSION__/dist/consentio.min.js';
 
 const log = require('logToConsole');
@@ -17,17 +15,13 @@ const makeNumber = require('makeNumber');
 const JSON = require('JSON');
 const Object = require('Object');
 
-// The banner reads and writes this same cookie. It is fixed rather than a field: the
-// get_cookies permission can only name a cookie known at publish time, and a name that
-// could drift from the banner's is one more way the two readers disagree.
+// Not a field: the get_cookies permission can only name a cookie known at publish time.
 const COOKIE_NAME = 'consentio';
 
-// Milliseconds Google holds tags for while the visitor answers. Only ever sent to
-// someone who has not answered.
+// Milliseconds Google holds tags for while the visitor answers.
 const WAIT_FOR_UPDATE = 500;
 
-// Consent category to the Google signals it drives. The four categories are fixed, so
-// this is the only map there is, and it has to stay identical to the banner's.
+// Has to stay identical to the banner's map.
 const SIGNAL_MAP = {
   strictly_necessary: ['security_storage'],
   preferences_functionality: ['functionality_storage', 'personalization_storage'],
@@ -35,17 +29,15 @@ const SIGNAL_MAP = {
   marketing_advertising: ['ad_storage', 'ad_user_data', 'ad_personalization']
 };
 
-// No stored answer is one granted key, not four denied ones. Four denied categories would
-// deny security_storage, which the other install route grants, and the two would disagree
-// about the same visitor.
+// No stored answer is one granted key, not four denied: all-denied would deny
+// security_storage, which the direct install route grants for the same visitor.
 const BASELINE_CONSENTS = { strictly_necessary: 'granted' };
 
 const RAN_KEY = 'consentio-tag-ran';
 
 log('Consentio Tag =', data);
 
-// A second trigger must not push another default or inject a second banner. The window key
-// only appears once the injected script has run, so the page-lifetime flag covers the gap.
+// The window key only appears once the injected script has run, so the flag covers the gap.
 if (templateStorage.getItem(RAN_KEY) || copyFromWindow('ConsentioInstance')) {
   log('Consentio Tag: already initialized');
   data.gtmOnSuccess();
@@ -66,8 +58,7 @@ function readStoredConsents(version) {
   if (!stored || typeof stored !== 'object') {
     return null;
   }
-  // A version mismatch discards the whole value. So does a value with no consents key,
-  // which is how one written before the categories were nested reads.
+  // No consents key is how a value written before the categories were nested reads.
   if (stored.version !== version || !stored.consents) {
     return null;
   }
@@ -101,8 +92,7 @@ function toGoogleSignals(consents) {
 // ## Consent default ##
 // Before injectScript, which is always async: a default pushed after it is already too late.
 
-// A text field hands back a string once it has been edited, and the banner stores this
-// value in the cookie the reader above compares against.
+// A text field hands back a string once it has been edited.
 const version = makeNumber(data.version);
 
 const storedConsents = readStoredConsents(version);
@@ -135,14 +125,11 @@ function hasSelectedVariable(obj){
 
 const hasCookiesVariable = hasSelectedVariable(data.cookies);
 
-// Built-in English sends no strings at all, so the banner keeps its own and picks up any
-// later correction to them.
 const fromFields = data.textSource === 'custom';
 const fromVariable = data.textSource === 'variable' && hasSelectedVariable(data.textsVariable);
 
-// A language pack variable holds a published <locale>.json unchanged - the words under
-// `texts`, the four categories keyed under `consents`. The custom fields are flat on
-// `data` and are tag fields that cannot move, so the two paths are read differently.
+// The variable holds a published <locale>.json unchanged: the words under `texts`, the
+// four categories keyed under `consents`. The custom fields are flat on `data`.
 const pack = fromVariable ? data.textsVariable : null;
 const packTexts = pack && pack.texts ? pack.texts : {};
 const packConsents = pack && pack.consents ? pack.consents : {};
@@ -165,8 +152,8 @@ function category(key, titleField, descriptionField) {
   return { title: words ? words.title : null, description: words ? words.description : null };
 }
 
-// A pack may name a policy page in its own language. A blank one there means this
-// language has no link; no key at all falls back to the tag's own field.
+// A blank policyUrl in a pack means this language has no link; only a missing key falls
+// back to the tag's own field.
 const policyUrl = pack && pack.policyUrl !== undefined && pack.policyUrl !== null
   ? pack.policyUrl
   : data.policyUrl;
@@ -181,10 +168,7 @@ const config = {
   version: version,
   debug: data.debug,
   consentRequired: data.consentRequired,
-  // The site owes its own settings link once this is on. The banner warns; it cannot check.
   hideFloatingButton: data.hideFloatingButton,
-  // An address, not a word, so it is a field of its own rather than one of the texts. The
-  // banner checks the scheme; nothing here is put in an href.
   policyUrl: policyUrl,
   texts: {
     barTitle: text('barTitle'),
@@ -234,7 +218,6 @@ const config = {
     }
   ]
 };
-// The banner writes the cookie, so these are config fields rather than anything done here.
 if (data.cookieLifetime) {
   config.cookieLifetime = makeNumber(data.cookieLifetime);
 }
@@ -256,12 +239,11 @@ log('cookies =', cookies);
 // ## load script ##
 
 const scriptLoaded = function () {
-  // Two arguments, and the merged shape, on purpose: the URL above pins the release
-  // before this template's own, so the bundle that answers this call may be an older one.
-  // The banner splits a config carrying `texts` into a settings and a language itself.
+  // Two arguments and the merged shape on purpose: the pinned bundle may be older than
+  // this template, and it splits a config carrying `texts` itself.
   const consentioInstance = callInWindow('Consentio.Create', config, cookies);
-  // The banner sets this too. Setting it here as well is what makes the guard above work
-  // against an older pinned bundle.
+  // The banner sets this too; setting it here is what makes the guard above work against
+  // an older pinned bundle.
   setInWindow('ConsentioInstance', consentioInstance, true);
   data.gtmOnSuccess();
 };

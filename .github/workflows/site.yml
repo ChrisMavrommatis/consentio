@@ -1,14 +1,10 @@
 name: Documentation site
 
-# Written, provable, and switched off.
+# Pages has to be switched to the "GitHub Actions" source in the repository settings before
+# the deploy step can work, whatever this file says.
 #
-# `publish` defaults to false, so a dispatch builds the site and uploads the artifact and
-# stops there. Nothing reaches Pages until the maintainer dispatches with it on, and Pages
-# also has to be switched to the "GitHub Actions" source in the repository settings first -
-# until that is done the deploy step cannot work whatever this file says.
-#
-# There is no push trigger on purpose. The site is the fixture the by-hand release checks
-# run on; it should move when someone decides it moves.
+# No push trigger on purpose: the site is the fixture the by-hand release checks run on, so
+# it moves when someone decides it moves.
 
 on:
   workflow_dispatch:
@@ -47,9 +43,6 @@ jobs:
 
       # GitHub Pages cannot build this itself - jekyll-tidy is not on its plugin allowlist -
       # so the site is built here and only the output is handed over.
-      # The production overlay, and only here. It carries the published address, the
-      # container ID and the tag-manager route; _config.yml alone stays on localhost with
-      # no Google Tag Manager, which is what a local or pull-request build gets.
       # publish:site builds website/js/ and website/data/i18n/ first: both are gitignored,
       # so a checkout has neither and Jekyll would build a site whose loader is a 404.
       - name: Build the site
@@ -57,12 +50,10 @@ jobs:
           JEKYLL_ENV: production
         run: npm run publish:site
 
-      # The address lives in website/_config.yml and nowhere else. If it is ever wrong,
-      # every link on the site is wrong, so it is worth one line of output per run.
       - name: What it was built for
         run: |
           echo "from website/_config.prod.yml:"
-          grep -E '^(url|gtm_container_id|consentio_route)' website/_config.prod.yml
+          grep -E '^(url|gtm_container_id)|^  route' website/_config.prod.yml
           echo "baseurl, from website/_config.yml:"
           grep -E '^baseurl' website/_config.yml
 

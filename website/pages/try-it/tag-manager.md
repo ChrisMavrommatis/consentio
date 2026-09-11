@@ -13,11 +13,20 @@ visitor**. Answer the banner on any other page here, then come back to this one.
 cookie by the same rules, so the answer has to survive the trip. If it does not, one of the two readers is
 wrong, and the [cookie contract]({{ '/cookie/' | relative_url }}#the-cookie-contract) says which.
 
+{% assign container = site.gtm_container_id | default: "" %}
+{% if container == "" %}
 <div class="callout callout--warn" markdown="1">
-**There is no container configured**, so this page currently shows nothing at all. Once one is set and it
-carries the Consentio template, the banner appears here through the tag manager instead of through a
+**This build has no container configured**, so this page shows nothing at all. A build with one set, and the
+Consentio template imported into it, shows the banner here through the tag manager instead of through a
 script tag.
 </div>
+{% else %}
+<div class="callout" markdown="1">
+**The container is `{{ container }}`.** No banner here means the Consentio template is not imported into it.
+A banner that forgets an answer given on another page means the template's `version` field and this site's
+disagree, and a mismatch discards the whole stored value.
+</div>
+{% endif %}
 
 ## 🔍 What to compare {#what-to-compare}
 

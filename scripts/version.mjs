@@ -1,8 +1,5 @@
-// The version has one source - package.json - and this is what proves a release is not
-// about to contradict it. A tag whose number disagrees with the bundle it points at is a
-// permanent lie, and the CDN serves that tag forever.
-//
-// The bump itself is the maintainer's, not this script's. It only checks.
+// A tag whose number disagrees with the bundle it points at is a permanent lie, and the
+// CDN serves that tag forever. The bump is the maintainer's; this only checks.
 
 import { readFileSync } from 'node:fs';
 
