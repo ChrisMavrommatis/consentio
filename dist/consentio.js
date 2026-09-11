@@ -279,11 +279,40 @@ function hideElement(el) {
 }
 
 
+;// ./src/lib/held-scripts.ts
+/**
+ * Runs every `<script type="text/plain" data-consentio="<category>">` whose category is
+ * granted. A browser ignores the unknown type, so the site owner's script has not run;
+ * once released it stays run - revoking cannot take a script back.
+ */
+function releaseHeldScripts(consents) {
+    // A stored answer arrives while the page may still be parsing, and a tag below the
+    // parser is not in the document yet.
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => releaseHeldScripts(consents), { once: true });
+        return;
+    }
+    for (const held of document.querySelectorAll('script[type="text/plain"][data-consentio]')) {
+        if (consents[held.dataset.consentio] !== 'granted') {
+            continue;
+        }
+        // A script runs once, on insertion. Changing `type` on the tag in place runs nothing.
+        const live = document.createElement('script');
+        for (const { name, value } of held.attributes) {
+            if (name !== 'type') {
+                live.setAttribute(name, value);
+            }
+        }
+        live.textContent = held.textContent;
+        held.replaceWith(live);
+    }
+}
+
+
 ;// ./src/lib/url.ts
 // http, https, or a path on this site. Everything else - javascript:, data:, a bare
 // relative path, and //host, which leaves the site - fails. Issue 37.
 const ALLOWED = /^(https?:\/\/|\/(?!\/))/i;
-/** The address when it is one the banner may put in an href, null when it is not. */
 function safeUrl(value) {
     if (typeof value !== 'string') {
         return null;
@@ -294,6 +323,7 @@ function safeUrl(value) {
 
 
 ;// ./src/elements/consentio-app.ts
+
 
 
 
@@ -373,6 +403,10 @@ class ConsentioAppElement extends HTMLElement {
         this.isRendered = true;
         this.emit('consentio:initialized', this.state.consents);
         // No `consent default` from here - it would be two fetches too late. The loader has it.
+        // A default state is not an answer, so nothing held is released until one is stored.
+        if (this.state.consentGiven) {
+            releaseHeldScripts(this.state.consents);
+        }
     }
     disconnectedCallback() {
         for (const [event, handler] of this._handlers) {
@@ -447,7 +481,6 @@ class ConsentioAppElement extends HTMLElement {
         this.addOrReplace(newModal, this.modal);
         this.modal = newModal;
         this.modal.logger = this.logger;
-        // A site with its own settings link hides this and owes the visitor that link - issue 40.
         if (this.config.hideFloatingButton) {
             this.floatingButton?.remove();
             this.floatingButton = null;
@@ -538,7 +571,6 @@ class ConsentioAppElement extends HTMLElement {
         this.state.rejectAll();
         this.answered();
     }
-    // Whichever button gave the answer, storing it and getting out of the way is the same.
     answered() {
         this.consentItems.forEach((consentItem) => {
             consentItem.updateState(this.state.consents[consentItem.id]);
@@ -550,6 +582,7 @@ class ConsentioAppElement extends HTMLElement {
         this._focus.leave(this.floatingButton);
         this.emit('consentio:consent-update', this.state.consents);
         this.gtm?.updateConsent(this.state.consents);
+        releaseHeldScripts(this.state.consents);
     }
     cancelSettings(event) {
         event.stopImmediatePropagation();
@@ -593,6 +626,7 @@ class ConsentioAppElement extends HTMLElement {
         this._focus.leave(this.floatingButton);
         this.emit('consentio:consent-update', this.state.consents);
         this.gtm?.updateConsent(this.state.consents);
+        releaseHeldScripts(this.state.consents);
     }
     emit(event, data) {
         this.dispatchEvent(new CustomEvent(event, {
@@ -1248,9 +1282,6 @@ const en_namespaceObject = /*#__PURE__*/JSON.parse('{"locale":"en","name":"Engli
 /**
  * Consentio - a frontend-only consent banner for static sites.
  *
- * This is the asynchronous half. It renders the banner and pushes `consent update`.
- * The `consent default` belongs to consentio-loader.ts, which runs before the tag manager.
- *
  * @author ChrisMavrommatis
  * @license Apache-2.0
  */
@@ -1275,7 +1306,7 @@ const TEXT_KEYS = Object.keys(en_namespaceObject.texts);
 /** The one category that is always on. The four are fixed, so this is derived, not supplied. */
 const ALWAYS_ON = 'strictly_necessary';
 class Consentio {
-    static version = "0.2.0";
+    static version = "0.3.0";
     /** Behaviour only. The words live in _defaultLanguage and nowhere else. */
     static _defaultSettings = {
         cookieName: 'consentio',
@@ -1311,7 +1342,6 @@ class Consentio {
         }
         return 'texts' in settings || Array.isArray(settings.consents);
     }
-    /** 0.1.0's one object, taken apart into the two it is now. */
     static splitLegacy(config) {
         const settings = Consentio.copy({}, config, SETTINGS_KEYS);
         const language = {};
@@ -1383,7 +1413,6 @@ class Consentio {
         }
         return merged;
     }
-    /** Two language inputs, the second winning. A supplied pack beats a legacy config's texts. */
     static overlayLanguage(base, over) {
         return {
             ...base,
@@ -1392,7 +1421,6 @@ class Consentio {
             consents: { ...base.consents, ...over.consents }
         };
     }
-    /** Settings and language into the one object the elements read. */
     static resolve(settings, language, logger = null) {
         // A language that names a policy page wins, blank included - '' is no link in this
         // language. Leaving the key out is what falls back to the settings.
