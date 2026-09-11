@@ -18,11 +18,17 @@ anything at all.
 2. **It reads the consent cookie** and works out the seven Google signals from it. If there is no cookie, it
    uses the built-in fallback rather than "everything denied" — the difference matters, and
    [the cookie page]({{ '/cookie/' | relative_url }}#no-stored-answer-is-not-everything-denied) explains why.
-3. **It pushes `consent default` onto the `dataLayer`, synchronously.** This is the whole reason the tag
+3. **It pushes `consent default` onto the `dataLayer`, synchronously.** This is why the tag
    blocks. Nothing has been fetched yet; it does not need anything to have been.
 4. **It publishes `window.ConsentioDefault`** — what that push was built from.
 5. Everything after this point is asynchronous and the page carries on: it injects `consentio.min.js`,
-   fetches your settings, language and cookie files, builds the banner, and inserts it.
+   fetches your settings, language and cookie files, builds the banner, and inserts it. A language file
+   that does not load is replaced by the built-in English, with one warning on the console; a settings or
+   cookies file that does not load stops the banner, with an error.
+6. **Once there is a stored answer** — one just given, or one from an earlier visit — the banner releases
+   every script marked `type="text/plain" data-consentio` whose category is granted.
+   [Hold a script until consent]({{ '/hold-scripts/' | relative_url }}) has what that reaches and what it
+   does not.
 
 Steps 1 to 4 are why `async` and `defer` break it. Both let the browser run the tag after your tag manager
 has already read consent, and there is no way to correct that afterwards — a tag manager reads consent once,
@@ -32,12 +38,17 @@ at load.
 
 1. The **Consent Initialization - All Pages** trigger fires. Tag Manager guarantees this runs before every
    other trigger in the container.
-2. The template reads the same cookie, by the same rules, in sandboxed template code, and **sets the consent
+2. **If `window.ConsentioDefault` is already set, the template stands down** — the script tag from the
+   other route ran on this page — and prints one line saying so.
+3. The template reads the same cookie, by the same rules, in sandboxed template code, and **sets the consent
    default through Tag Manager's own consent API.**
-3. It calls `injectScript` for `consentio.min.js` at a pinned version, then `Consentio.Create` from its
-   own fields.
+4. With *Text source* on *A published language pack*, it calls `injectScript` for `dist/i18n/<locale>.js`
+   at the same pinned version and reads the pack off `window.ConsentioLanguage`. A pack that does not load
+   is logged and the banner keeps its built-in English.
+5. It calls `injectScript` for `consentio.min.js` at a pinned version, then `Consentio.Create` from its
+   own fields and the pack, if there was one.
 
-`injectScript` is always asynchronous, which is why step 2 cannot be handed to the file it loads — by the
+`injectScript` is always asynchronous, which is why step 3 cannot be handed to the file it loads — by the
 time that file runs, Tag Manager has already decided what it may do.
 
 The template's entry point into the bundle:
@@ -69,9 +80,14 @@ that is easiest to get wrong.
 |---|---|---|
 | What you add | `consentio-loader.min.js` as a plain **blocking** `<script>` in `<head>`, above the tag manager snippet | the Consentio tag, on the **Consent Initialization - All Pages** trigger |
 | What pushes the consent default | the loader, on its first pass, before it fetches or injects anything | the template's own sandboxed code, before it calls `injectScript` |
-| Where settings come from | two JSON files, fetched by URL | the template's own fields |
+| Where settings come from | three JSON files, fetched by URL | the template's own fields |
+| Where a published language pack comes from | your own copy at `data-language-url`, or the CDN at the loader's version with `data-language` | the CDN at the template's version, when *Text source* asks for it |
 | Uses the loader | yes | **no — never** |
-| The cost | it blocks. 4.9 KB has to download before the page paints | **it only covers tags in that container** |
+| What it holds back | scripts marked `type="text/plain" data-consentio`, released when their category is granted | tags in the container, through its own consent settings |
+| The cost | it blocks. 5.3 KB has to download before the page paints | **it only covers tags in that container** |
+
+[Choose a route]({{ '/routes/' | relative_url }}) has the same comparison in the terms a site owner
+decides by.
 
 ## 🔒 The banner is inside a closed shadow root {#the-banner-is-inside-a-closed-shadow-root}
 
@@ -89,8 +105,8 @@ Measured on the files this site is serving right now.
 
 | File | Minified | Compressed | When it loads |
 |---|---|---|---|
-| `consentio-loader.min.js` | 4.9 KB | about 2.1 KB | blocking, in `<head>`, before the page paints |
-| `consentio.min.js` | 42.0 KB | about 12.9 KB | in the background, after the default is already pushed |
+| `consentio-loader.min.js` | 5.3 KB | about 2.3 KB | blocking, in `<head>`, before the page paints |
+| `consentio.min.js` | 42.5 KB | about 13.1 KB | in the background, after the default is already pushed |
 
 The compressed column is gzip, which is what almost any server will do for you. **Only the first file is on
 the critical path**, and only because the answer has to reach your tag manager before it decides anything.
@@ -99,6 +115,6 @@ container.
 
 ## 🔍 What ends up on `window` {#what-ends-up-on-window}
 
-Three globals, listed on the [install page]({{ '/install/direct/' | relative_url }}#what-the-loader-leaves-behind).
+Three globals, listed on [the loader tag]({{ '/loader/' | relative_url }}#what-it-leaves-on-window).
 `window.ConsentioDefault` is the useful one when you are checking behaviour: it is set by the loader and by
 nothing else, so its absence tells you a page is running the Tag Manager route.

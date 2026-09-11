@@ -132,3 +132,10 @@ keeps the site working is.
 **If you are writing your own reader, this is the line to get right.** Falling back to "all four denied"
 produces the same six denials but *also* denies `security_storage` — code that looks identical, an answer
 that is not, and two halves of the same site quietly disagreeing about the same visitor.
+
+## 📋 The other cookies your site sets {#the-other-cookies-your-site-sets}
+
+This page is about the one cookie Consentio writes. The rest are yours, and they go in
+[the cookie table]({{ '/cookies/' | relative_url }}) — one row each, shown in the settings panel.
+[The cookie catalogue]({{ '/cookies/catalogue/' | relative_url }}) has rows for the tools a site commonly
+runs, already in that shape.

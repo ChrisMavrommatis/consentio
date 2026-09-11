@@ -7,13 +7,13 @@ description: Add Consentio as a Tag Manager custom template. Four steps, then wh
 
 You are adding **one template to your container**, on one trigger. Nothing is pasted into your HTML and
 nothing is hosted by you. There is a second, optional template for your cookie table.
+[Choose a route]({{ '/routes/' | relative_url }}) puts this route beside the other one.
 
 <div class="callout callout--warn" markdown="1">
-**Check one thing before you start.** This route can only stop things Tag Manager loads. If anything on your
-site is pasted straight into a page — a video embed, a chat widget, a tracking pixel in a footer — it will
-keep running whatever the visitor answers, and the banner will look like it is working.
-[What Tag Manager cannot cover]({{ '/' | relative_url }}#the-tag-manager-routes-catch-in-the-open) has the
-detail. If in doubt, [put it in your HTML]({{ '/install/direct/' | relative_url }}) instead.
+**Check one thing before you start.** This route covers what Tag Manager loads. If anything on your site is
+pasted straight into a page — a video embed, a chat widget, a tracking pixel in a footer — it will keep
+running whatever the visitor answers, and the banner will look like it is working. The
+[HTML route]({{ '/install/direct/' | relative_url }}) can hold a script like that back; this one cannot.
 </div>
 
 ## 🚀 Four steps {#four-steps}
@@ -35,34 +35,45 @@ only reason the answer arrives in time.
 
 **3. Fill in the fields.** Everything has a working default, so you can publish first and come back.
 
-The one that matters is **Text source**. Leave it at *Built-in English* and the banner uses its own wording.
-Set it to *Custom* and every string appears in a box, already filled in with that English — change what you
-want, or paste a translation over it. Set it to *From a variable* and the wording comes from a **Language
-pack variable** — any Tag Manager variable holding a language pack. A pack downloaded from a release
-(`en.json`, `el.json`) goes in unedited, and a Lookup Table keyed on the page's language is how you switch
-wording by language.
+The one that matters is **Text source**. Leave it at *Built-in English* and the banner uses its own wording;
+the other three choices are where a translation or your own wording comes from, and
+[one of them](#words-from-a-variable) is below.
+[The Tag Manager tag]({{ '/tag/' | relative_url }}#the-fields) lists every field.
 
 For the cookie table, download `consentio-tag-cookies.tpl` from the same release and import it the same way -
 under **Variable Templates** rather than Tag Templates. Make a variable from it, fill in your rows, and pick
-it here. [Settings]({{ '/configuration/' | relative_url }}#configuration) lists every option.
+it as the **Cookies Variable**. [The cookie table]({{ '/cookies/' | relative_url }}) is what goes in a row.
 
 **4. Publish, then move everything else into the container.** Anything still pasted into a page is not
 covered by the banner. On this route that clean-up is most of the work.
 
+## 🌍 Words from a variable {#words-from-a-variable}
+
+For *From a variable*, make a **Custom JavaScript** variable whose whole value is a language pack wrapped
+in a function, and pick it as the tag's **Language pack variable**:
+
+```js
+function () {
+	return {
+		"locale": "en",
+		"name": "English",
+		"texts": {
+			"barTitle": "Cookies on this site"
+		}
+	};
+}
+```
+
+[Tag Manager language packs]({{ '/language/tag-manager/' | relative_url }}) has every published pack in
+that shape, complete, with a copy button — and the three things about the variable that Tag Manager does
+not tell you.
+
 ## 🧩 What the template does {#what-the-template-does}
 
-Two things, in this order, every time a page loads:
-
-1. **It reads the cookie and tells Tag Manager what the visitor allows** — before anything else in your
-   container runs.
-2. **It loads the banner** and hands it whatever wording you chose.
-
-**It does not use `consentio-loader.min.js` and it does not fetch settings files.** There are none on this
-route; the fields are your settings.
-
-The order is the whole point, and it is not something you can change from the Tag Manager screen — it is why
-the tag has to be on the Consent Initialization trigger. [How it works]({{ '/how-it-works/' | relative_url }}#the-sequence-in-tag-manager)
-has the sequence step by step, and the reason step 1 cannot be left to step 2.
+It reads the cookie and tells Tag Manager what the visitor allows, before anything else in your container
+runs; then it loads the banner and hands it your fields. It uses no script tag and fetches no settings
+file. [The Tag Manager tag]({{ '/tag/' | relative_url }}) lists every field, the four text sources, what
+it does in order, and the permissions it asks for.
 
 ## 🍪 Both ways use the same cookie {#the-cookie-is-the-contract-between-the-two-routes}
 
@@ -77,9 +88,8 @@ The cookie's name is always `consentio` on this route — a Tag Manager template
 reads when it is published, so it cannot be a field. If you changed the name on the other route, change it
 back before you run both.
 
-**How long it lasts and what it covers are fields**: **Cookie Lifetime (days)**, 90 unless you change it, and
-**Share the answer across subdomains**, off unless your site answers on more than one hostname. The banner
-writes the cookie on this route too, so they behave exactly as they do on the other one.
+**How long it lasts and what it covers are fields too** — **Cookie Lifetime (days)** and **Share the answer
+across subdomains** — and they behave as they do on the other route.
 
 [The cookie]({{ '/cookie/' | relative_url }}#the-cookie-contract) is the full description — what is in it,
 how long it lasts, and what it looks like when nobody has answered yet.

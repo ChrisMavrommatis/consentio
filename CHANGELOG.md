@@ -11,6 +11,90 @@ release body, so write these entries for the people using Consentio, not for the
 
 ## [Unreleased]
 
+## [0.3.0]
+
+### ✨ Added
+
+- **A script you mark waits for the visitor's answer.** A script pasted into the page — a chat widget, an
+  embed, a pixel from a vendor's instructions — used to run on every page load whatever the visitor said,
+  because it never reads what Consentio tells Google. Give it `type="text/plain"` and the category it
+  needs, and it runs once that category is granted and not before:
+
+  ```html
+  <script type="text/plain" data-consentio="statistics_performance"
+          src="https://vendor.example/analytics.js"></script>
+  ```
+
+  It runs the moment the visitor accepts or saves with that category on, and on a later visit as the banner
+  is set up. Nothing marked runs before there is an answer — a default state is not consent — so a script
+  that needs no consent is not marked. **Revoking does not un-run a script**: one that has run has run,
+  and taking the category away stops it on the next page load. A script you do not mark runs as it always
+  did; Consentio looks only at tags carrying both attributes. The **Hold a script until consent** page of
+  the documentation has what it reaches and what it cannot.
+
+- **The Tag Manager tag can load a published language pack for you.** *Text source* has a fourth value,
+  *A published language pack*: pick a language and the tag loads that pack from the CDN at the same version
+  as the banner, before the banner, so the words move with each release and nothing is pasted. If the pack
+  does not load, the tag says so on the console and the banner keeps its built-in English. *Built-in
+  English*, *Custom* and *From a variable* are unchanged, and *Built-in English* is still the default.
+
+- **`data-language="el"` on the script tag.** A shorthand for `data-language-url` pointing at the published
+  pack on the CDN, at the same version as the script, so a site running a pack unedited hosts no language
+  file. `data-language-url` wins when both are set, and the console says so.
+
+  ```html
+  <script src="/js/consentio-loader.min.js" data-consentio-loader data-language="el"></script>
+  ```
+
+- **A language pack to paste into Tag Manager.** For *Text source* set to *From a variable*, the
+  **Use Google Tag Manager** page of the documentation shows each published pack as a Custom JavaScript
+  variable with a copy control — the `function () { return ...; }` Tag Manager expects, ready to paste and
+  edit in place. The same files, `en.gtm.js` and `el.gtm.js`, are attached to the release beside `en.json`
+  and `el.json`, and so are `en.js` and `el.js`, the form the tag loads.
+
+- **A cookie catalogue to copy from.** The cookie table was the one thing every site had to write from
+  the vendors' documentation. The **Cookie catalogue** page of the documentation has rows for the tools a
+  site commonly runs — Google Analytics, Google Ads, Meta Pixel, Hotjar, YouTube and Vimeo embeds,
+  LinkedIn, TikTok, HubSpot, Cloudflare, and Consentio's own cookie — each block already in the shape of
+  `consentio-cookies.json` and the Cookies variable, with a copy control, the vendor page it was read from
+  and the day it was read. **Check every row against the vendor before you ship it**; the category is
+  Consentio's opinion, and no block lists every cookie a tool can set.
+
+- **A page that puts the two install routes side by side.** **Choose a route** in the documentation has one
+  table — what each route can stop, what it costs, where the words and settings come from — and the one
+  thing that decides between them: if anything on your site sets a cookie from outside the container, the
+  Tag Manager route does not cover it.
+
+- **The two `.LICENSE.txt` files are attached to the release.** Each minified bundle points at one, so a
+  bundle downloaded on its own used to name a file that was not there.
+
+### 🔀 Changed
+
+- **A language file that does not load no longer stops the banner.** On the HTML route any file that
+  failed to fetch — settings, language or cookies — used to end with `Initialization failed` on the console
+  and no banner. A language file that fails now costs only the language: the banner appears in its built-in
+  English and one warning names the file. A settings or cookies file that fails still stops the banner.
+
+- **The Tag Manager tag stands down when Consentio's script tag is on the page.** A page carrying both
+  routes used to get two banners that did not know about each other. The tag now checks for the script
+  tag's mark on the page before it does anything, prints one line on the console, and does nothing else.
+  A template imported from an earlier release does not; re-import it from this one.
+
+### ⚠️ Deprecated
+
+- **`data-config-url` goes in 1.0.0.** The single settings file from `0.1.0` — behaviour, `texts` and a
+  `consents` array in one — is still read and still taken apart for you, and the console now says once that
+  the attribute is deprecated. Move to `data-settings-url` and `data-language-url` before `1.0.0`; the
+  **Settings** page shows the three files.
+
+### 🛠️ Fixed
+
+- **The Tag Manager template loads the release it ships with.** The `consentio-tag.tpl` attached to `0.2.0`
+  pins `0.1.0`'s banner, so on that route every feature the `0.2.0` notes announce is missing, and the
+  template hands its new fields to a bundle that does not know them. The pin is now filled in at build time
+  from the version being released, so the two cannot drift again. **If you imported the template from
+  `0.2.0`, re-import it from this release.**
+
 ## [0.2.0] - 2026-09-10
 
 ### ✨ Added

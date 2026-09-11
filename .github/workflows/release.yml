@@ -165,6 +165,8 @@ jobs:
             dist/consentio.min.js.LICENSE.txt dist/consentio-loader.min.js.LICENSE.txt
             dist/consentio-tag.tpl dist/consentio-tag-cookies.tpl
             dist/i18n/en.json dist/i18n/el.json
+            dist/i18n/en.js dist/i18n/el.js
+            dist/i18n/en.gtm.js dist/i18n/el.gtm.js
           )
           # The title carries the v and the tag never does: a template pins consentio@0.2.0,
           # so a tag named v0.2.0 would 404 every container that imported one.

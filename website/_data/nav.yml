@@ -1,33 +1,53 @@
 # The sidebar, and the order the previous/next links walk. One list, so the two cannot
-# disagree. Reading order: what it is, how to put it in, what to do when it misbehaves,
-# then the reference nobody reads until they need it.
+# disagree. Reading order: what it is, how to put it in, then the reference - split by
+# route first, because that is what a reader arrives knowing, and what both routes share last.
 - title: Start here
   items:
     - title: Overview
       url: /
+    - title: How it works
+      url: /how-it-works/
     - title: Try it on this page
       url: /try-it/
     - title: Try it through a tag manager
       url: /try-it/tag-manager/
 - title: Set it up
   items:
+    - title: Choose a route
+      url: /routes/
     - title: Put it in your HTML
       url: /install/direct/
     - title: Use Google Tag Manager
       url: /install/tag-manager/
+    - title: Hold a script until consent
+      url: /hold-scripts/
     - title: Troubleshooting
       url: /troubleshooting/
-- title: Reference
+- title: "Reference: HTML route"
   items:
-    - title: Settings
+    - title: The loader tag
+      url: /loader/
+    - title: The settings file
       url: /configuration/
-    - title: How it works
-      url: /how-it-works/
+- title: "Reference: Tag Manager"
+  items:
+    - title: The tag
+      url: /tag/
+    - title: Language packs to paste
+      url: /language/tag-manager/
+- title: "Reference: both routes"
+  items:
+    - title: The language pack
+      url: /language/
+    - title: The cookie table
+      url: /cookies/
+    - title: The cookie catalogue
+      url: /cookies/catalogue/
     - title: The cookie
       url: /cookie/
     - title: What it tells Google
       url: /datalayer/
-    - title: Asking everyone again
-      url: /versioning/
     - title: Events
       url: /events/
+    - title: Asking everyone again
+      url: /versioning/

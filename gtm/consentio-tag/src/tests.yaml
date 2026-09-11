@@ -159,6 +159,17 @@ scenarios:
     assertApi('setDefaultConsentState').wasNotCalled();
     assertApi('injectScript').wasNotCalled();
     assertApi('gtmOnSuccess').wasCalled();
+- name: the direct install route on the page stands the tag down
+  code: |-
+    // The loader sets ConsentioDefault on its blocking pass, so it is there before this
+    // tag fires. Two banners is the failure this guards against.
+    mock('copyFromWindow', (key) => key === 'ConsentioDefault' ? { cookieName: 'consentio' } : undefined);
+
+    runCode(mockData);
+
+    assertApi('setDefaultConsentState').wasNotCalled();
+    assertApi('injectScript').wasNotCalled();
+    assertApi('gtmOnSuccess').wasCalled();
 - name: built-in English sends no strings at all
   code: |-
     mock('getCookieValues', () => []);
@@ -225,6 +236,44 @@ scenarios:
     const config = captureConfig();
 
     assertThat(config.policyUrl).isEqualTo('');
+- name: a published pack is injected before the bundle and fills the texts
+  code: |-
+    mock('getCookieValues', () => []);
+    mockData.textSource = 'pack';
+    mockData.textsPack = 'el';
+    mock('copyFromWindow', (key) => key === 'ConsentioLanguage' ? pack('/el/privacy/') : undefined);
+
+    const injected = [];
+    let sent = null;
+    mock('injectScript', (url, onSuccess) => { injected.push(url); onSuccess(); });
+    mock('callInWindow', (path, config) => { sent = config; });
+    runCode(mockData);
+
+    assertThat(injected).hasLength(2);
+    assertThat(injected[0]).contains('consentio@__VERSION__/dist/i18n/el.js');
+    assertThat(injected[1]).contains('consentio@__VERSION__/dist/consentio.min.js');
+    assertThat(sent.texts.barTitle).isEqualTo('\u03a0\u03bf\u03bb\u03b9\u03c4\u03b9\u03ba\u03ae Cookies');
+    assertThat(sent.consents[0].title).isEqualTo('\u0391\u03c0\u03bf\u03bb\u03cd\u03c4\u03c9\u03c2 \u03b1\u03c0\u03b1\u03c1\u03b1\u03af\u03c4\u03b7\u03c4\u03b1');
+    assertThat(sent.policyUrl).isEqualTo('/el/privacy/');
+- name: a pack that does not load still gives the visitor the banner
+  code: |-
+    mock('getCookieValues', () => []);
+    mockData.textSource = 'pack';
+    mockData.textsPack = 'el';
+
+    const injected = [];
+    let sent = null;
+    mock('injectScript', (url, onSuccess, onFailure) => {
+      injected.push(url);
+      if (url.indexOf('/dist/i18n/') !== -1) { onFailure(); } else { onSuccess(); }
+    });
+    mock('callInWindow', (path, config) => { sent = config; });
+    runCode(mockData);
+
+    assertThat(injected).hasLength(2);
+    assertThat(sent.texts).isEqualTo({});
+    assertThat(sent.consents[0].title).isEqualTo(undefined);
+    assertApi('gtmOnSuccess').wasCalled();
 - name: the cookie lifetime and the subdomain setting reach the banner
   code: |-
     // The banner writes the cookie, so both are config fields rather than anything this

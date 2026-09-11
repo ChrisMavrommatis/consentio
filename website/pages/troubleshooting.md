@@ -19,10 +19,11 @@ without it. Put it on exactly one tag.
 : The two files are not in the same folder. The small one works out where the big one is by looking next to
 itself, so moving one without the other breaks it. Put them back together.
 
-**A 404 on your settings, language or cookies file**
-: Check `data-settings-url`, `data-language-url` and `data-cookies-url` are paths your site actually serves.
-All three are optional — if you remove them the banner still runs on built-in defaults and built-in English,
-which is a quick way to prove the rest works.
+**A 404 on your settings or cookies file**
+: Check `data-settings-url` and `data-cookies-url` are paths your site actually serves. Both are optional —
+if you remove them the banner still runs on built-in defaults, which is a quick way to prove the rest
+works. A language file that does not load is not this: the banner still appears, in English, and
+[says so](#the-banner-is-in-english) on the console.
 
 **Nothing on the console at all**
 : The tag is probably not running. View source on the built page and confirm the tag is really in the
@@ -70,15 +71,49 @@ everything.
 Pages**, not *All Pages*. Only that trigger is guaranteed to run before everything else in the container.
 
 **On the Tag Manager route, a tag is not in the container.** Anything pasted straight into a page — a video
-embed, a chat widget, a pixel in a footer include — is outside the banner's reach entirely. Nothing
-Consentio can do reaches it. That is [the catch]({{ '/' | relative_url }}#the-tag-manager-routes-catch-in-the-open),
-and the fix is to move it into the container or switch routes.
+embed, a chat widget, a pixel in a footer include — is outside the banner's reach on that route. The fix is
+to move it into the container, or to switch to the HTML route and
+[mark the script]({{ '/hold-scripts/' | relative_url }}). [Choose a route]({{ '/routes/' | relative_url }})
+has the two side by side.
+
+**On the HTML route, a script you pasted into the page is not marked.** Consentio holds back only a tag
+carrying `type="text/plain"` and `data-consentio`; everything else runs as it always did.
+[Hold a script until consent]({{ '/hold-scripts/' | relative_url }}) is the one change to make.
+
+## 🚧 A held script never runs {#a-held-script-never-runs}
+
+You marked a script with `type="text/plain" data-consentio="..."` and it does not run after the visitor
+accepts.
+
+- **The category is misspelled.** `data-consentio` has to be one of `strictly_necessary`,
+  `preferences_functionality`, `statistics_performance` or `marketing_advertising`, exactly. Anything
+  else matches nothing and the tag is left alone.
+- **Nobody has answered yet.** A category's default state is not an answer, so on a page the visitor has
+  not answered nothing marked runs — `strictly_necessary` included. A script that needs no consent does
+  not get marked.
+- **The category was not granted.** Read the cookie, below, and check which categories say `granted`.
+- **It ran, and then the visitor revoked.** A script that has run has run; revoking stops it on the next
+  page load, not this one.
+
+## 🌍 The banner is in English, not the language you chose {#the-banner-is-in-english}
+
+The language file did not load, and the banner fell back to its built-in English rather than not showing.
+The console says which file:
+
+`[Consentio Loader] the language file did not load, so the banner keeps its built-in English: <url>`
+: On the HTML route. Check `data-language-url` is a path your site serves, or that the code in
+`data-language` is one a published pack exists for — `el`, not `gr`.
+
+`Consentio Tag: the language pack did not load, so the banner keeps its built-in English`
+: On the Tag Manager route, with *Text source* set to *A published language pack*. The tag loads the pack
+from the CDN at the same version as the banner, so something between the visitor and the CDN stopped it.
 
 ## 🧩 Two banners at once {#two-banners-at-once}
 
 You installed both routes. Pick one and remove the other. The template does not use
-`consentio-loader.min.js`; it loads the main file itself. Run both and you get two copies that do not know
-about each other, each writing over the other's answer.
+`consentio-loader.min.js`; it loads the main file itself. The template from this release stands down on a
+page where the script tag ran, and says so on the console; an older one does not, and you get two copies
+that do not know about each other, each writing over the other's answer.
 
 ## 📋 The settings panel tables are empty {#the-settings-panel-tables-are-empty}
 

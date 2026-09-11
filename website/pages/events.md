@@ -8,9 +8,11 @@ description: How to run your own code when a visitor answers the banner, and how
 **You do not need this page to make consent work.** Consentio already tells
 [Google's tags]({{ '/datalayer/' | relative_url }}#what-reaches-the-datalayer) what they may do, on its own.
 
-This is for the other case: **you have a script of your own that should only load if the visitor allows it.**
-An embedded map, a chat widget, a heatmap tool. Consentio cannot hold those back for you, but it will tell
-you when to.
+This is for the other case: **you have code of your own that should only run if the visitor allows it.**
+For a script tag — an embedded map, a chat widget, a heatmap tool — you do not need code at all:
+[mark the tag]({{ '/hold-scripts/' | relative_url }}) with the category it needs and Consentio releases
+it when that category is granted. The events are for what a tag cannot say: a call that takes the
+visitor's answer, or a script that has to load some other way.
 
 ## 📣 The two events {#the-two-events}
 

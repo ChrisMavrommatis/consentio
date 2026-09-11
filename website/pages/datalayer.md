@@ -104,8 +104,11 @@ heard of Consentio.
 **In Tag Manager**, that is what the container's own consent settings are for: a tag can be told to wait for
 a particular signal before it fires.
 
-**In your HTML**, a script you pasted into the page is yours to hold back. Do not load it up front — wait
-until the visitor allows it:
+**In your HTML**, a script you pasted into the page is held back by marking it: `type="text/plain"` and
+`data-consentio` naming the category it needs, and Consentio runs it once that category is granted.
+[Hold a script until consent]({{ '/hold-scripts/' | relative_url }}) shows the tag before and after. For
+anything a tag cannot say, [events]({{ '/events/' | relative_url }}#events) carry the same moment as
+JavaScript:
 
 ```js
 document.addEventListener('consentio:consent-update', (event) => {
@@ -114,6 +117,3 @@ document.addEventListener('consentio:consent-update', (event) => {
   }
 });
 ```
-
-[Events]({{ '/events/' | relative_url }}#events) has the full pattern, including how to catch a visitor who
-answered on a previous visit.

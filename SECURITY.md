@@ -55,9 +55,10 @@ Worth knowing before you decide whether this belongs in your `<head>`:
 - **It writes one cookie**, `consentio` by default, holding the visitor's own answer. Nothing else is
   stored.
 - **It pushes to `dataLayer`** — Google Consent Mode signals, and nothing that identifies anybody.
-- **Its only network requests are the ones you configure**: the direct route fetches the two JSON files
-  whose URLs you give it, and the tag manager template fetches the banner bundle from the CDN URL pinned
-  in the template. There is no telemetry, no analytics and no call home.
+- **Its only network requests are the ones you configure**: the direct route fetches the JSON files whose
+  URLs you give it — a published language pack from the CDN, when you ask for one by `data-language` — and
+  the tag manager template fetches the banner bundle, and a language pack if you chose one, from the CDN
+  URL pinned in the template. There is no telemetry, no analytics and no call home.
 
 ## 🚫 Not a vulnerability
 

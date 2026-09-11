@@ -10,7 +10,8 @@ visitor's answer in one cookie, and Google Consent Mode signals on `dataLayer`.
 
 **What it is not.** Not an npm package. No account, no server, nothing to keep running. Four consent
 categories, fixed — a site changes their wording, not the set. Google Consent Mode is the only thing it
-speaks. If what you need is a consent platform, this is not one.
+speaks; a script that does not read it runs unless you mark it, and Consentio intercepts no cookie. If
+what you need is a consent platform, this is not one.
 
 No runtime dependencies. Apache-2.0.
 
@@ -23,7 +24,7 @@ copy two built files into your site, or serve them from a CDN mirror of a tagged
 |---|---|
 | 🚀 **[Install directly](#-direct-install)** | one blocking `<script>` in `<head>`, above your tag manager |
 | 🏷️ **[Install as a tag manager template](#-tag-manager-template)** | one template on the Consent Initialization trigger |
-| 🍪 **[The cookie](#-the-cookie)** | one JSON object, and the two rules that are easy to get wrong |
+| 🍪 **[The cookie](#-the-cookie)** | one JSON object, and the three rules that are easy to get wrong |
 | 🛠️ **[Development](#-development)** | build, typecheck, test, serve |
 
 Full documentation: **[`website/pages/`](website/pages/)**, or `npm run serve` to read it as the Jekyll site
@@ -35,18 +36,21 @@ it is written for.
 |---|---|---|
 | What you add | `consentio-loader.min.js` as a plain **blocking** `<script>` in `<head>`, above the tag manager snippet | the Consentio tag, on the **Consent Initialization - All Pages** trigger |
 | What pushes the consent default | the loader, on its first pass, before it fetches or injects anything | the template's own sandboxed code, before it calls `injectScript` |
-| Where settings come from | JSON files, fetched by URL | the template's own fields |
+| Where settings come from | three JSON files, fetched by URL | the template's own fields |
+| Where the words come from | built-in English, a language file at any URL, or `data-language="el"` for the published pack at the CDN | built-in English, the tag's fields, a variable, or a published pack the tag loads from the CDN |
 | Uses the loader | yes | **no — never** |
-| The cost | it blocks. 4.9 KB has to download before the page paints | **it only covers tags in that container** |
+| What it holds back | scripts marked `type="text/plain" data-consentio`, released when their category is granted — nothing it is not told about | tags in the container |
+| The cost | it blocks. 5.3 KB has to download before the page paints | **it only covers tags in that container** |
 
 **The tag manager route's catch belongs in the open.** A template can only gate what the tag manager loads.
 Take that route and *every* tag and cookie-setting script on the site has to be managed from the container —
-anything pasted straight into the page fires regardless of what the visitor answered. That is worse than no
-banner, because it looks compliant.
+anything pasted straight into the page fires regardless of what the visitor answered, while the banner looks
+as if it is working. The [routes page](website/pages/routes.md) puts the two side by side.
 
 > **Do not install both.** The template never loads the loader; it injects `consentio.min.js` itself and
-> calls `Consentio.Create` on its own. Run both and the visitor gets two banners that do not know about
-> each other.
+> calls `Consentio.Create` on its own. The template stands down on a page where the loader ran, and says
+> so on the console; an older one does not, and the visitor gets two banners that do not know about each
+> other.
 
 ## 🚀 Direct install
 
@@ -74,6 +78,21 @@ relative to its own `src` — then:
 > read consent, which leaves you with a banner that gates nothing. The loader warns on the console when it
 > sees one, whatever `data-debug` says.
 
+`data-language="el"` in place of `data-language-url` fetches the published Greek pack from the CDN at the
+loader's own version. A language file that does not load costs the language, not the banner: it falls back
+to built-in English with one warning on the console.
+
+A script pasted into the page — a widget, an embed, a vendor's pixel — runs whatever the visitor answered,
+unless it is marked:
+
+```html
+<script type="text/plain" data-consentio="statistics_performance"
+        src="https://vendor.example/analytics.js"></script>
+```
+
+Consentio replaces it with a live copy once that category is granted, and not before.
+[`website/pages/hold-scripts.md`](website/pages/hold-scripts.md) has what it reaches and what it does not.
+
 [`website/_layouts/base.html`](website/_layouts/base.html) is a live working example of this route.
 
 ## 🏷️ Tag manager template
@@ -85,15 +104,19 @@ each one is and how they are edited. Both are attached to every release as a `.t
 **They are provided as they are.** Neither is listed anywhere, and there is nothing to subscribe to - a fix
 reaches your container when you import the newer file.
 
+The tag's *Text source* has four values: built-in English, its own pre-filled fields, a variable, or a
+published language pack it loads from the CDN at the same version as the banner. A pack that does not
+load is logged and the banner keeps its English.
+
 ## 🍪 The cookie
 
 One JSON object, URI-encoded, named `consentio` by default:
 
 ```json
-{"version":1,"consents":{"strictly_necessary":"granted","preferences_functionality":"denied","statistics_performance":"denied","marketing_advertising":"denied"}}
+{"version":1,"consents":{"strictly_necessary":"granted","preferences_functionality":"denied","statistics_performance":"denied","marketing_advertising":"denied"},"date":"2026-09-09T10:00:00.000Z"}
 ```
 
-Two things that are easy to get wrong, and that a tag manager template has to match by hand:
+Three things that are easy to get wrong, and that a tag manager template has to match by hand:
 
 - **A version mismatch discards the whole stored value.** It does not merge and it does not partially
   apply — the banner shows again from scratch.
@@ -105,7 +128,8 @@ Two things that are easy to get wrong, and that a tag manager template has to ma
   answer and the banner asks again.
 
 The [documentation](website/pages/cookie.md) states the contract in full — name, value, attributes, the five
-reading rules and the traps.
+reading rules and the traps. [`website/_data/cookie-catalogue.yml`](website/_data/cookie-catalogue.yml) is
+the catalogue of other tools' cookies the site renders for copying into a cookie table.
 
 ## 📂 Repository structure
 
@@ -165,8 +189,9 @@ source. There is no push trigger.
 what must never be in a pull request. **[`SECURITY.md`](SECURITY.md)** says how to report a vulnerability
 and why a published tag is never patched in place.
 
-**Some tests are marked `todo` on purpose.** They describe behaviour the code does not have yet, so the run
-exits 0 with those listed. That is the correct state. See **[`test/README.md`](test/README.md)**.
+**A test marked `todo` describes behaviour the code does not have yet**, and the run exits 0 with it
+listed. There are none at the moment, so one turning up is something new. See
+**[`test/README.md`](test/README.md)**.
 
 ## 📄 Licence
 

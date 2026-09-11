@@ -72,3 +72,30 @@ test('issue 34 - the pack says which language it is, and the banner can read it'
 	assert.equal(resolved.texts.barTitle, emitted.texts.barTitle);
 	assert.equal(resolved.consents[0].title, emitted.consents.strictly_necessary.title);
 });
+
+// --- the two script forms ----------------------------------------------------------
+//
+// The tag route cannot fetch, so the pack also ships as a script assigning one global, and
+// as a Custom JavaScript variable to paste. Both are the json and nothing else.
+
+test('the script form assigns the pack, unchanged, to the one global', () => {
+	execFileSync(process.execPath, [SCRIPT], { encoding: 'utf8' });
+	for (const name of ['en', 'el']) {
+		const json = JSON.parse(readFileSync(new URL(`../../build/i18n/${name}.json`, import.meta.url), 'utf8'));
+		const script = readFileSync(new URL(`../../build/i18n/${name}.js`, import.meta.url), 'utf8');
+		const scope: Record<string, unknown> = {};
+		new Function('globalThis', script)(scope);
+		assert.deepEqual(Object.keys(scope), ['ConsentioLanguage'], `build/i18n/${name}.js sets more than the one global`);
+		assert.deepEqual(scope.ConsentioLanguage, json);
+	}
+});
+
+test('the paste-in form is a function returning the pack, unchanged', () => {
+	for (const name of ['en', 'el']) {
+		const json = JSON.parse(readFileSync(new URL(`../../build/i18n/${name}.json`, import.meta.url), 'utf8'));
+		const snippet = readFileSync(new URL(`../../build/i18n/${name}.gtm.js`, import.meta.url), 'utf8');
+		assert.match(snippet, /^function \(\) \{\n/, 'a Custom JavaScript variable is an anonymous function');
+		const variable = new Function(`return (${snippet});`)() as () => unknown;
+		assert.deepEqual(variable(), json);
+	}
+});

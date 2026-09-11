@@ -1,3 +1,4 @@
+require 'cgi'
 require 'json'
 
 module Jekyll
@@ -6,6 +7,7 @@ module Jekyll
     SETTINGS_PATH = '/data/consentio-settings.json'.freeze
     COOKIES_PATH = '/data/consentio-cookies.json'.freeze
     LANGUAGE_FALLBACK = '/data/consentio-language.json'.freeze
+    PACKS_DIR = 'data/i18n'.freeze
 
     # The loader reads the cookie in <head>, before any settings file has been fetched, so
     # these two reach the banner off the tag and are warned about in a settings file.
@@ -74,6 +76,23 @@ module Jekyll
     end
   end
 
+  # One block per built <locale>.gtm.js under data/i18n/: the pack as a Custom JavaScript
+  # variable, with a copy control. The page's script wires the button.
+  class ConsentioPackSnippetsTag < Liquid::Tag
+    def render(context)
+      dir = File.join(context.registers[:site].source, Consentio::PACKS_DIR)
+      Dir.glob(File.join(dir, '*.gtm.js')).sort.map do |file|
+        locale = File.basename(file, '.gtm.js')
+        name = JSON.parse(File.read(File.join(dir, "#{locale}.json")))['name']
+        code = CGI.escapeHTML(File.read(file).chomp)
+        %(<figure class="snippet" markdown="0">) \
+          + %(<figcaption class="snippet__bar"><span>#{name} <code>#{locale}.gtm.js</code></span>) \
+          + %(<button type="button" class="button button--quiet snippet__copy">Copy</button></figcaption>) \
+          + %(<pre><code>#{code}</code></pre></figure>)
+      end.join("\n")
+    end
+  end
+
   class ConsentioSettingsPage < PageWithoutAFile
     def initialize(site, body)
       path = Consentio::SETTINGS_PATH.sub(%r{\A/}, '')
@@ -96,3 +115,4 @@ module Jekyll
 end
 
 Liquid::Template.register_tag('consentio_head', Jekyll::ConsentioHeadTag)
+Liquid::Template.register_tag('consentio_pack_snippets', Jekyll::ConsentioPackSnippetsTag)
