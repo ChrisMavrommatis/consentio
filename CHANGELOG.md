@@ -11,6 +11,19 @@ release body, so write these entries for the people using Consentio, not for the
 
 ## [Unreleased]
 
+### 🛠️ Fixed
+
+- **The Tag Manager template loads the release it ships with.** The `consentio-tag.tpl` attached to `0.2.0`
+  pins `0.1.0`'s banner, so on that route every feature the `0.2.0` notes announce is missing, and the
+  template hands its new fields to a bundle that does not know them. The pin is now filled in at build time
+  from the version being released, so the two cannot drift again. **If you imported the template from
+  `0.2.0`, re-import it from this release.**
+
+### ✨ Added
+
+- **The two `.LICENSE.txt` files are attached to the release.** Each minified bundle points at one, so a
+  bundle downloaded on its own used to name a file that was not there.
+
 ## [0.2.0] - 2026-09-10
 
 ### ✨ Added

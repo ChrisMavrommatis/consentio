@@ -15,6 +15,8 @@
       url: /install/direct/
     - title: Use Google Tag Manager
       url: /install/tag-manager/
+    - title: Hold a script until consent
+      url: /hold-scripts/
     - title: Troubleshooting
       url: /troubleshooting/
 - title: Reference

@@ -1,0 +1,304 @@
+# The cookie catalogue: rows a site owner copies into their own cookie table,
+# one block per tool, each row already in Consentio's five-field shape.
+#
+# Every purpose and duration is what the vendor's own page said on the
+# `checked` date; nothing here was written from memory, and a cookie the
+# vendor does not document with a lifetime is left out. Durations drift, so
+# verify against `documentation` before shipping.
+#
+# `category` is Consentio's opinion, not the vendor's. It is one of the four
+# fixed keys: strictly_necessary, preferences_functionality,
+# statistics_performance, marketing_advertising. Change it if you disagree.
+#
+# The first block is the one cookie Consentio itself sets; its duration
+# follows the cookieLifetime setting.
+
+- vendor: Consentio
+  documentation: https://chrismavrommatis.github.io/consentio/cookie/
+  checked: "2026-09-11"
+  rows:
+    - name: consentio
+      purpose: Stores your answer to this cookie banner and the date you gave it.
+      provenance: Consentio
+      duration: 90 days by default; the cookieLifetime setting changes it
+      category: strictly_necessary
+
+- vendor: Google Analytics 4
+  documentation: https://support.google.com/analytics/answer/11397207
+  checked: "2026-09-11"
+  rows:
+    - name: _ga
+      purpose: Tells one visitor apart from another.
+      provenance: Google Analytics
+      duration: 2 years
+      category: statistics_performance
+    - name: _ga_*
+      purpose: Keeps the state of the current visit between pages.
+      provenance: Google Analytics
+      duration: 2 years
+      category: statistics_performance
+
+- vendor: Google Tag Manager
+  documentation: https://business.safety.google/adscookies/
+  checked: "2026-09-11"
+  rows:
+    - name: _dc_gtm_*
+      purpose: Helps Google Analytics measure how visitors use the site.
+      provenance: Google Tag Manager
+      duration: 1 minute
+      category: statistics_performance
+
+- vendor: Google Ads
+  documentation: https://business.safety.google/adscookies/
+  checked: "2026-09-11"
+  rows:
+    - name: _gcl_au
+      purpose: Measures whether a click on a Google ad led to an action on this site.
+      provenance: Google Ads
+      duration: 90 days
+      category: marketing_advertising
+    - name: _gcl_aw
+      purpose: Measures whether a click on a Google ad led to an action on this site.
+      provenance: Google Ads
+      duration: 90 days
+      category: marketing_advertising
+    - name: _gcl_gs
+      purpose: Measures whether a click on a Google ad led to an action on this site.
+      provenance: Google Ads
+      duration: 90 days
+      category: marketing_advertising
+    - name: _gcl_gb
+      purpose: Measures whether a click on a Google ad led to an action on this site.
+      provenance: Google Ads
+      duration: 90 days
+      category: marketing_advertising
+    - name: IDE
+      purpose: Used by Google to show its ads on sites other than Google's own.
+      provenance: Google (doubleclick.net)
+      duration: 13 months in the EEA and UK, 24 months elsewhere
+      category: marketing_advertising
+
+- vendor: Meta Pixel
+  documentation: https://www.meta.com/help/quest/articles/accounts/privacy-information-and-settings/cookies-and-advertising-on-meta-quest-devices/
+  checked: "2026-09-11"
+  rows:
+    - name: _fbp
+      purpose: Identifies the browser so Meta can measure its ads and how the site is used.
+      provenance: Meta Pixel
+      duration: 90 days
+      category: marketing_advertising
+
+- vendor: Meta Pixel (click ID)
+  documentation: https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/fbp-and-fbc/
+  checked: "2026-09-11"
+  rows:
+    - name: _fbc
+      purpose: Stores the click ID from the Meta ad that brought you to the site.
+      provenance: Meta Pixel
+      duration: 90 days
+      category: marketing_advertising
+
+- vendor: Hotjar
+  documentation: https://help.hotjar.com/hc/en-us/articles/36819973371409-Cookies-Set-by-the-Hotjar-Tracking-Code
+  checked: "2026-09-11"
+  rows:
+    - name: _hjSessionUser_*
+      purpose: Keeps a Hotjar user ID so later visits count as the same person.
+      provenance: Hotjar
+      duration: 365 days
+      category: statistics_performance
+    - name: _hjSession_*
+      purpose: Holds the current visit so its page views are grouped together.
+      provenance: Hotjar
+      duration: 30 minutes, extended while you are active
+      category: statistics_performance
+    - name: _hjTLDTest
+      purpose: Works out the most general cookie path Hotjar can use.
+      provenance: Hotjar
+      duration: Session
+      category: statistics_performance
+    - name: _hjClosedSurveyInvites
+      purpose: Remembers that you closed a survey invitation so it is not shown again.
+      provenance: Hotjar
+      duration: 365 days
+      category: statistics_performance
+    - name: _hjDonePolls
+      purpose: Remembers that you completed a survey so it is not shown again.
+      provenance: Hotjar
+      duration: 365 days
+      category: statistics_performance
+    - name: _hjMinimizedPolls
+      purpose: Keeps a survey minimised as you move between pages.
+      provenance: Hotjar
+      duration: 365 days
+      category: statistics_performance
+
+- vendor: YouTube embeds
+  documentation: https://policies.google.com/technologies/cookies?hl=en
+  checked: "2026-09-11"
+  rows:
+    - name: YSC
+      purpose: Checks that requests during a visit come from you and not from another site.
+      provenance: YouTube
+      duration: Session
+      category: strictly_necessary
+    - name: __Secure-YNID
+      purpose: Remembers your YouTube preferences and helps YouTube find and fix problems with its player.
+      provenance: YouTube
+      duration: 6 months
+      category: preferences_functionality
+    - name: __Secure-YENID
+      purpose: Remembers your YouTube preferences and helps YouTube find and fix problems with its player.
+      provenance: YouTube
+      duration: 13 months
+      category: preferences_functionality
+    - name: PREF
+      purpose: Stores your player preferences such as autoplay, shuffle and player size.
+      provenance: YouTube
+      duration: 8 months from last use
+      category: preferences_functionality
+
+- vendor: Vimeo embeds
+  documentation: https://help.vimeo.com/hc/en-us/articles/26080940921361-Vimeo-Player-Cookies
+  checked: "2026-09-11"
+  rows:
+    - name: vuid
+      purpose: A Vimeo ID used to build viewing statistics.
+      provenance: Vimeo
+      duration: 2 years
+      category: statistics_performance
+    - name: player
+      purpose: Remembers your player settings such as volume, quality and captions.
+      provenance: Vimeo
+      duration: 1 year
+      category: preferences_functionality
+    - name: player_clearance
+      purpose: Keeps bots away from the Vimeo player.
+      provenance: Vimeo
+      duration: 7 days
+      category: strictly_necessary
+
+- vendor: LinkedIn Insight Tag
+  documentation: https://www.linkedin.com/legal/l/cookie-table
+  checked: "2026-09-11"
+  rows:
+    - name: bcookie
+      purpose: Identifies the browser to LinkedIn so it can detect abuse of its platform.
+      provenance: LinkedIn
+      duration: 1 year
+      category: marketing_advertising
+    - name: bscookie
+      purpose: Remembers that a logged-in LinkedIn member passed two-factor authentication.
+      provenance: LinkedIn
+      duration: 1 year
+      category: marketing_advertising
+    - name: lidc
+      purpose: Helps LinkedIn pick which data centre answers your requests.
+      provenance: LinkedIn
+      duration: 24 hours
+      category: marketing_advertising
+    - name: li_gc
+      purpose: Stores a guest's consent to LinkedIn's non-essential cookies.
+      provenance: LinkedIn
+      duration: 6 months
+      category: marketing_advertising
+    - name: li_sugr
+      purpose: Makes a probable match of your identity for LinkedIn.
+      provenance: LinkedIn
+      duration: 90 days
+      category: marketing_advertising
+    - name: UserMatchHistory
+      purpose: Syncs your LinkedIn Ads ID.
+      provenance: LinkedIn
+      duration: 30 days
+      category: marketing_advertising
+    - name: AnalyticsSyncHistory
+      purpose: Records when your browser last synced with LinkedIn's analytics cookie.
+      provenance: LinkedIn
+      duration: 30 days
+      category: statistics_performance
+    - name: lms_analytics
+      purpose: Identifies LinkedIn members away from LinkedIn for analytics.
+      provenance: LinkedIn
+      duration: 30 days
+      category: statistics_performance
+    - name: lms_ads
+      purpose: Identifies LinkedIn members away from LinkedIn for advertising.
+      provenance: LinkedIn
+      duration: 30 days
+      category: marketing_advertising
+    - name: li_fat_id
+      purpose: An indirect member ID used for conversion tracking, retargeting and analytics.
+      provenance: LinkedIn
+      duration: 30 days
+      category: marketing_advertising
+    - name: ln_or
+      purpose: Records whether LinkedIn's Oribi analytics may run on this domain.
+      provenance: LinkedIn
+      duration: 1 day
+      category: statistics_performance
+
+- vendor: TikTok Pixel
+  documentation: https://ads.tiktok.com/help/article/using-cookies-with-tiktok-pixel?lang=en
+  checked: "2026-09-11"
+  rows:
+    - name: _ttp
+      purpose: Measures TikTok ad campaigns and personalises what you see on TikTok, including ads.
+      provenance: TikTok
+      duration: 13 months from last use
+      category: marketing_advertising
+    - name: ttcsid_*
+      purpose: Measures TikTok ad campaigns and personalises what you see on TikTok, including ads.
+      provenance: TikTok
+      duration: 13 months from last use
+      category: marketing_advertising
+    - name: ttclid
+      purpose: Measures TikTok ad campaigns and personalises what you see on TikTok, including ads.
+      provenance: TikTok
+      duration: 13 months from last use
+      category: marketing_advertising
+
+- vendor: HubSpot
+  documentation: https://knowledge.hubspot.com/privacy-and-consent/what-cookies-does-hubspot-set-in-a-visitor-s-browser
+  checked: "2026-09-11"
+  rows:
+    - name: __hstc
+      purpose: Tracks your visits, with a visitor ID, first and last visit times and a visit count.
+      provenance: HubSpot
+      duration: 6 months
+      category: statistics_performance
+    - name: hubspotutk
+      purpose: Keeps a visitor ID so HubSpot recognises you across visits.
+      provenance: HubSpot
+      duration: 6 months
+      category: statistics_performance
+    - name: __hssc
+      purpose: Tracks the current visit and how many pages you viewed in it.
+      provenance: HubSpot
+      duration: 30 minutes
+      category: statistics_performance
+    - name: __hssrc
+      purpose: Records whether you restarted the browser since your last visit.
+      provenance: HubSpot
+      duration: Session
+      category: statistics_performance
+    - name: messagesUtk
+      purpose: Recognises you in the chat widget so an earlier chat can continue.
+      provenance: HubSpot
+      duration: 6 months
+      category: preferences_functionality
+
+- vendor: Cloudflare
+  documentation: https://developers.cloudflare.com/fundamentals/reference/policies-compliances/cloudflare-cookies/
+  checked: "2026-09-11"
+  rows:
+    - name: __cf_bm
+      purpose: Tells automated traffic from real visitors to protect the site from bots.
+      provenance: Cloudflare
+      duration: 30 minutes of inactivity
+      category: strictly_necessary
+    - name: __cflb
+      purpose: Keeps your requests on the same server when the site uses Cloudflare load balancing.
+      provenance: Cloudflare
+      duration: Up to 24 hours
+      category: strictly_necessary

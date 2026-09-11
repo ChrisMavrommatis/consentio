@@ -9,6 +9,7 @@ import floatingButtonTemplate from '../templates/consentio-floating-button.html'
 import ConsentioGTM from '../lib/gtm.js';
 import FocusTrap from '../lib/focus.js';
 import { showElement, hideElement } from '../lib/dom.js';
+import { releaseHeldScripts } from '../lib/held-scripts.js';
 import { safeUrl } from '../lib/url.js';
 
 import type ConsentioBarElement from './consentio-bar.js';
@@ -116,6 +117,10 @@ class ConsentioAppElement extends HTMLElement {
 		this.isRendered = true;
 		this.emit('consentio:initialized', this.state.consents);
 		// No `consent default` from here - it would be two fetches too late. The loader has it.
+		// A default state is not an answer, so nothing held is released until one is stored.
+		if (this.state.consentGiven) {
+			releaseHeldScripts(this.state.consents);
+		}
 	}
 
 	disconnectedCallback(): void {
@@ -310,6 +315,7 @@ class ConsentioAppElement extends HTMLElement {
 		this._focus.leave(this.floatingButton);
 		this.emit('consentio:consent-update', this.state.consents);
 		this.gtm?.updateConsent(this.state.consents);
+		releaseHeldScripts(this.state.consents);
 	}
 
 	cancelSettings(event: Event): void {
@@ -355,6 +361,7 @@ class ConsentioAppElement extends HTMLElement {
 		this._focus.leave(this.floatingButton);
 		this.emit('consentio:consent-update', this.state.consents);
 		this.gtm?.updateConsent(this.state.consents);
+		releaseHeldScripts(this.state.consents);
 	}
 
 	emit(event: string, data: unknown): void {
