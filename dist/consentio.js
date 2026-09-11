@@ -15,36 +15,17 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -55,7 +36,7 @@ __webpack_require__.d(__webpack_exports__, {
 });
 
 ;// ./src/scss/consentio.scss
-const consentio_namespaceObject = ":host{--required-bg-color: rgba(0, 0, 0, 0.7);--theme-bar-title-color: #455a64;--bar-shadow-color: rgba(0, 0, 0, 0.37);--bar-bg-color: #e0e0e0;--bar-text-color: #424242;--button-bg-color: #37474f;--button-text-color: #e0e0e0;--button-flat-bg-color: #37474f;--button-flat-text-color: #e0e0e0;--modal-title-color: #455a64;--modal-bg-color: #e0e0e0;--modal-text-color: #424242;--modal-footer-bg-color: #D3D3D3;--modal-footer-border-color: #bdbdbd;--consent-header-bg-color: #ececec;--consent-header-text-color: #455a64;--consent-border-color: #a8a8a8;--consent-shadow-color: #8e8e8e69;--switch-text-color: #37474f;--switch-bg-color: rgba(0, 0, 0, .38);--switch-off-color: #f1f1f1;--switch-on-color: #37474f;--table-border-color: #636363;--floating-btn-bg-color: #37474f;--floating-btn-color: #704747;--link-text-color: #546e7a;--focus-ring-color: #1a73e8}:host consentio-required{display:none}:host consentio-bar{display:none}:host consentio-modal{display:none}:host consentio-floating-button{display:none}:host p,:host h1,:host h2,:host h3,:host h4,:host h5,:host h6,:host div,:host li,:host a,:host th,:host td{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,Oxygen-Sans,Ubuntu,Cantarell,\"Helvetica Neue\",sans-serif;text-transform:none;line-height:1.5;letter-spacing:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0;font-size:15px}:host h1,:host h2,:host h3,:host h4,:host h5,:host h6{font-weight:400;color:var(--modal-title-color);font-size:2.28rem !important}:host h2{font-size:1.83rem !important}:host h3{font-size:1.5rem !important}:host h4{font-size:1.25rem !important}:host h5{font-size:1rem !important;font-weight:bold !important}:host h6{font-size:.83rem !important}:host th,:host td{background-color:inherit;min-width:inherit;border-bottom:0;border-left:0}:host a,:host .link{color:var(--link-text-color)}:host a:hover,:host .link:hover{filter:brightness(115%)}:host .button{color:var(--button-text-color);background-color:var(--button-bg-color);border:none;border-radius:2px;cursor:pointer;vertical-align:middle;letter-spacing:.5px;display:inline-block;text-align:center;height:36px;min-width:200px;padding:8px 20px;margin:8px 5px;transition:background-color .3s ease-out;-webkit-tap-highlight-color:rgba(0,0,0,0)}:host .button:hover{filter:brightness(115%)}:host .button:focus-visible{outline:2px solid var(--focus-ring-color);outline-offset:2px}:host .button-flat{background-color:var(--button-flat-bg-color);color:var(--button-flat-text-color);cursor:pointer;vertical-align:middle;letter-spacing:.5px;display:inline-block;text-align:center;height:15 px;border-radius:2px;min-width:100px;padding:5px 10px;margin:4px 2px;transition:background-color .3s ease-out;-webkit-tap-highlight-color:rgba(0,0,0,0)}:host .button-flat:hover{filter:brightness(115%)}:host .button-flat:focus-visible{outline:2px solid var(--focus-ring-color);outline-offset:2px}:host consentio-required{position:fixed;z-index:15001;width:100%;height:100%;top:0;left:0;background:var(--required-bg-color)}:host consentio-bar{box-sizing:border-box;position:fixed;bottom:0;left:0;width:100%;z-index:15002;line-height:1;box-shadow:0 0 10px var(--bar-shadow-color);overflow-y:auto;background:var(--bar-bg-color);color:var(--bar-text-color);padding:15px 10px 30px 15px}:host consentio-bar>.container{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;margin:0 auto;width:80%}:host consentio-bar>.container>main{max-width:1000px;width:100%}:host consentio-bar>.container>main>h5{color:var(--bar-title-color);margin:0 0 10px;padding:0;font-size:20px;line-height:1.2;font-weight:300}:host consentio-bar>.container>main>p{font-size:14px}:host consentio-bar>.container>footer{align-items:end;margin:-5px}:host consentio-modal{position:fixed;top:10%;z-index:15003;left:0;right:0;background-color:var(--modal-bg-color);color:var(--modal-text-color);padding:0;margin:auto;overflow-y:auto;border-radius:2px;box-shadow:0 0 10px var(--bar-shadow-color);width:70%;max-height:90%;height:70%}@media only screen and (max-width : 992.99px){:host consentio-modal{top:5%;width:90%;height:90%}}:host consentio-modal main{padding:24px 24px 0px 24px;position:absolute;overflow-y:auto;height:calc(100% - 48px - 24px);max-height:100%}:host consentio-modal main p{padding-bottom:10px;margin-bottom:.5rem}:host consentio-modal main>h4{margin-top:0;color:var(--modal-title-color);font-size:2.28rem !important}:host consentio-modal footer{border-radius:0 0 2px 2px;position:absolute;bottom:0;padding:4px 6px;height:40px;width:calc(100% - 12px);text-align:right;background-color:var(--modal-footer-bg-color);border-top:1px solid var(--modal-footer-border-color)}:host consentio-modal footer .logo{position:absolute;padding:6px 12px 12px 12px}:host consentio-consent-items{margin-top:1rem}:host consentio-consent-items consentio-consent-item .consent-header{display:flex;cursor:pointer;line-height:1.5;padding:1rem;align-items:center;justify-content:space-between;background-color:var(--consent-header-bg-color);color:var(--consent-header-text-color);border-bottom:1px solid var(--consent-border-color);border-left:1px solid var(--consent-border-color);border-right:1px solid var(--consent-border-color)}:host consentio-consent-items consentio-consent-item .consent-header h5{max-width:57%;display:flex}:host consentio-consent-items consentio-consent-item .consent-header:focus-visible{outline:2px solid var(--focus-ring-color);outline-offset:-2px}:host consentio-consent-items consentio-consent-item .consent-body{display:none;border-bottom:1px solid var(--consent-border-color);border-left:1px solid var(--consent-border-color);border-right:1px solid var(--consent-border-color);box-sizing:border-box;padding:1.5rem}@media only screen and (max-width : 992.99px){:host consentio-consent-items consentio-consent-item .consent-body{padding:1rem}}:host consentio-consent-items consentio-consent-item:first-child .consent-header{border-top:1px solid var(--consent-border-color)}:host consentio-switch{user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0)}:host consentio-switch label{cursor:pointer;font-size:.8rem;color:var(--switch-text-color)}:host consentio-switch input[type=checkbox]{opacity:0;width:0;height:0}:host consentio-switch input[type=checkbox]:checked:not([disabled]){background-color:#84c7c1}:host consentio-switch input[type=checkbox]:not(:checked),:host consentio-switch input[type=checkbox]:checked{position:absolute;opacity:0;pointer-events:none}:host consentio-switch .switch-lever{content:\"\";display:inline-block;position:relative;width:36px;height:14px;background-color:var(--switch-bg-color);border-radius:15px;margin-right:10px;transition:background .3s ease;vertical-align:middle;margin:0 16px}:host consentio-switch .switch-lever::before{background-color:rgba(38,166,154,.15)}:host consentio-switch .switch-lever::after{background-color:var(--switch-off-color);box-shadow:0px 3px 1px -2px rgba(0,0,0,.2),0px 2px 2px 0px rgba(0,0,0,.14),0px 1px 5px 0px rgba(0,0,0,.12)}:host consentio-switch .switch-lever::before,:host consentio-switch .switch-lever::after{content:\"\";position:absolute;display:inline-block;width:20px;height:20px;border-radius:50%;left:0;top:-3px;transition:left .3s ease,background .3s ease,box-shadow .1s ease,transform .1s ease}:host consentio-switch input[type=checkbox]:focus-visible+.switch-lever{outline:2px solid var(--focus-ring-color);outline-offset:4px;border-radius:15px}:host consentio-switch input[type=checkbox]:checked:checked+.switch-lever::before,:host consentio-switch input[type=checkbox]:checked:checked+.switch-lever::after{left:18px}:host consentio-switch input[type=checkbox]:checked:checked+.switch-lever::after{background-color:var(--switch-on-color)}:host table{width:100%;display:table;border-collapse:collapse;border-spacing:0;border:none}@media only screen and (max-width : 992.99px){:host table{overflow-wrap:anywhere}}:host table td,:host table th{padding:15px 5px;display:table-cell;text-align:left;vertical-align:middle;border-radius:2px}:host table tr{border-bottom:none;border-bottom:1px solid var(--table-border-color)}:host table tbody>tr>td{border-radius:0}:host consentio-floating-button{position:fixed;right:40px;bottom:40px;z-index:15000;box-sizing:border-box}:host consentio-floating-button button{font-family:inherit;line-height:inherit;border:none;cursor:pointer;background:var(--floating-btn-bg-color);border-radius:50%;transition:background-color .2s ease-in-out;align-items:center;display:flex;justify-content:center;box-shadow:0px 3px 5px -1px rgba(0,0,0,.2),0px 6px 10px rgba(0,0,0,.14),0px 1px 18px rgba(0,0,0,.12);color:var(--floating-btn-color);width:64px;height:64px;left:initial;padding:0}:host consentio-floating-button button:hover{filter:brightness(115%)}:host consentio-floating-button button:focus-visible{outline:2px solid var(--focus-ring-color);outline-offset:4px}:host consentio-floating-button button .icon{color:var(--floating-btn-color);padding:12px;height:auto;width:inherit}:host consentio-floating-button button .icon:hover{filter:brightness(115%)}";
+const consentio_namespaceObject = ":host{--required-bg-color: rgba(0, 0, 0, 0.7);--bar-title-color: #455a64;--bar-shadow-color: rgba(0, 0, 0, 0.37);--bar-bg-color: #e0e0e0;--bar-text-color: #424242;--button-bg-color: #37474f;--button-text-color: #e0e0e0;--button-flat-bg-color: #37474f;--button-flat-text-color: #e0e0e0;--modal-title-color: #455a64;--modal-bg-color: #e0e0e0;--modal-text-color: #424242;--modal-footer-bg-color: #D3D3D3;--modal-footer-border-color: #bdbdbd;--consent-header-bg-color: #ececec;--consent-header-text-color: #455a64;--consent-border-color: #a8a8a8;--consent-shadow-color: #8e8e8e69;--switch-text-color: #37474f;--switch-bg-color: rgba(0, 0, 0, .38);--switch-off-color: #f1f1f1;--switch-on-color: #37474f;--table-border-color: #636363;--floating-btn-bg-color: #37474f;--floating-btn-color: #704747;--link-text-color: #546e7a;--focus-ring-color: #1a73e8}:host consentio-required{display:none}:host consentio-bar{display:none}:host consentio-modal{display:none}:host consentio-floating-button{display:none}:host p,:host h1,:host h2,:host h3,:host h4,:host h5,:host h6,:host div,:host li,:host a,:host th,:host td{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,Oxygen-Sans,Ubuntu,Cantarell,\"Helvetica Neue\",sans-serif;text-transform:none;line-height:1.5;letter-spacing:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0;font-size:15px}:host h1,:host h2,:host h3,:host h4,:host h5,:host h6{font-weight:400;color:var(--modal-title-color);font-size:2.28rem !important}:host h2{font-size:1.83rem !important}:host h3{font-size:1.5rem !important}:host h4{font-size:1.25rem !important}:host h5{font-size:1rem !important;font-weight:bold !important}:host h6{font-size:.83rem !important}:host th,:host td{background-color:inherit;min-width:inherit;border-bottom:0;border-left:0}:host a,:host .link{color:var(--link-text-color)}:host a:hover,:host .link:hover{filter:brightness(115%)}:host .button{color:var(--button-text-color);background-color:var(--button-bg-color);border:none;border-radius:2px;cursor:pointer;vertical-align:middle;letter-spacing:.5px;display:inline-block;text-align:center;height:36px;min-width:130px;padding:8px 20px;margin:8px 5px;transition:background-color .3s ease-out;-webkit-tap-highlight-color:rgba(0,0,0,0)}:host .button:hover{filter:brightness(115%)}:host .button:focus-visible{outline:2px solid var(--focus-ring-color);outline-offset:2px}:host .button-flat{background-color:var(--button-flat-bg-color);color:var(--button-flat-text-color);cursor:pointer;vertical-align:middle;letter-spacing:.5px;display:inline-block;text-align:center;height:15 px;border-radius:2px;min-width:100px;padding:5px 10px;margin:4px 2px;transition:background-color .3s ease-out;-webkit-tap-highlight-color:rgba(0,0,0,0)}:host .button-flat:hover{filter:brightness(115%)}:host .button-flat:focus-visible{outline:2px solid var(--focus-ring-color);outline-offset:2px}:host consentio-required{position:fixed;z-index:15001;width:100%;height:100%;top:0;left:0;background:var(--required-bg-color)}:host consentio-bar{box-sizing:border-box;position:fixed;bottom:0;left:0;width:100%;z-index:15002;line-height:1;box-shadow:0 0 10px var(--bar-shadow-color);overflow-y:auto;background:var(--bar-bg-color);color:var(--bar-text-color);padding:15px 10px 30px 15px}:host consentio-bar>.container{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;margin:0 auto;width:80%}:host consentio-bar>.container>main{max-width:1000px;width:100%}:host consentio-bar>.container>main>h2{color:var(--bar-title-color);margin:0 0 10px;padding:0;line-height:1.2}:host consentio-bar>.container>main>p{font-size:14px}:host consentio-bar>.container>main>.policy{margin-top:8px}:host consentio-bar>.container>main>.policy>a{font-size:inherit}:host consentio-bar>.container>footer{margin:-5px}@media only screen and (max-width : 600.99px){:host consentio-bar>.container>footer{display:flex;flex-direction:column;width:100%}}:host consentio-modal{position:fixed;top:10%;z-index:15003;left:0;right:0;background-color:var(--modal-bg-color);color:var(--modal-text-color);padding:0;margin:auto;overflow-y:auto;border-radius:2px;box-shadow:0 0 10px var(--bar-shadow-color);width:70%;max-height:90%;height:70%}@media only screen and (max-width : 992.99px){:host consentio-modal{top:5%;width:90%;height:90%}}:host consentio-modal main{padding:24px 24px 0px 24px;position:absolute;overflow-y:auto;height:calc(100% - 48px - 24px);max-height:100%}:host consentio-modal main p{padding-bottom:10px;margin-bottom:.5rem}:host consentio-modal main>h4{margin-top:0;color:var(--modal-title-color);font-size:2.28rem !important}:host consentio-modal footer{border-radius:0 0 2px 2px;position:absolute;bottom:0;padding:4px 6px;height:40px;width:calc(100% - 12px);text-align:right;background-color:var(--modal-footer-bg-color);border-top:1px solid var(--modal-footer-border-color)}:host consentio-modal footer .logo{position:absolute;padding:6px 12px 12px 12px}:host consentio-consent-items{margin-top:1rem}:host consentio-consent-items consentio-consent-item .consent-header{display:flex;cursor:pointer;line-height:1.5;padding:1rem;align-items:center;justify-content:space-between;background-color:var(--consent-header-bg-color);color:var(--consent-header-text-color);border-bottom:1px solid var(--consent-border-color);border-left:1px solid var(--consent-border-color);border-right:1px solid var(--consent-border-color)}:host consentio-consent-items consentio-consent-item .consent-header h5{max-width:57%;display:flex}:host consentio-consent-items consentio-consent-item .consent-header:focus-visible{outline:2px solid var(--focus-ring-color);outline-offset:-2px}:host consentio-consent-items consentio-consent-item .consent-body{display:none;border-bottom:1px solid var(--consent-border-color);border-left:1px solid var(--consent-border-color);border-right:1px solid var(--consent-border-color);box-sizing:border-box;padding:1.5rem}@media only screen and (max-width : 992.99px){:host consentio-consent-items consentio-consent-item .consent-body{padding:1rem}}:host consentio-consent-items consentio-consent-item:first-child .consent-header{border-top:1px solid var(--consent-border-color)}:host consentio-switch{user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0)}:host consentio-switch label{cursor:pointer;font-size:.8rem;color:var(--switch-text-color)}:host consentio-switch input[type=checkbox]{opacity:0;width:0;height:0}:host consentio-switch input[type=checkbox]:checked:not([disabled]){background-color:#84c7c1}:host consentio-switch input[type=checkbox]:not(:checked),:host consentio-switch input[type=checkbox]:checked{position:absolute;opacity:0;pointer-events:none}:host consentio-switch .switch-lever{content:\"\";display:inline-block;position:relative;width:36px;height:14px;background-color:var(--switch-bg-color);border-radius:15px;transition:background .3s ease;vertical-align:middle;margin:0 16px}:host consentio-switch .switch-lever::before{background-color:rgba(38,166,154,.15)}:host consentio-switch .switch-lever::after{background-color:var(--switch-off-color);box-shadow:0px 3px 1px -2px rgba(0,0,0,.2),0px 2px 2px 0px rgba(0,0,0,.14),0px 1px 5px 0px rgba(0,0,0,.12)}:host consentio-switch .switch-lever::before,:host consentio-switch .switch-lever::after{content:\"\";position:absolute;display:inline-block;width:20px;height:20px;border-radius:50%;left:0;top:-3px;transition:left .3s ease,background .3s ease,box-shadow .1s ease,transform .1s ease}:host consentio-switch input[type=checkbox]:focus-visible+.switch-lever{outline:2px solid var(--focus-ring-color);outline-offset:4px;border-radius:15px}:host consentio-switch input[type=checkbox]:checked:checked+.switch-lever::before,:host consentio-switch input[type=checkbox]:checked:checked+.switch-lever::after{left:18px}:host consentio-switch input[type=checkbox]:checked:checked+.switch-lever::after{background-color:var(--switch-on-color)}:host table{width:100%;display:table;border-collapse:collapse;border-spacing:0;border:none}@media only screen and (max-width : 992.99px){:host table{overflow-wrap:anywhere}}:host table td,:host table th{padding:15px 5px;display:table-cell;text-align:left;vertical-align:middle;border-radius:2px}:host table tr{border-bottom:none;border-bottom:1px solid var(--table-border-color)}:host table tbody>tr>td{border-radius:0}:host consentio-floating-button{position:fixed;right:40px;bottom:40px;z-index:15000;box-sizing:border-box}:host consentio-floating-button button{font-family:inherit;line-height:inherit;border:none;cursor:pointer;background:var(--floating-btn-bg-color);border-radius:50%;transition:background-color .2s ease-in-out;align-items:center;display:flex;justify-content:center;box-shadow:0px 3px 5px -1px rgba(0,0,0,.2),0px 6px 10px rgba(0,0,0,.14),0px 1px 18px rgba(0,0,0,.12);color:var(--floating-btn-color);width:64px;height:64px;left:initial;padding:0}:host consentio-floating-button button:hover{filter:brightness(115%)}:host consentio-floating-button button:focus-visible{outline:2px solid var(--focus-ring-color);outline-offset:4px}:host consentio-floating-button button .icon{color:var(--floating-btn-color);padding:12px;height:auto;width:inherit}:host consentio-floating-button button .icon:hover{filter:brightness(115%)}";
 ;// ./src/lib/template-renderer.ts
 class TemplateRenderer {
     static illegalRgx = /[\/\?<>\\:\*\|"]/g;
@@ -70,10 +51,17 @@ class TemplateRenderer {
             return this.domSanitize(value === undefined || value === null ? '' : String(value));
         });
     }
+    /**
+     * A text node escapes `&`, `<` and `>` and nothing else, so a value carrying a quote
+     * could close an attribute it was substituted into - issue 29. Both quotes are escaped
+     * here as well, which is what lets `{{ }}` sit inside an attribute value at all.
+     */
     static domSanitize(value) {
         const div = document.createElement('div');
         div.appendChild(document.createTextNode(value));
-        return div.innerHTML;
+        return div.innerHTML
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     }
     static regexSanitize(value, replacement) {
         return value
@@ -88,12 +76,12 @@ class TemplateRenderer {
 
 ;// ./src/templates/consentio-bar.html
 // Module
-var code = `<consentio-bar role="region" aria-labelledby="consentio-bar-title"> <div class="container"> <main> <h2 id="consentio-bar-title">{{ barTitle }}</h2> <p> {{ barDescription }} </p> </main> <footer> <button class="button" data-role="settings">{{ buttonSettings }}</button> <button class="button" data-role="acceptAll">{{ buttonAcceptAll }}</button> </footer> </div> </consentio-bar> `;
+var code = `<consentio-bar role="region" aria-labelledby="consentio-bar-title"> <div class="container"> <main> <h2 id="consentio-bar-title">{{ barTitle }}</h2> <p> {{ barDescription }} </p> <p class="policy"></p> </main> <footer> <button class="button" data-role="settings">{{ buttonSettings }}</button> <button class="button" data-role="rejectAll">{{ buttonRejectAll }}</button> <button class="button" data-role="acceptAll">{{ buttonAcceptAll }}</button> </footer> </div> </consentio-bar> `;
 // Exports
 /* harmony default export */ const consentio_bar = (code);
 ;// ./src/templates/consentio-modal.html
 // Module
-var consentio_modal_code = `<consentio-modal role="dialog" aria-modal="true" aria-labelledby="consentio-modal-title"> <main> <h4 id="consentio-modal-title">{{ modalTitle }}</h4> <p>{{ modalDescription }}</p> <consentio-consent-items></consentio-consent-items> </main> <footer> <div class="logo"> <a href="https://github.com/ChrisMavrommatis/consentio" target="_blank" rel="noopener noreferrer" class="link"> <strong>Consentio</strong> </a> </div> <button type="button" class="button-flat" data-role="cancel">{{ buttonCancel }}</button> <button type="button" class="button-flat" data-role="save">{{ buttonSave }}</button> </footer> </consentio-modal> `;
+var consentio_modal_code = `<consentio-modal role="dialog" aria-modal="true" aria-labelledby="consentio-modal-title"> <main> <h4 id="consentio-modal-title">{{ modalTitle }}</h4> <p>{{ modalDescription }}</p> <p class="policy"></p> <consentio-consent-items></consentio-consent-items> </main> <footer> <div class="logo"> <a href="https://github.com/ChrisMavrommatis/consentio" target="_blank" rel="noopener noreferrer" class="link"> <strong>Consentio</strong> </a> </div> <button type="button" class="button-flat" data-role="cancel">{{ buttonCancel }}</button> <button type="button" class="button-flat" data-role="save">{{ buttonSave }}</button> </footer> </consentio-modal> `;
 // Exports
 /* harmony default export */ const consentio_modal = (consentio_modal_code);
 ;// ./src/templates/consentio-consent-item.html
@@ -278,15 +266,35 @@ class FocusTrap {
 function isHidden(el) {
     return el.style.display === 'none' || el.offsetParent === null;
 }
+// Null is a real state, not a mistake: there is no floating button when a site hides it.
 function showElement(el) {
-    el.style.display = 'block';
+    if (el) {
+        el.style.display = 'block';
+    }
 }
 function hideElement(el) {
-    el.style.display = 'none';
+    if (el) {
+        el.style.display = 'none';
+    }
+}
+
+
+;// ./src/lib/url.ts
+// http, https, or a path on this site. Everything else - javascript:, data:, a bare
+// relative path, and //host, which leaves the site - fails. Issue 37.
+const ALLOWED = /^(https?:\/\/|\/(?!\/))/i;
+/** The address when it is one the banner may put in an href, null when it is not. */
+function safeUrl(value) {
+    if (typeof value !== 'string') {
+        return null;
+    }
+    const trimmed = value.trim();
+    return ALLOWED.test(trimmed) ? trimmed : null;
 }
 
 
 ;// ./src/elements/consentio-app.ts
+
 
 
 
@@ -304,8 +312,9 @@ class ConsentioAppElement extends HTMLElement {
         this._onKeydown = this.onKeydown.bind(this);
         // Bound once: a fresh bind() never matches what addEventListener was given. Issue 7.
         this._handlers = [
-            ['consentio:open-settings', this.openSettings.bind(this)],
+            ['consentio:open-settings', this.onOpenSettings.bind(this)],
             ['consentio:accept-all-consents', this.acceptAll.bind(this)],
+            ['consentio:reject-all-consents', this.rejectAll.bind(this)],
             ['consentio:cancel-settings', this.cancelSettings.bind(this)],
             ['consentio:save-settings', this.saveSettings.bind(this)]
         ];
@@ -392,14 +401,10 @@ class ConsentioAppElement extends HTMLElement {
             barTitle: this.config.texts.barTitle,
             barDescription: this.config.texts.barDescription,
             buttonSettings: this.config.texts.buttonSettings,
+            buttonRejectAll: this.config.texts.buttonRejectAll,
             buttonAcceptAll: this.config.texts.buttonAcceptAll,
         });
-        const cookieTableHeaders = {
-            cookieName: this.config.texts.cookieTableHeaderName,
-            cookiePurpose: this.config.texts.cookieTableHeaderPurpose,
-            cookieProvenance: this.config.texts.cookieTableHeaderProvenance,
-            cookieDuration: this.config.texts.cookieTableHeaderDuration
-        };
+        this.renderPolicyLink(newBar);
         this.addOrReplace(newBar, this.bar);
         this.bar = newBar;
         this.bar.logger = this.logger;
@@ -408,7 +413,7 @@ class ConsentioAppElement extends HTMLElement {
             this.bar.setAttribute('role', 'dialog');
             this.bar.setAttribute('aria-modal', 'true');
         }
-        this.consentItems = this.config.consents.map(consent => {
+        this.consentItems = this.config.consents.map((consent) => {
             const consentItem = this.renderNode(consentio_consent_item, {
                 consentKey: consent.key,
                 consentTitle: consent.title,
@@ -417,7 +422,8 @@ class ConsentioAppElement extends HTMLElement {
             if (consent.alwaysOn) {
                 consentItem.alwaysOn = this.config.texts.alwaysOnLabel;
             }
-            consentItem.tableHeaders = cookieTableHeaders;
+            // The four column headings are texts like any other - there is no second name for them.
+            consentItem.tableHeaders = this.config.texts;
             consentItem.cookies = this.cookies.filter(cookie => cookie.category === consent.key);
             if (this.state.consentGiven) {
                 consentItem.itemState = this.state.consents[consentItem.id];
@@ -433,6 +439,7 @@ class ConsentioAppElement extends HTMLElement {
             buttonSave: this.config.texts.buttonSave,
             buttonCancel: this.config.texts.buttonCancel,
         });
+        this.renderPolicyLink(newModal);
         const consentList = newModal.querySelector('consentio-consent-items');
         this.consentItems.forEach(consentItem => {
             consentList.appendChild(consentItem);
@@ -440,10 +447,38 @@ class ConsentioAppElement extends HTMLElement {
         this.addOrReplace(newModal, this.modal);
         this.modal = newModal;
         this.modal.logger = this.logger;
-        if (!this.isRendered) {
+        // A site with its own settings link hides this and owes the visitor that link - issue 40.
+        if (this.config.hideFloatingButton) {
+            this.floatingButton?.remove();
+            this.floatingButton = null;
+        }
+        else if (!this.floatingButton) {
             this.floatingButton = this.renderNode(consentio_floating_button, {});
             this._shadow.appendChild(this.floatingButton);
         }
+    }
+    /**
+     * An href is an attribute, and TemplateRenderer only protects a text node - issue 29.
+     * So the anchor is built here, and a URL that is not http, https or a path on this
+     * site never reaches setAttribute. No URL leaves no empty paragraph behind.
+     */
+    renderPolicyLink(host) {
+        const slot = host.querySelector('.policy');
+        if (!slot) {
+            return;
+        }
+        const url = safeUrl(this.config.policyUrl);
+        if (!url) {
+            slot.remove();
+            return;
+        }
+        const link = document.createElement('a');
+        link.className = 'link';
+        link.textContent = this.config.texts.policyLinkLabel;
+        link.setAttribute('target', '_blank');
+        link.setAttribute('rel', 'noopener noreferrer');
+        link.setAttribute('href', url);
+        slot.appendChild(link);
     }
     initState() {
         hideElement(this.required);
@@ -474,8 +509,17 @@ class ConsentioAppElement extends HTMLElement {
             this._shadow.replaceChild(newEl, oldEl);
         }
     }
-    openSettings(event) {
+    onOpenSettings(event) {
         event.stopImmediatePropagation();
+        this.openSettings();
+    }
+    // No event: a page link calls this through Consentio.openSettings - issue 40.
+    openSettings() {
+        // The bar's button cannot be pressed while the panel is up; a page link can.
+        // Re-entering the trap would drag focus off whatever the visitor had reached.
+        if (this.modal.style.display !== 'none') {
+            return;
+        }
         hideElement(this.bar);
         hideElement(this.floatingButton);
         showElement(this.modal);
@@ -487,6 +531,15 @@ class ConsentioAppElement extends HTMLElement {
     acceptAll(event) {
         event.stopImmediatePropagation();
         this.state.acceptAll();
+        this.answered();
+    }
+    rejectAll(event) {
+        event.stopImmediatePropagation();
+        this.state.rejectAll();
+        this.answered();
+    }
+    // Whichever button gave the answer, storing it and getting out of the way is the same.
+    answered() {
         this.consentItems.forEach((consentItem) => {
             consentItem.updateState(this.state.consents[consentItem.id]);
             consentItem.reset();
@@ -563,6 +616,9 @@ class ConsentioBarElement extends HTMLElement {
     get settingsBtn() {
         return this.querySelector('button[data-role="settings"]');
     }
+    get rejectAllBtn() {
+        return this.querySelector('button[data-role="rejectAll"]');
+    }
     get acceptAllBtn() {
         return this.querySelector('button[data-role="acceptAll"]');
     }
@@ -585,6 +641,10 @@ class ConsentioBarElement extends HTMLElement {
             this.openSettings(event);
             return;
         }
+        if (target?.closest('button[data-role="rejectAll"]')) {
+            this.rejectAll(event);
+            return;
+        }
         if (target?.closest('button[data-role="acceptAll"]')) {
             this.acceptAll(event);
         }
@@ -593,6 +653,11 @@ class ConsentioBarElement extends HTMLElement {
         event.stopImmediatePropagation();
         this.emit('consentio:open-settings', {});
         this.logger?.log('[Consentio:Event] open-settings', 'info');
+    }
+    rejectAll(event) {
+        event.stopImmediatePropagation();
+        this.emit('consentio:reject-all-consents', {});
+        this.logger?.log('[Consentio:Event] reject-all-consents', 'info');
     }
     acceptAll(event) {
         event.stopImmediatePropagation();
@@ -779,9 +844,16 @@ class ConsentioConsentItemElement extends HTMLElement {
         table.appendChild(thead);
         const headerRow = document.createElement('tr');
         thead.appendChild(headerRow);
-        Array.from(Object.keys(this.tableHeaders)).forEach(key => {
+        // Named one by one, and in this order: the columns below are built in the same order.
+        const headings = [
+            this.tableHeaders.cookieTableHeaderName,
+            this.tableHeaders.cookieTableHeaderPurpose,
+            this.tableHeaders.cookieTableHeaderProvenance,
+            this.tableHeaders.cookieTableHeaderDuration
+        ];
+        headings.forEach(heading => {
             const th = document.createElement('th');
-            th.appendChild(document.createTextNode(this.tableHeaders[key]));
+            th.appendChild(document.createTextNode(heading));
             headerRow.appendChild(th);
         });
         const tbody = document.createElement('tbody');
@@ -884,11 +956,37 @@ class ConsentioModalElement extends HTMLElement {
 /* harmony default export */ const elements_consentio_modal = (ConsentioModalElement);
 
 ;// ./src/lib/cookies.ts
-/*! based on js-cookie v3.0.1 */
+/*!
+ * The cookie reader below is js-cookie v3.0.1, ported to TypeScript, cut down to what
+ * Consentio uses and changed where a consent cookie needs different defaults.
+ * https://github.com/js-cookie/js-cookie
+ *
+ * MIT License
+ *
+ * Copyright (c) 2018 Copyright 2018 Klaus Hartl, Fagner Brack, GitHub Contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 class Cookies {
+    // No expiry: how long an answer lasts is a setting, and consent-store.ts owns the number.
     static defaultAttributes = {
         path: '/',
-        expires: 90,
         sameSite: 'Lax'
     };
     // Read at set() time: at module load there is no page yet.
@@ -960,8 +1058,9 @@ class Cookies {
         }
         return key ? jar[key] : jar;
     }
-    static remove(name) {
-        this.set(name, '', { expires: -1 });
+    // A cookie is only removed by a call carrying the domain it was written with. Issue 39.
+    static remove(name, attributes) {
+        this.set(name, '', this.assign({}, attributes, { expires: -1 }));
     }
 }
 /* harmony default export */ const cookies = (Cookies);
@@ -975,6 +1074,57 @@ class Cookies {
 const BASELINE_CONSENTS = (/* unused pure expression or super */ null && ({
     strictly_necessary: 'granted'
 }));
+/** How long a stored answer lasts when the site names none, in days. The one place it is written. */
+const DEFAULT_LIFETIME_DAYS = 90;
+/** Written and read back to ask the browser which domains it will take, then deleted. */
+const PROBE_COOKIE = 'consentio_probe';
+let probedHost = null;
+let probedDomain = '';
+/**
+ * The broadest Domain this browser accepts for the page it is on, or '' when there is none.
+ * Asked rather than computed: a label strip gets `co.uk` from `site.co.uk`, and doing it
+ * properly needs the public suffix list. Issue 39.
+ */
+function sharedDomain() {
+    const hostname = typeof location === 'undefined' ? '' : location.hostname;
+    if (typeof hostname !== 'string' || !hostname) {
+        return '';
+    }
+    if (hostname !== probedHost) {
+        probedHost = hostname;
+        probedDomain = probeSharedDomain(hostname);
+    }
+    return probedDomain;
+}
+function probeSharedDomain(hostname) {
+    // `localhost` and an IP address carry no shared domain, and probing one says so slowly.
+    if (hostname.indexOf('.') === -1 || hostname.indexOf(':') !== -1 || /^[\d.]+$/.test(hostname)) {
+        return '';
+    }
+    const labels = hostname.split('.');
+    for (let i = labels.length - 2; i >= 0; i--) {
+        const candidate = labels.slice(i).join('.');
+        // No expiry, so a probe the removal below somehow missed dies with the tab.
+        cookies.set(PROBE_COOKIE, '1', { domain: candidate });
+        const accepted = cookies.get(PROBE_COOKIE) === '1';
+        cookies.remove(PROBE_COOKIE, { domain: candidate });
+        if (accepted) {
+            return candidate;
+        }
+    }
+    return '';
+}
+function attributesFor(options) {
+    const lifetime = typeof options.lifetime === 'number' && options.lifetime > 0
+        ? options.lifetime
+        : DEFAULT_LIFETIME_DAYS;
+    const attributes = { expires: lifetime };
+    const domain = options.shared ? sharedDomain() : '';
+    if (domain) {
+        attributes.domain = domain;
+    }
+    return attributes;
+}
 /** The stored choice, or null when there is none to honour at this version. */
 function readConsents(cookieName, version) {
     const cookie = cookies.get(cookieName);
@@ -984,6 +1134,7 @@ function readConsents(cookieName, version) {
     try {
         const stored = JSON.parse(cookie);
         // A flat value written before the nesting has no `consents`, and reads as no answer.
+        // Nothing tests the date: a value written before it existed is still an answer. Issue 38.
         if (stored === null || typeof stored !== 'object' || stored.version !== version || !stored.consents) {
             return null;
         }
@@ -993,19 +1144,35 @@ function readConsents(cookieName, version) {
         return null;
     }
 }
-function writeConsents(cookieName, version, consents) {
-    cookies.set(cookieName, JSON.stringify({ version, consents }));
+/** Writes the answer. False means the browser did not keep it, which should not happen. Issue 39. */
+function writeConsents(cookieName, version, consents, options = {}) {
+    // Nothing reads the date yet, and a cookie that already exists cannot be given one. Issue 38.
+    const value = JSON.stringify({ version, consents, date: new Date().toISOString() });
+    // The other scope goes first, so flipping the setting cannot leave two cookies of one
+    // name for the browser to send together.
+    clearConsents(cookieName);
+    cookies.set(cookieName, value, attributesFor(options));
+    return cookies.get(cookieName) === value;
 }
+/** Both scopes, whichever is in use: a cookie is only removed at the Domain it was written at. Issue 39. */
 function clearConsents(cookieName) {
     cookies.remove(cookieName);
+    const domain = sharedDomain();
+    if (domain) {
+        cookies.remove(cookieName, { domain });
+    }
 }
 
 ;// ./src/lib/state.ts
 
 class ConsentioState {
-    constructor(cookieName, version, consents) {
+    constructor(cookieName, version, consents, cookie = {}, logger = null) {
         this.cookieName = cookieName;
         this.version = version;
+        // Kept because rejectAll has to know which categories stay granted.
+        this.categories = consents;
+        this.cookie = cookie;
+        this.logger = logger;
         // Null when there is nothing to honour at this version; the block below backfills it.
         this.consents = readConsents(cookieName, version);
         this.consentGiven = this.consents !== null;
@@ -1018,17 +1185,31 @@ class ConsentioState {
             });
         }
     }
+    persist() {
+        // A browser drops a cookie it will not take in silence, so the write is read back. Issue 39.
+        const stored = writeConsents(this.cookieName, this.version, this.consents, this.cookie);
+        this.consentGiven = true;
+        if (stored) {
+            return;
+        }
+        this.logger?.warn(`[Consentio] the answer did not read back - the browser did not keep the "${this.cookieName}" cookie. Nothing Consentio asks for should be refused, so look for something else on the page clearing cookies.`);
+    }
     updateState(newState) {
         this.consents = newState;
-        writeConsents(this.cookieName, this.version, this.consents);
-        this.consentGiven = true;
+        this.persist();
     }
     acceptAll() {
         Array.from(Object.keys(this.consents)).forEach((key) => {
             this.consents[key] = 'granted';
         });
-        writeConsents(this.cookieName, this.version, this.consents);
-        this.consentGiven = true;
+        this.persist();
+    }
+    rejectAll() {
+        const alwaysOn = this.categories.filter((category) => category.alwaysOn).map((category) => category.key);
+        Array.from(Object.keys(this.consents)).forEach((key) => {
+            this.consents[key] = alwaysOn.includes(key) ? 'granted' : 'denied';
+        });
+        this.persist();
     }
 }
 /* harmony default export */ const state = (ConsentioState);
@@ -1061,6 +1242,8 @@ class ConsentioLogger {
 }
 /* harmony default export */ const lib_logger = (ConsentioLogger);
 
+;// ./i18n/en.yaml
+const en_namespaceObject = /*#__PURE__*/JSON.parse('{"locale":"en","name":"English","texts":{"barTitle":"Cookie Policy","barDescription":"This site uses cookies. Until you choose, only the ones the site cannot run without are on. Accept them all, reject the rest, or open the settings to choose category by category.","buttonSettings":"Settings","buttonSave":"Save","buttonCancel":"Cancel","buttonAcceptAll":"Accept All","buttonRejectAll":"Reject All","modalTitle":"Cookie Settings","modalDescription":"Choose which cookies this site may use. Save stores your choice, Cancel leaves it as it was. Under the European general data protection regulation (GDPR) and the ePrivacy directive, a site must have your consent before it uses any cookie besides the strictly necessary ones. Expand a category to read what it covers.","alwaysOnLabel":"Always On","policyLinkLabel":"Privacy Policy","cookieTableHeaderName":"Cookie Name","cookieTableHeaderPurpose":"Cookie Purpose","cookieTableHeaderProvenance":"Provenance","cookieTableHeaderDuration":"Duration"},"consents":{"strictly_necessary":{"title":"Strictly Necessary Cookies","description":"These cookies are essential for you to browse the website and use its features, such as accessing secure areas of the site. Cookies that allow web shops to hold your items in your cart while you are shopping online are an example of strictly necessary cookies."},"preferences_functionality":{"title":"Preferences Cookies","description":"Preference cookies enable a website to remember information that changes the way the website behaves or looks, such as your preferred language or the region that you are in."},"statistics_performance":{"title":"Statistics Cookies","description":"Statistic cookies help website owners to understand how visitors interact with websites by collecting and reporting information anonymously."},"marketing_advertising":{"title":"Marketing Cookies","description":"Marketing cookies are used to track visitors across websites. The intention is to display ads that are relevant and engaging for the individual user and thereby more valuable for publishers and third party advertisers."}}}');
 ;// ./src/consentio.ts
 /**
  * Consentio - a frontend-only consent banner for static sites.
@@ -1079,115 +1262,230 @@ class ConsentioLogger {
 
 
 
+
+
+
+/** The behaviour keys a settings file may carry. Anything else in it is ignored. */
+const SETTINGS_KEYS = [
+    'cookieName', 'cookieLifetime', 'shareAcrossSubdomains', 'debug', 'version', 'consentRequired',
+    'policyUrl', 'hideFloatingButton'
+];
+/** The words a pack may carry, taken from en.yaml so there is one key list. */
+const TEXT_KEYS = Object.keys(en_namespaceObject.texts);
+/** The one category that is always on. The four are fixed, so this is derived, not supplied. */
+const ALWAYS_ON = 'strictly_necessary';
 class Consentio {
-    static version = "0.1.0";
-    static _defaultConfig = {
+    static version = "0.2.0";
+    /** Behaviour only. The words live in _defaultLanguage and nowhere else. */
+    static _defaultSettings = {
         cookieName: 'consentio',
+        cookieLifetime: (/* inlined export .DEFAULT_LIFETIME_DAYS */90),
+        shareAcrossSubdomains: false,
         debug: false,
         version: 1,
         consentRequired: false,
-        texts: {
-            barTitle: 'Cookie Policy',
-            barDescription: 'This site uses cookies to enhance your experience. We are assuming that you are okay with that, but you can change that by clicking at the settings button.',
-            buttonSettings: 'Settings',
-            buttonSave: 'Save',
-            buttonCancel: 'Cancel',
-            buttonAcceptAll: 'Accept All',
-            modalTitle: 'Cookie Settings',
-            modalDescription: `Here you can change your cookie preferences. Clicking on save will save the current settings, while clicking on cancel makes no change.
-			According to the European general data protection regulation (GDPR) and the ePrivacy directive, websites must receive the user’s consent before using any cookie 
-			besides the strictly necessary ones. You can expand each section to learn a bit more for each category. If you are interested to learn more, then follow the link.`,
-            alwaysOnLabel: 'Always On',
-            cookieTableHeaderName: 'Cookie Name',
-            cookieTableHeaderPurpose: 'Cookie Purpose',
-            cookieTableHeaderProvenance: 'Provenance',
-            cookieTableHeaderDuration: 'Duration'
-        },
-        consents: [
-            {
-                key: 'strictly_necessary',
-                title: 'Strictly Necessary Cookies',
-                description: `These cookies are essential for you to browse the website and use its features, such as accessing secure areas of the site. 
-				Cookies that allow web shops to hold your items in your cart while you are shopping online are an example of strictly necessary cookies.`,
-                alwaysOn: true,
-                defaultState: 'granted'
-            },
-            {
-                key: 'preferences_functionality',
-                title: 'Preferences Cookies',
-                description: `Preference cookies enable a website to remember information that changes the way the website behaves or looks, 
-				such as your preferred language or the region that you are in.`,
-                alwaysOn: false,
-                defaultState: 'denied'
-            },
-            {
-                key: 'statistics_performance',
-                title: 'Statistics Cookies',
-                description: `Statistic cookies help website owners to understand how visitors interact with websites by collecting and reporting information anonymously.`,
-                alwaysOn: false,
-                defaultState: 'denied'
-            },
-            {
-                key: 'marketing_advertising',
-                title: 'Marketing Cookies',
-                description: `Marketing cookies are used to track visitors across websites. The intention is to display ads that are relevant and engaging for the
-			 individual user and thereby more valuable for publishers and third party advertisers.`,
-                alwaysOn: false,
-                defaultState: 'denied'
-            }
-        ],
+        policyUrl: '',
+        hideFloatingButton: false,
+        consents: {
+            strictly_necessary: { defaultState: 'granted' },
+            preferences_functionality: { defaultState: 'denied' },
+            statistics_performance: { defaultState: 'denied' },
+            marketing_advertising: { defaultState: 'denied' }
+        }
     };
-    static Create(options = {}, cookies = []) {
+    /** i18n/en.yaml, as published. A pack a site supplies is this shape too - issue 34. */
+    static _defaultLanguage = en_namespaceObject;
+    static Create(settings = {}, language = {}, cookies = []) {
         // The loader's double-init guard reads this. Issue 9.
-        const instance = new Consentio(options, cookies, window.console);
+        const instance = new Consentio(settings, language, cookies, window.console);
         window.ConsentioInstance = instance;
         return instance;
     }
-    // The four categories are fixed, so this only ever changes copy. Issue 28.
-    static mergeConsents(defaultConsents, customConsents, logger = null) {
-        const consentMap = Object.fromEntries(defaultConsents.map(c => [c.key, c]));
-        customConsents.forEach(c => {
-            if (!Object.prototype.hasOwnProperty.call(consentMap, c.key)) {
-                // Warned, not thrown: the rest of the config is still good.
-                logger?.warn(`[Consentio] unknown consent category "${c.key}" ignored - the four categories are fixed`);
-                return;
-            }
-            // Field by field: a spread would carry through whatever else the site wrote.
-            const changes = {};
-            if (c.title !== undefined) {
-                changes.title = c.title;
-            }
-            if (c.description !== undefined) {
-                changes.description = c.description;
-            }
-            if (c.alwaysOn !== undefined) {
-                changes.alwaysOn = c.alwaysOn;
-            }
-            if (c.defaultState !== undefined) {
-                changes.defaultState = c.defaultState;
-            }
-            consentMap[c.key] = { ...consentMap[c.key], ...changes };
-        });
-        return Object.values(consentMap);
+    /**
+     * A merged object with `texts`, or with `consents` as an array, is 0.1.0's config.
+     * A settings file never has either.
+     */
+    static isLegacy(settings) {
+        if (!settings || typeof settings !== 'object') {
+            return false;
+        }
+        return 'texts' in settings || Array.isArray(settings.consents);
     }
-    constructor(options = {}, cookies = [], logger = null) {
+    /** 0.1.0's one object, taken apart into the two it is now. */
+    static splitLegacy(config) {
+        const settings = Consentio.copy({}, config, SETTINGS_KEYS);
+        const language = {};
+        if (config.texts) {
+            language.texts = config.texts;
+        }
+        if (!Array.isArray(config.consents)) {
+            return { settings, language };
+        }
+        for (const entry of config.consents) {
+            if (!entry || typeof entry.key !== 'string') {
+                continue;
+            }
+            // alwaysOn is read and dropped: it is derived from the key now.
+            const words = Consentio.copy({}, entry, ['title', 'description']);
+            if (Object.keys(words).length > 0) {
+                language.consents = { ...language.consents, [entry.key]: words };
+            }
+            if (entry.defaultState !== undefined) {
+                settings.consents = { ...settings.consents, [entry.key]: { defaultState: entry.defaultState } };
+            }
+        }
+        return { settings, language };
+    }
+    /** Field by field, and only the fields named: a spread carries through whatever else was written. */
+    static copy(target, source, keys) {
+        if (!source || typeof source !== 'object') {
+            return target;
+        }
+        const from = source;
+        for (const key of keys) {
+            if (from[key] !== undefined) {
+                target[key] = from[key];
+            }
+        }
+        return target;
+    }
+    // The four categories are fixed, so a settings file only ever changes a default state. Issue 28.
+    static mergeSettings(defaults, supplied = {}, logger = null) {
+        const merged = Consentio.copy({ ...defaults, consents: {} }, supplied, SETTINGS_KEYS);
+        for (const key of Object.keys(defaults.consents)) {
+            merged.consents[key] = { ...defaults.consents[key] };
+        }
+        for (const [key, value] of Object.entries(supplied.consents || {})) {
+            if (!Object.prototype.hasOwnProperty.call(merged.consents, key)) {
+                // Warned, not thrown: the rest of the settings are still good.
+                logger?.warn(`[Consentio] unknown consent category "${key}" ignored - the four categories are fixed`);
+                continue;
+            }
+            Consentio.copy(merged.consents[key], value, ['defaultState']);
+        }
+        return merged;
+    }
+    // A pack may change every string but no key: a fifth category would reach no Google signal.
+    static mergeLanguage(defaults, supplied = {}, logger = null) {
+        const merged = Consentio.copy({ ...defaults, texts: { ...defaults.texts }, consents: {} }, supplied, ['locale', 'name', 'policyUrl']);
+        for (const key of Object.keys(defaults.consents)) {
+            merged.consents[key] = { ...defaults.consents[key] };
+        }
+        // Blank is not absent: '' is a supplied value and renders as an empty string. Leaving
+        // the key out is what falls back to English.
+        Consentio.copy(merged.texts, supplied.texts, TEXT_KEYS);
+        for (const [key, value] of Object.entries(supplied.consents || {})) {
+            if (!Object.prototype.hasOwnProperty.call(merged.consents, key)) {
+                logger?.warn(`[Consentio] unknown consent category "${key}" ignored - the four categories are fixed`);
+                continue;
+            }
+            Consentio.copy(merged.consents[key], value, ['title', 'description']);
+        }
+        return merged;
+    }
+    /** Two language inputs, the second winning. A supplied pack beats a legacy config's texts. */
+    static overlayLanguage(base, over) {
+        return {
+            ...base,
+            ...over,
+            texts: { ...base.texts, ...over.texts },
+            consents: { ...base.consents, ...over.consents }
+        };
+    }
+    /** Settings and language into the one object the elements read. */
+    static resolve(settings, language, logger = null) {
+        // A language that names a policy page wins, blank included - '' is no link in this
+        // language. Leaving the key out is what falls back to the settings.
+        const address = language.policyUrl === undefined ? settings.policyUrl : language.policyUrl;
+        return {
+            cookieName: settings.cookieName,
+            cookieLifetime: settings.cookieLifetime,
+            shareAcrossSubdomains: settings.shareAcrossSubdomains,
+            debug: settings.debug,
+            version: settings.version,
+            consentRequired: settings.consentRequired,
+            hideFloatingButton: settings.hideFloatingButton,
+            // An address is behaviour, not a word, so it is checked rather than escaped - issue 37.
+            policyUrl: Consentio.policyUrl(address, logger),
+            locale: language.locale,
+            texts: language.texts,
+            consents: Object.keys(settings.consents).map((key) => ({
+                key,
+                title: language.consents[key]?.title ?? '',
+                description: language.consents[key]?.description ?? '',
+                alwaysOn: key === ALWAYS_ON,
+                defaultState: settings.consents[key].defaultState
+            }))
+        };
+    }
+    /**
+     * A settings file cannot name the cookie or the version, because the loader has already
+     * read the cookie by the time the file arrives. Said out loud rather than dropped. Issue 43.
+     */
+    static warnLoaderWins(supplied, fromLoader, logger = null) {
+        const attributes = [
+            ['cookieName', 'data-cookie-name'],
+            ['version', 'data-version']
+        ];
+        for (const [key, attribute] of attributes) {
+            if (supplied[key] !== undefined && supplied[key] !== fromLoader[key]) {
+                logger?.warn(`[Consentio] "${key}" in the settings file is ignored - the loader tag reads the cookie before the file arrives. Set ${attribute} on the tag instead.`);
+            }
+        }
+    }
+    static policyUrl(value, logger = null) {
+        const url = safeUrl(value);
+        if (!url && value) {
+            // Warned, not thrown: a banner with no link is better than no banner.
+            logger?.warn(`[Consentio] policy URL "${value}" ignored - it must start with http://, https:// or /`);
+        }
+        return url || '';
+    }
+    /**
+     * `new Consentio(settings, language, cookies, logger)`.
+     *
+     * 0.1.0's `(config, cookies, logger)` still works: an Array in argument two is that
+     * call, and a settings carrying `texts` is that config, split internally.
+     */
+    constructor(settings = {}, language = {}, cookies = [], logger = null) {
+        if (Array.isArray(language)) {
+            logger = cookies ?? null;
+            cookies = language;
+            language = {};
+        }
+        const rows = Array.isArray(cookies) ? cookies : [];
+        let settingsInput = settings;
+        let languageInput = language;
+        if (Consentio.isLegacy(settings)) {
+            const split = Consentio.splitLegacy(settings);
+            settingsInput = split.settings;
+            // A pack supplied as argument two beats the wording inside the old config.
+            languageInput = Consentio.overlayLanguage(split.language, languageInput);
+        }
+        this.settings = Consentio.mergeSettings(Consentio._defaultSettings, settingsInput, logger);
+        this.language = Consentio.mergeLanguage(Consentio._defaultLanguage, languageInput, logger);
         // The loader already resolved the cookie name and version off its own tag. Taking
         // them back is what stops the two halves reading different cookies.
         const fromLoader = typeof window === 'undefined' ? undefined : window.ConsentioDefault;
-        this.config = {
-            ...Consentio._defaultConfig,
-            ...options,
-            ...(fromLoader ? { cookieName: fromLoader.cookieName, version: fromLoader.version } : {}),
-            texts: {
-                ...Consentio._defaultConfig.texts,
-                ...(options.texts || {})
-            },
-            consents: options.consents
-                ? Consentio.mergeConsents(Consentio._defaultConfig.consents, options.consents, logger)
-                : Consentio._defaultConfig.consents
-        };
+        if (fromLoader) {
+            Consentio.warnLoaderWins(settingsInput, fromLoader, logger);
+            this.settings.cookieName = fromLoader.cookieName;
+            this.settings.version = fromLoader.version;
+            // Published only when the tag names them, so a settings file still gets to.
+            if (fromLoader.cookieLifetime !== undefined) {
+                this.settings.cookieLifetime = fromLoader.cookieLifetime;
+            }
+            if (fromLoader.shareAcrossSubdomains !== undefined) {
+                this.settings.shareAcrossSubdomains = fromLoader.shareAcrossSubdomains;
+            }
+        }
+        this.config = Consentio.resolve(this.settings, this.language, logger);
+        if (this.config.hideFloatingButton) {
+            // Warned, not thrown: the site may well have its own link, and nothing here can see it.
+            logger?.warn('[Consentio] hideFloatingButton is set - the site now owes the visitor a link of its own calling window.ConsentioInstance.openSettings()');
+        }
         this.cookies = [
-            ...cookies
+            ...rows
         ];
         this.logger = new lib_logger(logger, this.config.debug);
         this.state = null;
@@ -1196,8 +1494,10 @@ class Consentio {
         this.init();
     }
     init() {
-        this.state = new state(this.config.cookieName, this.config.version, this.config.consents);
+        this.state = new state(this.config.cookieName, this.config.version, this.config.consents, { lifetime: this.config.cookieLifetime, shared: this.config.shareAcrossSubdomains }, this.logger.logger);
         this.el = document.createElement("consentio-app");
+        // The pack says which language its words are in, so the banner can say so too.
+        this.el.setAttribute('lang', this.config.locale);
         this.el.config = this.config;
         this.el.state = this.state;
         this.el.cookies = this.cookies;
@@ -1213,6 +1513,21 @@ class Consentio {
         document.addEventListener('DOMContentLoaded', () => {
             document.body.appendChild(this.el);
         }, { once: true });
+    }
+    /**
+     * The page's supported way into the settings panel - a footer link, a cookie policy
+     * page. Issue 40.
+     *
+     * A call made before the banner is in the document is ignored rather than queued:
+     * the panel it would open has not been built yet, and the only caller that early is
+     * a script in `<head>`, which has no visitor to open it for.
+     */
+    openSettings() {
+        if (!this.el?.isRendered) {
+            this.logger?.log('[Consentio] openSettings ignored - the banner is not on the page yet', 'warn');
+            return;
+        }
+        this.el.openSettings();
     }
     defineCustomElements() {
         const elements = [

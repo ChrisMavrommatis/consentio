@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 # Fails if any commit in the push wrote dist/ and was not the release workflow.
 #
-# The freshness check next to this one catches a *stale* dist/. This catches one that is
-# hand-written and happens to be fresh, which freshness cannot see: the tree is correct,
-# so only the commit that made it tells the two apart. dist/ is the shipped product and
-# one process owns it.
+# A freshness check cannot see a hand-written dist/ that happens to be fresh; only the
+# commit that made it tells the two apart.
 #
 # Called by ci.yml with BEFORE, HEAD_SHA and BASE_SHA from the event, and by
 # test/scripts/dist-guard.test.mts against a throwaway repository.

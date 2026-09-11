@@ -1,18 +1,11 @@
 name: Release
 
-# A dispatch is listed against main, because the tag does not exist until the release job.
-# Without this the Actions list shows the commit message and nothing says which release a
-# run was - or whether it was the dry run.
+# Without this the Actions list shows the commit message, not which release a run was.
 run-name: Release v${{ inputs.version }}${{ inputs.dry_run && ' (dry run)' || '' }}
 
-# One dispatch does the whole thing, including making the tag.
-#
-# It cannot be a tag trigger. jsDelivr serves the git tree at the tag, so
-# consentio@0.1.0/dist/consentio.min.js is whatever dist/ held in the commit the tag
-# points at. A workflow firing after the tag exists cannot change that commit - it would
-# publish whatever happened to be sitting there, which is exactly how 0.0.4 shipped a
-# bundle no source produced. So this builds and commits dist/ first, then tags that
-# commit.
+# One dispatch does the whole thing, including making the tag. It cannot be a tag trigger:
+# jsDelivr serves the git tree at the tag, so dist/ has to be committed before the tag
+# exists.
 #
 # Before dispatching: rename `## [Unreleased]` in CHANGELOG.md to the version, open a
 # fresh empty Unreleased above it, bump package.json, and push both to main.
@@ -30,12 +23,10 @@ on:
         default: true
 
 jobs:
-  # Seconds, and it runs alone. A missing changelog section and an already-used version
-  # are both cheap to find, and a tag is permanent - there is no fixing one afterwards.
+  # Cheap checks, alone and first: a tag is permanent and there is no fixing one afterwards.
   gate:
     name: gate
     runs-on: ubuntu-latest
-    # Reads only. The write is on `release` below, which is the job that commits, tags and publishes.
     permissions:
       contents: read
     steps:
@@ -62,11 +53,8 @@ jobs:
           printf '%s' "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)*$' \
             || { echo "'$VERSION' is not a version. Write 0.1.0, not v0.1.0."; exit 1; }
 
-      # The bundle carries package.json's version. A tag that says something else is a
-      # permanent lie, and the CDN serves it forever.
-      # Through the environment, like every other step here. Interpolating the input
-      # straight into the shell lets whoever dispatches choose what runs; the semver check
-      # above happens to reject those characters today, which is step order, not a design.
+      # Through the environment, like every other step here. An input interpolated straight
+      # into a run: block lets whoever dispatches choose what runs.
       - name: package.json agrees
         env:
           VERSION: ${{ inputs.version }}
@@ -77,9 +65,7 @@ jobs:
           VERSION: ${{ inputs.version }}
         run: node scripts/changelog.mjs check "$VERSION"
 
-      # 0.0.1 to 0.0.4 are already on origin. Re-releasing a version silently is worse
-      # than not releasing at all. Check the remote too - a tag can be there and not in
-      # the runner's checkout.
+      # The remote too: a tag can be on origin and not in the runner's checkout.
       - name: The version is not already tagged
         env:
           VERSION: ${{ inputs.version }}
@@ -101,7 +87,6 @@ jobs:
     name: release
     needs: gate
     runs-on: ubuntu-latest
-    # Commits dist/ to main, pushes a tag and publishes the release. The only job that needs the write.
     permissions:
       contents: write
     steps:
@@ -164,8 +149,7 @@ jobs:
           git tag -a "$VERSION" -m "Consentio $VERSION"
           git push origin "refs/tags/$VERSION"
 
-      # The web UI cannot make a bare tag, so a release may already exist for one made
-      # that way. Edit it if it does, create it if it does not.
+      # The web UI cannot make a bare tag, so a release may already exist for one made that way.
       - name: Publish the release
         if: ${{ !inputs.dry_run }}
         env:
@@ -173,17 +157,17 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          # The templates and the language packs are attached too: both are things a
-          # person downloads and pastes, and a release asset is a stable link to one.
+          # Webpack moves each /*! banner into a .LICENSE.txt and leaves a pointer to it
+          # behind, so a bundle downloaded without one points at a file that is not there.
           files=(
             dist/consentio.js dist/consentio.min.js
             dist/consentio-loader.js dist/consentio-loader.min.js
+            dist/consentio.min.js.LICENSE.txt dist/consentio-loader.min.js.LICENSE.txt
             dist/consentio-tag.tpl dist/consentio-tag-cookies.tpl
             dist/i18n/en.json dist/i18n/el.json
           )
-          # The title carries the v and the tag never does. jsDelivr serves the git tree at
-          # the tag, so consentio@0.2.0 is the URL a template pins - a tag named v0.2.0
-          # would 404 every container that imported one.
+          # The title carries the v and the tag never does: a template pins consentio@0.2.0,
+          # so a tag named v0.2.0 would 404 every container that imported one.
           if gh release view "$VERSION" >/dev/null 2>&1; then
             gh release edit "$VERSION" --title "v$VERSION" --notes-file "$RUNNER_TEMP/notes.md"
             gh release upload "$VERSION" "${files[@]}" --clobber

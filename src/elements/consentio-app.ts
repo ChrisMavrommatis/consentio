@@ -200,7 +200,6 @@ class ConsentioAppElement extends HTMLElement {
 		this.modal.logger = this.logger;
 
 
-		// A site with its own settings link hides this and owes the visitor that link - issue 40.
 		if (this.config.hideFloatingButton) {
 			this.floatingButton?.remove();
 			this.floatingButton = null;
@@ -300,7 +299,6 @@ class ConsentioAppElement extends HTMLElement {
 		this.answered();
 	}
 
-	// Whichever button gave the answer, storing it and getting out of the way is the same.
 	answered(): void {
 		this.consentItems.forEach((consentItem) => {
 			consentItem.updateState(this.state.consents[consentItem.id]);

@@ -2,10 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const { parse } = require('yaml');
 
-// Where each target writes, one per verb: build: -> build/, site: -> website/,
-// publish: -> dist/. `build` is the default, so nothing local reaches dist/ or the
-// published site by accident. build/ mirrors dist/, so what a release ships can be looked
-// at without writing dist/.
+// `build` is the default, so nothing local reaches dist/ or the published site by accident.
 const DESTINATIONS = {
 	build: 'build',
 	website: 'website/js',
@@ -23,8 +20,7 @@ module.exports = (env, argv) => {
 	}
 	console.log(`Environment Build: ${target} -> ${dest}`);
 
-	// The one place the version enters the bundle. src/ carries no literal; the test
-	// harness does the same substitution in test/resolve.mjs.
+	// The one place the version enters the bundle; src/ carries no literal.
 	const version = require('./package.json').version;
 	const define = () => new webpack.DefinePlugin({
 		__CONSENTIO_VERSION__: JSON.stringify(version)

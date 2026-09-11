@@ -11,7 +11,7 @@ release body, so write these entries for the people using Consentio, not for the
 
 ## [Unreleased]
 
-## [0.2.0]
+## [0.2.0] - 2026-09-10
 
 ### ✨ Added
 

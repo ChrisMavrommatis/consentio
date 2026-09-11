@@ -1,0 +1,18 @@
+---
+layout: null
+permalink: /sitemap.xml
+sitemap:
+  exclude: true
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{%- for pg in site.pages -%}
+{%- assign tail = pg.url | slice: -1 -%}
+{%- if tail == "/" and pg.sitemap.exclude != true %}
+	<url>
+		<loc>{{ pg.url | absolute_url }}</loc>
+		<lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
+	</url>
+{%- endif -%}
+{%- endfor %}
+</urlset>

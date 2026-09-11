@@ -6,6 +6,11 @@ import { parse } from 'yaml';
 const ROOT = new URL('../', import.meta.url);
 const TEMPLATES = ['consentio-tag', 'consentio-tag-cookies'];
 
+// The CDN pin. `sandbox.js` writes `consentio@__VERSION__` and this fills it in from
+// package.json, so the .tpl a release attaches loads that release's bundle.
+const VERSION = JSON.parse(readFileSync(new URL('package.json', ROOT), 'utf8')).version;
+const PIN = /consentio@(?:__VERSION__|\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?)/g;
+
 // A .tpl is these seven sections in this order, and the order is Google's, not ours.
 // `array` means every file under the directory, concatenated in filename order.
 const SECTIONS = [
@@ -56,8 +61,7 @@ function serialise(value) {
 
 // ## English comes from i18n/en.yaml ##
 
-// A pre-filled field carries the same words the banner falls back to, so it is a reference
-// rather than a copy: {"$text": "texts.barTitle"}.
+// A pre-filled field holds {"$text": "texts.barTitle"} rather than a copy of the words.
 function resolve(node) {
 	if (Array.isArray(node)) { return node.map(resolve); }
 	if (node && typeof node === 'object') {
@@ -102,7 +106,8 @@ function compose(template) {
 	const src = partsDir(template);
 	return assemble(SECTIONS.map(([, file, kind]) => {
 		if (kind === 'text') {
-			return readFileSync(SHARED[file] ?? new URL(file, src), 'utf8').replace(/\n$/, '');
+			const body = readFileSync(SHARED[file] ?? new URL(file, src), 'utf8').replace(/\n$/, '');
+			return body.replace(PIN, `consentio@${VERSION}`);
 		}
 		if (kind === 'json') {
 			return serialise(resolve(JSON.parse(readFileSync(new URL(file, src), 'utf8'))));
@@ -121,7 +126,11 @@ function decompose(from, template) {
 
 	SECTIONS.forEach(([, file, kind], i) => {
 		if (kind === 'text') {
-			if (!SHARED[file]) { writeFileSync(new URL(file, src), `${bodies[i]}\n`); }
+			// Back to the placeholder, so a decompose of a released .tpl does not freeze
+			// that release's version into the source it came from.
+			if (!SHARED[file]) {
+				writeFileSync(new URL(file, src), `${bodies[i].replace(PIN, 'consentio@__VERSION__')}\n`);
+			}
 			return;
 		}
 		if (kind === 'json') {
@@ -143,8 +152,6 @@ function decompose(from, template) {
 const DECOMPOSE = process.argv.indexOf('--decompose');
 
 if (DECOMPOSE !== -1) {
-	// Takes the file the tag manager's editor exported. There is no committed .tpl to
-	// split, because the .tpl is built.
 	const [from, into] = process.argv.slice(DECOMPOSE + 1);
 	if (!from || !into) {
 		process.stderr.write(`usage: gtm.mjs --decompose <exported.tpl> <${TEMPLATES.join('|')}>\n`);
@@ -162,8 +169,7 @@ if (DECOMPOSE !== -1) {
 	for (const template of TEMPLATES) { compose(template); }
 	process.stdout.write(`gtm: ${TEMPLATES.length} templates compose\n`);
 } else {
-	// build/ mirrors dist/: one file per template, named after the template it is, so what
-	// a release ships can be looked at without writing dist/.
+	// build/ mirrors dist/, so what a release ships can be looked at without writing dist/.
 	const dest = process.argv.includes('--dist') ? 'dist' : 'build';
 	mkdirSync(new URL(`${dest}/`, ROOT), { recursive: true });
 

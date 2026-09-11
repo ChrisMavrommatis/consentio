@@ -112,8 +112,7 @@
 	margin-left: auto;
 }
 
-// One breakpoint. Below it the sidebar becomes a disclosure above the content, which is the
-// only layout change worth having on a seven-page site.
+// One breakpoint. Below it the sidebar becomes a disclosure above the content.
 @media (max-width: 60rem) {
 	.shell {
 		grid-template-columns: minmax(0, 1fr);

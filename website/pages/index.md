@@ -56,7 +56,7 @@ actually stop.
 | What you add | one `<script>` tag, plus two files you host | one template, on one trigger |
 | Where your settings live | two small files you edit by hand | fields you fill in inside Tag Manager |
 | What it can stop | anything on the page | only what Tag Manager loads |
-| What it costs | the page waits for one small file — 4.6 KB, about 2 KB compressed | nothing extra on the page, but read the warning below |
+| What it costs | the page waits for one small file — 4.9 KB, about 2 KB compressed | nothing extra on the page, but read the warning below |
 
 If you are not sure, **put it in your HTML**. It is the one that covers everything.
 

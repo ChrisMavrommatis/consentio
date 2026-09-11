@@ -22,10 +22,6 @@ test('domSanitize escapes angle brackets and ampersands', () => {
 });
 
 // --- defect 29 -------------------------------------------------------------
-//
-// A text node escapes &, < and > and nothing else, so a value carrying a quote could close
-// the attribute it was substituted into. Both quotes are escaped, which is what lets a
-// placeholder sit inside an attribute value at all.
 
 test('issue 29 - domSanitize escapes both quotes', () => {
 	assert.equal(TemplateRenderer.domSanitize(`a "b" and 'c'`), 'a &quot;b&quot; and &#39;c&#39;');

@@ -38,7 +38,7 @@ review what moved.
 
 ```html
 <!-- an exact tag -->
-<script src="https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@0.1.0/dist/consentio-loader.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@0.2.0/dist/consentio-loader.min.js"></script>
 ```
 
 The same applies to the tag manager template: it pins the banner version in its own CDN URL, so the

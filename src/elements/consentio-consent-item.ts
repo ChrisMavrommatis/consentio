@@ -1,10 +1,7 @@
 import { isHidden, showElement, hideElement } from '../lib/dom.js';
 import type { ConsentioTexts, ConsentState, CookieTableRow } from '../types.js';
 
-/**
- * The four of the banner's texts this element reads. A view of ConsentioTexts rather than
- * a type of its own: two names for the same four strings is what defect 34's cleanup removed.
- */
+/** Two names for the same four strings is what defect 34's cleanup removed. */
 type TableHeaderTexts = Pick<ConsentioTexts,
 	'cookieTableHeaderName' | 'cookieTableHeaderPurpose' | 'cookieTableHeaderProvenance' | 'cookieTableHeaderDuration'>;
 

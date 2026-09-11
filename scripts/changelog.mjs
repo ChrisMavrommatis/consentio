@@ -1,10 +1,7 @@
-// Reads CHANGELOG.md. `check` gates a release before anything is built; `extract` prints
-// the body that becomes the release notes; `date` stamps the release date at commit time.
 // No dependencies - the release workflow runs this on a bare `npm ci`.
 //
-// Why the section matcher is fussier than it looks: a released section carries its own
-// `##` subheadings once `Unreleased` is promoted, so stopping at the next `## ` would cut
-// the notes off at their first subheading. Only a *version* heading ends a section.
+// A released section carries its own `##` subheadings, so only a version heading ends a
+// section. Stopping at the next `## ` would cut the notes off at their first subheading.
 
 import { readFileSync, writeFileSync } from 'node:fs';
 
@@ -103,7 +100,7 @@ function body(section) {
 
 // In the file a release is `##` and its own sections are `###`, under one `# Changelog`.
 // A release body has no such parent, so lift the shallowest heading to `##` and move the
-// rest by the same amount - relative depth survives and nothing has to be recorded.
+// rest by the same amount.
 function promote({ slice, insideSlice }) {
 	let shallowest = 7;
 	for (const [index, line] of slice.entries()) {
