@@ -6,7 +6,7 @@ A Google Tag Manager variable holding the cookie table the
 Create one, add a row per cookie your site sets, and select it in the **Consentio Tag**'s *Cookies Variable*
 field. Leave it at *None* and the banner shows no table.
 
-Full documentation: <https://chrismavrommatis.github.io/consentio/configuration/>
+Full documentation: <https://chrismavrommatis.github.io/consentio/cookies/>
 
 ## ⚙️ A row {#a-row}
 

@@ -35,16 +35,14 @@ file with an unminified one, and nothing loads.
 ```
 
 `/data/consentio-cookies.json` — the cookies you actually set, listed for visitors who open the settings.
-An empty array `[]` is a valid start.
+An empty array `[]` is a valid start; [the cookie table]({{ '/cookies/' | relative_url }}) is what goes
+in a row.
 
 `/data/en.json` — the words, and **optional**. Leave it out and the banner uses its built-in English. To
-change the wording or to run in another language, download a language pack from a
-[release]({{ site.repository_url }}/releases/latest), put it beside the other two, and point
-`data-language-url` at it. To run a published pack as it is, `data-language="el"` on the tag fetches it
-from the CDN at the same version as the script, and there is no file to host. If the language file does
-not load, the banner keeps its built-in English and says so on the console.
+change the wording or run in another language, put a [language pack]({{ '/language/' | relative_url }})
+beside the other two and point `data-language-url` at it.
 
-[Settings]({{ '/configuration/' | relative_url }}#configuration) lists every option in all three files.
+[Settings]({{ '/configuration/' | relative_url }}) lists every key in the settings file.
 
 **3. Paste the tag into `<head>`, above everything else.**
 
@@ -159,44 +157,7 @@ and after, and what it cannot reach.
 
 ## ⚙️ Everything you can put on the tag {#the-loader-tags-data-attributes}
 
-These go on the tag itself, because the script needs them before it can fetch anything.
-
-| Attribute | Required | Default | What it does |
-|---|---|---|---|
-| `data-consentio-loader` | **yes** | — | Marks the tag so the script can find itself. Without it you get `script not found` on the console and nothing happens. Put it on exactly one tag |
-| `data-settings-url` | no | none | Where your settings file is. Leave it out and the built-in defaults are used |
-| `data-language-url` | no | none | Where your language file is — a published language pack, or one of your own. Leave it out and the banner uses its built-in English. If the file does not load, the banner keeps its English and says so on the console |
-| `data-language` | no | none | A language code, `el`. The published pack for it is fetched from the CDN at the same version as this script. `data-language-url` wins if both are set, and the console says so |
-| `data-cookies-url` | no | none | Where your cookie list is. Leave it out and the tables in the settings panel are empty |
-| `data-config-url` | no | none | **Deprecated, removed in 1.0.0.** The older single settings file, carrying `texts` and a `consents` array. Still read, with a console warning. Use `data-settings-url` and `data-language-url` |
-| `data-cookie-name` | no | `consentio` | Name of the cookie the answer is stored in |
-| `data-cookie-lifetime` | no | `90` | Days an answer is kept before the visitor is asked again. See [How long it lasts]({{ '/cookie/' | relative_url }}#how-long-it-lasts) |
-| `data-share-across-subdomains` | no | `false` | `"true"` stores one answer for every hostname your site answers on, instead of one each. There is no domain to type — Consentio works out the one they share. See [One answer across subdomains]({{ '/cookie/' | relative_url }}#one-answer-across-subdomains) |
-| `data-version` | no | `1` | Which stored answers are still valid. See [Versioning stored consent]({{ '/versioning/' | relative_url }}#versioning-stored-consent) |
-| `data-debug` | no | `false` | `"true"` prints what it is doing to the console. Errors and the async/defer warning are always printed |
-| `data-wait-for-update` | no | `500` | Milliseconds tags should wait for an answer before giving up. Only sent to a visitor who has not answered yet |
-
-**Four of these can also be set in the settings file, and the tag wins.** If you put `cookieName`,
-`version`, `cookieLifetime` or `shareAcrossSubdomains` in both places, the value on the tag is the one used —
-everywhere, including inside the banner. You cannot end up with the tag reading one cookie and the banner
-writing another. The settings-file versions exist for the Tag Manager route, which has no tag.
-
-**`cookieName` and `version` are decided by the tag even when it does not name them**, because the script
-has to read the cookie before any file has been fetched: leave them off the tag and you get `consentio` and
-`1`, not what the settings file says. **Putting either in a settings file on this route does nothing at
-all**, and Consentio says so on the console rather than leaving you to find it. The other two are not read
-that early, so leaving them off the tag is what lets the settings file name them.
-
-## 🔍 What you can check in the console {#what-the-loader-leaves-behind}
-
-Three things end up on `window`. You do not need them to run the banner — they are there for when you are
-working out what happened.
-
-| Type this | You get |
-|---|---|
-| `window.ConsentioDefault` | What the first message to Google was built from: the cookie name, the version, the answers, and `consentGiven` — which is `false` when the visitor has not answered yet |
-| `window.ConsentioInstance` | The banner itself. While this exists, the script will not start a second one |
-| `window.Consentio` | The code that builds a banner, once the main file has loaded |
-
-[Troubleshooting]({{ '/troubleshooting/' | relative_url }}#how-to-check-what-actually-happened) uses all
-three.
+The tag in step 3 names two files. It can also name the language pack, the cookie's name and lifetime, the
+version, and whether to print what it is doing. [The loader tag]({{ '/loader/' | relative_url }}) lists
+every attribute, which of them win over the settings file, and the three things it leaves on `window` for
+when you are working out what happened.

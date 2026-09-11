@@ -115,6 +115,6 @@ container.
 
 ## 🔍 What ends up on `window` {#what-ends-up-on-window}
 
-Three globals, listed on the [install page]({{ '/install/direct/' | relative_url }}#what-the-loader-leaves-behind).
+Three globals, listed on [the loader tag]({{ '/loader/' | relative_url }}#what-it-leaves-on-window).
 `window.ConsentioDefault` is the useful one when you are checking behaviour: it is set by the loader and by
 nothing else, so its absence tells you a page is running the Tag Manager route.

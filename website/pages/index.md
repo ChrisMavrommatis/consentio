@@ -61,24 +61,46 @@ the console. An older template does not, and you get two banners that do not kno
 
 ## 📂 The rest of the documentation {#the-rest-of-the-documentation}
 
-Start at the top. The reference pages come last — read them when you need them, not before.
+Start at the top. The reference is split by route: read your route's pages, then the ones both share.
+
+**Start here, and set it up**
 
 | Page | What is in it |
 |---|---|
+| [How it works]({{ '/how-it-works/' | relative_url }}) | load order, what runs when, and why the script cannot wait |
+| [Try it on this page]({{ '/try-it/' | relative_url }}) | the live banner, and a button that clears your answer so it shows again |
+| [Try it through a tag manager]({{ '/try-it/tag-manager/' | relative_url }}) | the one page here with no script tag, for checking that both ways agree about the same visitor |
 | [Choose a route]({{ '/routes/' | relative_url }}) | the two ways to install, side by side |
 | [Put it in your HTML]({{ '/install/direct/' | relative_url }}) | four steps, then the detail |
 | [Use Google Tag Manager]({{ '/install/tag-manager/' | relative_url }}) | four steps, then the detail |
 | [Hold a script until consent]({{ '/hold-scripts/' | relative_url }}) | one attribute on a script tag, and it waits for the visitor's answer |
-| [Try it on this page]({{ '/try-it/' | relative_url }}) | the live banner, and a button that clears your answer so it shows again |
 | [Troubleshooting]({{ '/troubleshooting/' | relative_url }}) | symptom, cause, fix |
-| [Settings]({{ '/configuration/' | relative_url }}) | every option, with defaults and a full example |
-| [How it works]({{ '/how-it-works/' | relative_url }}) | load order, what runs when, and why the script cannot wait |
+
+**Reference: HTML route**
+
+| Page | What is in it |
+|---|---|
+| [The loader tag]({{ '/loader/' | relative_url }}) | every attribute on the tag, which ones win, what it leaves on `window` |
+| [The settings file]({{ '/configuration/' | relative_url }}) | every key, the four categories, the older single file |
+
+**Reference: Tag Manager**
+
+| Page | What is in it |
+|---|---|
+| [The tag]({{ '/tag/' | relative_url }}) | every field on the template, the four text sources, the Cookies variable, the permissions |
+| [Language packs to paste]({{ '/language/tag-manager/' | relative_url }}) | the published packs as variables to paste into a container |
+
+**Reference: both routes**
+
+| Page | What is in it |
+|---|---|
+| [The language pack]({{ '/language/' | relative_url }}) | every word the banner shows, and how to load a published pack or your own |
+| [The cookie table]({{ '/cookies/' | relative_url }}) | the file that lists the cookies your site sets, one row each |
+| [The cookie catalogue]({{ '/cookies/catalogue/' | relative_url }}) | rows for the cookies common tools set, to copy into your own table |
 | [The cookie]({{ '/cookie/' | relative_url }}) | what it stores, how long it lasts, and what to put in your cookie policy |
-| [Cookie catalogue]({{ '/cookies/catalogue/' | relative_url }}) | rows for the cookies common tools set, to copy into your own table |
 | [What it tells Google]({{ '/datalayer/' | relative_url }}) | exactly what Consentio sends, and how to check it arrived |
-| [Asking everyone again]({{ '/versioning/' | relative_url }}) | how to throw away every stored answer, and when that is the right thing |
 | [Events]({{ '/events/' | relative_url }}) | how to run your own code when someone answers |
-| [Try it through a tag manager]({{ '/try-it/tag-manager/' | relative_url }}) | the one page here with no script tag, for checking that both ways agree about the same visitor |
+| [Asking everyone again]({{ '/versioning/' | relative_url }}) | how to throw away every stored answer, and when that is the right thing |
 
 ## 🏁 Versions {#release-note}
 

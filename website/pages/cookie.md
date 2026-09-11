@@ -135,14 +135,7 @@ that is not, and two halves of the same site quietly disagreeing about the same 
 
 ## 📋 The other cookies your site sets {#the-other-cookies-your-site-sets}
 
-This page is about the one cookie Consentio writes. The rest are yours, and two things on this site help
-with them.
-
-**The cookie table.** The settings panel lists every cookie you declare, one row each, in
-[`consentio-cookies.json`]({{ '/configuration/' | relative_url }}#the-cookies-json) on the HTML route or
-the Cookies variable on the Tag Manager route. [The cookie catalogue]({{ '/cookies/catalogue/' | relative_url }})
-has rows for the tools a site commonly runs, already in that shape, to copy and check against the vendor.
-
-**Holding the script that sets them.** Declaring a cookie does not stop the script that writes it. On the
-HTML route, mark that script with `type="text/plain"` and the category it needs, and it runs only once
-the visitor grants that category — [Hold a script until consent]({{ '/hold-scripts/' | relative_url }}).
+This page is about the one cookie Consentio writes. The rest are yours, and they go in
+[the cookie table]({{ '/cookies/' | relative_url }}) — one row each, shown in the settings panel.
+[The cookie catalogue]({{ '/cookies/catalogue/' | relative_url }}) has rows for the tools a site commonly
+runs, already in that shape.
