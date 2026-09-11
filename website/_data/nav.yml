@@ -11,6 +11,8 @@
       url: /try-it/tag-manager/
 - title: Set it up
   items:
+    - title: Choose a route
+      url: /routes/
     - title: Put it in your HTML
       url: /install/direct/
     - title: Use Google Tag Manager
@@ -27,6 +29,8 @@
       url: /how-it-works/
     - title: The cookie
       url: /cookie/
+    - title: Cookie catalogue
+      url: /cookies/catalogue/
     - title: What it tells Google
       url: /datalayer/
     - title: Asking everyone again

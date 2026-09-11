@@ -7,13 +7,13 @@ description: Add Consentio as a Tag Manager custom template. Four steps, then wh
 
 You are adding **one template to your container**, on one trigger. Nothing is pasted into your HTML and
 nothing is hosted by you. There is a second, optional template for your cookie table.
+[Choose a route]({{ '/routes/' | relative_url }}) puts this route beside the other one.
 
 <div class="callout callout--warn" markdown="1">
-**Check one thing before you start.** This route can only stop things Tag Manager loads. If anything on your
-site is pasted straight into a page — a video embed, a chat widget, a tracking pixel in a footer — it will
-keep running whatever the visitor answers, and the banner will look like it is working.
-[What Tag Manager cannot cover]({{ '/' | relative_url }}#the-tag-manager-routes-catch-in-the-open) has the
-detail. If in doubt, [put it in your HTML]({{ '/install/direct/' | relative_url }}) instead.
+**Check one thing before you start.** This route covers what Tag Manager loads. If anything on your site is
+pasted straight into a page — a video embed, a chat widget, a tracking pixel in a footer — it will keep
+running whatever the visitor answers, and the banner will look like it is working. The
+[HTML route]({{ '/install/direct/' | relative_url }}) can hold a script like that back; this one cannot.
 </div>
 
 ## 🚀 Four steps {#four-steps}
@@ -37,10 +37,12 @@ only reason the answer arrives in time.
 
 The one that matters is **Text source**. Leave it at *Built-in English* and the banner uses its own wording.
 Set it to *Custom* and every string appears in a box, already filled in with that English — change what you
-want, or paste a translation over it. Set it to *From a variable* and the wording comes from a **Language
-pack variable** — any Tag Manager variable holding a language pack. A pack downloaded from a release
-(`en.json`, `el.json`) goes in unedited, and a Lookup Table keyed on the page's language is how you switch
-wording by language.
+want, or paste a translation over it. Set it to *A published language pack* and pick a language: the tag
+loads that pack from the CDN at the same version as the banner, so the words move with each release. If the
+pack does not load, the banner keeps its built-in English and says so on the console. Set it to *From a
+variable* and the wording comes from a **Language pack variable** — any Tag Manager variable holding a
+language pack, which is how you edit the words yourself or switch them by page. [A language pack to
+paste](#a-language-pack-to-paste) below is one ready to go.
 
 For the cookie table, download `consentio-tag-cookies.tpl` from the same release and import it the same way -
 under **Variable Templates** rather than Tag Templates. Make a variable from it, fill in your rows, and pick
@@ -48,6 +50,45 @@ it here. [Settings]({{ '/configuration/' | relative_url }}#configuration) lists 
 
 **4. Publish, then move everything else into the container.** Anything still pasted into a page is not
 covered by the banner. On this route that clean-up is most of the work.
+
+## 🌍 A language pack to paste {#a-language-pack-to-paste}
+
+For *From a variable*, make a **Custom JavaScript** variable in Tag Manager — **Variables → User-Defined →
+New → Custom JavaScript** — and paste one of these in as its whole value. Three things about it that Tag
+Manager does not say:
+
+- it is a **Custom JavaScript** variable, not a Constant or a Data Layer variable
+- it is a function that **returns** the pack — the `function () { return ...; }` around the words is what
+  Tag Manager expects, so keep it
+- **the words are edited in place.** Change any string between the quotes and save the variable. Leave a key
+  out and the banner uses its built-in English for that one
+
+Then pick the variable as the tag's **Language pack variable**. A Lookup Table keyed on the page's language,
+with one of these variables per row, is how you switch wording by language.
+
+{% consentio_pack_snippets %}
+
+{% raw %}
+<script>
+	(function () {
+		var buttons = document.querySelectorAll('.snippet__copy');
+		for (var i = 0; i < buttons.length; i++) {
+			buttons[i].addEventListener('click', function (event) {
+				var button = event.currentTarget;
+				var code = button.closest('.snippet').querySelector('pre').textContent;
+				if (!navigator.clipboard) {
+					button.textContent = 'Select the text and copy it';
+					return;
+				}
+				navigator.clipboard.writeText(code).then(function () {
+					button.textContent = 'Copied';
+					setTimeout(function () { button.textContent = 'Copy'; }, 1500);
+				});
+			});
+		}
+	})();
+</script>
+{% endraw %}
 
 ## 🧩 What the template does {#what-the-template-does}
 
@@ -58,7 +99,12 @@ Two things, in this order, every time a page loads:
 2. **It loads the banner** and hands it whatever wording you chose.
 
 **It does not use `consentio-loader.min.js` and it does not fetch settings files.** There are none on this
-route; the fields are your settings.
+route; the fields are your settings. The one thing it loads besides the banner is a published language
+pack, when *Text source* asks for one.
+
+**If the script tag from the other route is on the page, the tag stands down** and prints one line on the
+console saying so. That is what stops a page carrying both routes from showing two banners — with the
+template from this release, not an older one.
 
 The order is the whole point, and it is not something you can change from the Tag Manager screen — it is why
 the tag has to be on the Consent Initialization trigger. [How it works]({{ '/how-it-works/' | relative_url }}#the-sequence-in-tag-manager)

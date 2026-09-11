@@ -12,7 +12,7 @@ panel. On the Tag Manager route there are no files — the same options are fiel
 | File | On the tag | Holds |
 |---|---|---|
 | settings | `data-settings-url` | behaviour: the cookie, the version, whether an answer is required |
-| language | `data-language-url` | the words. A [language pack](https://github.com/ChrisMavrommatis/consentio/releases/latest) as published, or one of your own |
+| language | `data-language-url`, or `data-language` for a published pack at the CDN | the words. A [language pack](https://github.com/ChrisMavrommatis/consentio/releases/latest) as published, or one of your own |
 | cookies | `data-cookies-url` | the cookie table, one row per cookie your site sets |
 
 **Words and behaviour are separate files because they change on different days, and often by different
@@ -96,7 +96,14 @@ default — is untouched and keeps working.
 | `consents` | object | Keyed by category, each with a `title` and a `description` |
 
 **A released pack is a valid language file exactly as downloaded.** `en.json` and `el.json` are attached to
-every release; point `data-language-url` at one, or copy it and edit the strings.
+every release; point `data-language-url` at one, or copy it and edit the strings. To run one unedited
+without hosting it, put `data-language="el"` on the tag and the pack is fetched from the CDN at the same
+version as the script. On the Tag Manager route the same thing is *Text source* set to *A published
+language pack*.
+
+**A language file that does not load costs the language, not the banner.** The banner appears in its
+built-in English and the console names the file that failed. The other two files are not forgiven that
+way: a settings or cookies file that does not load stops the banner with an error.
 
 ## 💬 `texts` {#texts}
 
@@ -167,12 +174,13 @@ object and a `consents` **array**:
 }
 ```
 
-**That still works and is not going away in this version.** `data-config-url` is still read, and a file in
-that shape is taken apart into a settings and a language for you. `alwaysOn` in such a file is ignored —
+**That still works, and it is deprecated: it is removed in 1.0.0.** `data-config-url` is still read, a file
+in that shape is taken apart into a settings and a language for you, and the console says once that the
+attribute is going. `alwaysOn` in such a file is ignored —
 only `strictly_necessary` is ever always on, and it is now decided by the key rather than by a field.
 
-If you are writing a file today, write the three above instead: a translator can then be given one file that
-contains nothing but words.
+Move to the three files above before 1.0.0. A translator can then be given one file that contains nothing
+but words.
 
 ## 🍪 The cookies JSON {#the-cookies-json}
 
@@ -200,6 +208,9 @@ matched by `category` against a consent `key`. An entry whose `category` matches
 
 All five fields are strings and all five are shown verbatim. `duration` and `provenance` are free text —
 nothing parses them.
+
+[The cookie catalogue]({{ '/cookies/catalogue/' | relative_url }}) has rows in this shape for the tools a
+site commonly runs, to copy in and check against the vendor.
 
 **List every cookie your site really sets, including Consentio’s own.** The table is what a visitor reads
 before deciding, so a name in it that your site does not set is a false statement about your own site, and a

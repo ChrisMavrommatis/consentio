@@ -222,6 +222,37 @@
 	border-left-color: var(--warn-rule);
 }
 
+// ---- a block of code with a copy control ---------------------------------------------
+
+.snippet {
+	margin: 0 0 1.5rem;
+}
+
+.snippet__bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: .6rem;
+	padding: .5rem .9rem;
+	border: 1px solid var(--rule);
+	border-bottom: 0;
+	border-radius: var(--radius) var(--radius) 0 0;
+	background: var(--bg-soft);
+	font-size: .9rem;
+}
+
+.snippet__copy {
+	padding: .3rem .8rem;
+	font-size: .85rem;
+}
+
+.snippet pre {
+	margin: 0;
+	border-radius: 0 0 var(--radius) var(--radius);
+	max-height: 24rem;
+}
+
 // ---- the live banner controls --------------------------------------------------------
 
 .fixture {

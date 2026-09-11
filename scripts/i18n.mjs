@@ -1,4 +1,4 @@
-// Builds each language into the json a site publishes. See i18n/README.md.
+// Builds each language into the json a site publishes, and the two script forms of it. See i18n/README.md.
 
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { parse } from 'yaml';
@@ -8,6 +8,9 @@ const SOURCE = new URL('i18n/', ROOT);
 
 // The whole file is published, so a key nobody reads is a key that will mislead someone.
 const TOP_LEVEL_KEYS = ['locale', 'name', 'policyUrl', 'texts', 'consents'];
+
+// What <locale>.js assigns the pack to. The tag's permissions name the same global.
+const PACK_GLOBAL = 'ConsentioLanguage';
 
 // A pack may change every string but no key: a fifth would reach no Google signal.
 const CATEGORY_KEYS = [
@@ -117,7 +120,13 @@ if (checkOnly) {
 
 	for (const pack of packs.values()) {
 		// The pack itself, unchanged. Reshaping it here is what defect 34 was.
-		writeFileSync(new URL(`${pack.locale}.json`, outDir), `${JSON.stringify(pack, null, '\t')}\n`);
+		const json = JSON.stringify(pack, null, '\t');
+		writeFileSync(new URL(`${pack.locale}.json`, outDir), `${json}\n`);
+		// The same pack as a script: a sandboxed template cannot fetch, so the tag injects
+		// this file and reads the global back.
+		writeFileSync(new URL(`${pack.locale}.js`, outDir), `globalThis.${PACK_GLOBAL} = ${json};\n`);
+		// And as a Custom JavaScript variable, ready to paste into Tag Manager.
+		writeFileSync(new URL(`${pack.locale}.gtm.js`, outDir), `function () {\n\treturn ${json.replace(/\n/g, '\n\t')};\n}\n`);
 	}
 
 	process.stdout.write(`i18n: ${packs.size} languages (${locales}) -> ${outDir.pathname.replace(ROOT.pathname, '')}\n`);

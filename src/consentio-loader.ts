@@ -38,10 +38,6 @@ import type { ConsentioDefaultState } from './types.js';
 		});
 	}
 
-	const getResources = function (urls: string[]): Promise<any[]> {
-		return Promise.all(urls.map(url => getResource(url)));
-	}
-
 	const loaderScript = doc.querySelector<HTMLScriptElement>('script[data-consentio-loader]');
 
 	if (!loaderScript) {
@@ -53,11 +49,15 @@ import type { ConsentioDefaultState } from './types.js';
 
 	const loaderSrc = loaderScript.getAttribute('src');
 
-	// Three files, one per concern. `data-config-url` is 0.1.0's merged one and still works.
+	// Three files, one per concern. `data-config-url` is 0.1.0's merged one: still read, warned about, gone in 1.0.0.
 	const settingsUrl = loaderScript.dataset.settingsUrl || null;
-	const languageUrl = loaderScript.dataset.languageUrl || null;
 	const configUrl = loaderScript.dataset.configUrl || null;
 	const cookiesUrl = loaderScript.dataset.cookiesUrl || null;
+
+	// `data-language="el"` is the published pack at this loader's own version; a url beats it.
+	const languageCode = loaderScript.dataset.language || null;
+	const languageUrl = loaderScript.dataset.languageUrl
+		|| (languageCode ? `https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@${__CONSENTIO_VERSION__}/dist/i18n/${languageCode}.json` : null);
 
 
 
@@ -148,6 +148,11 @@ import type { ConsentioDefaultState } from './types.js';
 
 		if (settingsUrl && configUrl) {
 			logger.warn('[Consentio Loader] both data-config-url and data-settings-url are set - data-settings-url wins');
+		} else if (configUrl) {
+			logger.warn('[Consentio Loader] data-config-url is deprecated and is removed in 1.0.0 - use data-settings-url and data-language-url');
+		}
+		if (loaderScript.dataset.languageUrl && languageCode) {
+			logger.warn('[Consentio Loader] both data-language and data-language-url are set - data-language-url wins');
 		}
 		add('settings', settingsUrl || configUrl);
 		add('language', languageUrl);
@@ -157,7 +162,13 @@ import type { ConsentioDefaultState } from './types.js';
 		try {
 
 			if (resources.length > 0) {
-				const results = await getResources(resources.map(([, url]) => url));
+				// A pack that does not load costs the visitor its language, not the banner.
+				const results = await Promise.all(resources.map(([name, url]) => name !== 'language'
+					? getResource(url)
+					: getResource(url).catch((error) => {
+						logger.warn(`[Consentio Loader] the language file did not load, so the banner keeps its built-in English: ${url}`, error);
+						return {};
+					})));
 				resources.forEach(([name], index) => {
 					const loaded = results[index];
 					debug && logger.info(`[Consentio Loader] ${name} loaded:`, loaded);

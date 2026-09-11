@@ -28,6 +28,17 @@ const SHARED = { 'terms-of-service.txt': new URL('gtm/terms-of-service.txt', ROO
 
 const english = parse(readFileSync(new URL('i18n/en.yaml', ROOT), 'utf8'));
 
+// The locale picker lists the language files, so shipping a language means writing its
+// yaml and nothing here. Node names the language in English; a name that is not ascii
+// would reach the tag manager's screen, so the code alone is shown for one.
+const languageNames = new Intl.DisplayNames(['en'], { type: 'language' });
+const LOCALE_ITEMS = readdirSync(new URL('i18n/', ROOT)).filter((f) => f.endsWith('.yaml')).sort()
+	.map((f) => parse(readFileSync(new URL(`i18n/${f}`, ROOT), 'utf8')).locale)
+	.map((locale) => {
+		const name = languageNames.of(locale);
+		return { value: locale, displayValue: /^[\x20-\x7e]+$/.test(name) ? `${name} (${locale})` : locale };
+	});
+
 
 // ## The .tpl format ##
 
@@ -61,7 +72,8 @@ function serialise(value) {
 
 // ## English comes from i18n/en.yaml ##
 
-// A pre-filled field holds {"$text": "texts.barTitle"} rather than a copy of the words.
+// A pre-filled field holds {"$text": "texts.barTitle"} rather than a copy of the words,
+// and the locale picker holds {"$locales": true} rather than a list.
 function resolve(node) {
 	if (Array.isArray(node)) { return node.map(resolve); }
 	if (node && typeof node === 'object') {
@@ -70,20 +82,26 @@ function resolve(node) {
 			if (typeof value !== 'string') { throw new Error(`i18n/en.yaml has no ${node.$text}`); }
 			return value;
 		}
+		if (node.$locales === true) { return LOCALE_ITEMS; }
 		return Object.fromEntries(Object.entries(node).map(([key, value]) => [key, resolve(value)]));
 	}
 	return node;
 }
 
-// The inverse, for --decompose. Only the strings that are already the English become refs.
+// The inverse, for --decompose. Only the strings that are already the English become refs,
+// and only a select listing exactly the locales becomes the picker.
 function reference(node, path = []) {
 	if (Array.isArray(node)) { return node.map((v) => reference(v, path)); }
 	if (node && typeof node === 'object') {
 		const out = {};
 		for (const [key, value] of Object.entries(node)) {
-			out[key] = key === 'defaultValue' && typeof value === 'string' && ENGLISH_PATHS.has(value)
-				? { $text: ENGLISH_PATHS.get(value) }
-				: reference(value, path);
+			if (key === 'defaultValue' && typeof value === 'string' && ENGLISH_PATHS.has(value)) {
+				out[key] = { $text: ENGLISH_PATHS.get(value) };
+			} else if (key === 'selectItems' && JSON.stringify(value) === JSON.stringify(LOCALE_ITEMS)) {
+				out[key] = { $locales: true };
+			} else {
+				out[key] = reference(value, path);
+			}
 		}
 		return out;
 	}

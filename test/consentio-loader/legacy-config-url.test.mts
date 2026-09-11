@@ -8,6 +8,7 @@ const LOADER = new URL('../../src/consentio-loader.js', import.meta.url);
 /**
  * A site on 0.1.0's two files is untouched: the merged config still arrives as argument
  * one, the cookie table still arrives as argument three, and the banner splits the first.
+ * It is told once, on the console, that the attribute goes in 1.0.0.
  */
 
 const CONFIG = { consentRequired: true, texts: { barTitle: 'Ours' }, consents: [{ key: 'marketing_advertising', title: 'Ads' }] };
@@ -19,6 +20,9 @@ globalThis.fetch = ((url: string) => Promise.resolve({
 	ok: true,
 	json: () => Promise.resolve(FILES[String(url)])
 })) as unknown as typeof fetch;
+
+const warnings: unknown[] = [];
+globalThis.console = { ...console, warn: (...args: unknown[]) => { warnings.push(args[0]); } } as Console;
 
 const calls: unknown[][] = [];
 window.Consentio = function (...args: unknown[]) { calls.push(args); } as unknown as Window['Consentio'];
@@ -36,4 +40,8 @@ test('the merged config and the cookie table arrive where they always did', asyn
 	assert.deepEqual(settings, CONFIG, 'the file is handed over as it was written');
 	assert.deepEqual(language, {}, 'there is no language file on this route');
 	assert.deepEqual(cookies, COOKIES);
+});
+
+test('the deprecation is said once, naming the two attributes to move to', () => {
+	assert.deepEqual(warnings, ['[Consentio Loader] data-config-url is deprecated and is removed in 1.0.0 - use data-settings-url and data-language-url']);
 });

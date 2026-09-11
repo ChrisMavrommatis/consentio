@@ -1,0 +1,19 @@
+{
+	"type": "SELECT",
+	"name": "textsPack",
+	"displayName": "Language pack",
+	"macrosInSelect": false,
+	"selectItems": {
+		"$locales": true
+	},
+	"simpleValueType": true,
+	"defaultValue": "en",
+	"enablingConditions": [
+		{
+			"paramName": "textSource",
+			"paramValue": "pack",
+			"type": "EQUALS"
+		}
+	],
+	"help": "A language pack published with the same version of Consentio this tag loads. The tag loads it from the CDN before the banner, so a later release moves the words with the banner. If the pack does not load, the banner keeps its built-in English and says so on the console."
+}

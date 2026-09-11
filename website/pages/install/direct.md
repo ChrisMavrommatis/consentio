@@ -5,8 +5,9 @@ permalink: /install/direct/
 description: Add Consentio to your site with one script tag. Four steps, then the detail.
 ---
 
-You are adding **one `<script>` tag** to the top of every page, and the small settings files it reads. This
-route covers everything on the page, not just what a tag manager loads.
+You are adding **one `<script>` tag** to the top of every page, and the small settings files it reads. The
+answer reaches your tag manager before it starts, and a script you mark waits for consent.
+[Choose a route]({{ '/routes/' | relative_url }}) puts this route beside the Tag Manager one.
 
 ## 🚀 Four steps {#four-steps}
 
@@ -39,7 +40,9 @@ An empty array `[]` is a valid start.
 `/data/en.json` — the words, and **optional**. Leave it out and the banner uses its built-in English. To
 change the wording or to run in another language, download a language pack from a
 [release]({{ site.repository_url }}/releases/latest), put it beside the other two, and point
-`data-language-url` at it.
+`data-language-url` at it. To run a published pack as it is, `data-language="el"` on the tag fetches it
+from the CDN at the same version as the script, and there is no file to host. If the language file does
+not load, the banner keeps its built-in English and says so on the console.
 
 [Settings]({{ '/configuration/' | relative_url }}#configuration) lists every option in all three files.
 
@@ -53,7 +56,7 @@ change the wording or to run in another language, download a language pack from 
 ```
 
 **It has to come first**, and it must not have `async` or `defer` on it. Both of those are explained below,
-and both are the reason a banner ends up looking right while stopping nothing.
+and both are the reason a banner ends up looking right after your tags have already decided.
 
 **4. Load a page.**
 
@@ -122,8 +125,8 @@ itself.
 ## 🚫 Never put `async` or `defer` on this tag {#do-not-put-async-or-defer-on-the-loader-tag}
 
 `async` and `defer` both tell the browser *run this whenever you like*. Whenever you like is after the tag
-manager has already decided what it may do, which puts you back where you started: **a banner that stops
-nothing.**
+manager has already decided what it may do, which puts you back where you started: **a banner your tags
+never heard from.**
 
 The script checks for both and writes a warning to the console when it finds one:
 
@@ -131,19 +134,28 @@ The script checks for both and writes a warning to the console when it finds one
 [Consentio Loader] loaded with async or defer, so the consent default cannot arrive before the tag manager
 ```
 
-That warning is printed whatever `data-debug` says. A banner that silently stops nothing is worth the noise.
+That warning is printed whatever `data-debug` says. A banner that silently arrives late is worth the noise.
 
 ## ⚖️ What it costs {#what-it-costs}
 
-The tag blocks, so **4.9 KB has to download and run before the page appears** — about 2 KB once your server
-compresses it. That is the price of the answer arriving in time. There is no version of this that is both
-correct and non-blocking, so it is better to know the number now than to find it in a performance audit
-later.
+The tag blocks, so **5.3 KB has to download and run before the page appears** — about 2.3 KB once your
+server compresses it. That is the price of the answer arriving in time. There is no version of this that is
+both correct and non-blocking, so it is better to know the number now than to find it in a performance
+audit later.
 
-The main file, `consentio.min.js`, is 42.0 KB (about 13 KB compressed) and loads in the background. It
+The main file, `consentio.min.js`, is 42.5 KB (about 13 KB compressed) and loads in the background. It
 blocks nothing.
 
 [How it works]({{ '/how-it-works/' | relative_url }}#what-it-weighs) has both figures in one table.
+
+## ⚠️ What it can stop {#what-it-can-stop}
+
+The answer reaches Google's tags before they start, and they act on it. **A script you pasted into the page
+yourself does not read that answer** — a chat widget, an embedded map, a pixel from a vendor's
+instructions — and it runs the moment the browser reaches it. Mark it with `type="text/plain"` and the
+category it needs, and it runs once that category is granted and not before. A script you do not mark runs
+as it always did. [Hold a script until consent]({{ '/hold-scripts/' | relative_url }}) shows the tag before
+and after, and what it cannot reach.
 
 ## ⚙️ Everything you can put on the tag {#the-loader-tags-data-attributes}
 
@@ -153,9 +165,10 @@ These go on the tag itself, because the script needs them before it can fetch an
 |---|---|---|---|
 | `data-consentio-loader` | **yes** | — | Marks the tag so the script can find itself. Without it you get `script not found` on the console and nothing happens. Put it on exactly one tag |
 | `data-settings-url` | no | none | Where your settings file is. Leave it out and the built-in defaults are used |
-| `data-language-url` | no | none | Where your language file is — a published language pack, or one of your own. Leave it out and the banner uses its built-in English |
+| `data-language-url` | no | none | Where your language file is — a published language pack, or one of your own. Leave it out and the banner uses its built-in English. If the file does not load, the banner keeps its English and says so on the console |
+| `data-language` | no | none | A language code, `el`. The published pack for it is fetched from the CDN at the same version as this script. `data-language-url` wins if both are set, and the console says so |
 | `data-cookies-url` | no | none | Where your cookie list is. Leave it out and the tables in the settings panel are empty |
-| `data-config-url` | no | none | The older single settings file, carrying `texts` and a `consents` array. Still read, and still works. Use `data-settings-url` and `data-language-url` in new sites |
+| `data-config-url` | no | none | **Deprecated, removed in 1.0.0.** The older single settings file, carrying `texts` and a `consents` array. Still read, with a console warning. Use `data-settings-url` and `data-language-url` |
 | `data-cookie-name` | no | `consentio` | Name of the cookie the answer is stored in |
 | `data-cookie-lifetime` | no | `90` | Days an answer is kept before the visitor is asked again. See [How long it lasts]({{ '/cookie/' | relative_url }}#how-long-it-lasts) |
 | `data-share-across-subdomains` | no | `false` | `"true"` stores one answer for every hostname your site answers on, instead of one each. There is no domain to type — Consentio works out the one they share. See [One answer across subdomains]({{ '/cookie/' | relative_url }}#one-answer-across-subdomains) |

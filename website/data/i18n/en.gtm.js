@@ -1,0 +1,41 @@
+function () {
+	return {
+		"locale": "en",
+		"name": "English",
+		"texts": {
+			"barTitle": "Cookie Policy",
+			"barDescription": "This site uses cookies. Until you choose, only the ones the site cannot run without are on. Accept them all, reject the rest, or open the settings to choose category by category.",
+			"buttonSettings": "Settings",
+			"buttonSave": "Save",
+			"buttonCancel": "Cancel",
+			"buttonAcceptAll": "Accept All",
+			"buttonRejectAll": "Reject All",
+			"modalTitle": "Cookie Settings",
+			"modalDescription": "Choose which cookies this site may use. Save stores your choice, Cancel leaves it as it was. Under the European general data protection regulation (GDPR) and the ePrivacy directive, a site must have your consent before it uses any cookie besides the strictly necessary ones. Expand a category to read what it covers.",
+			"alwaysOnLabel": "Always On",
+			"policyLinkLabel": "Privacy Policy",
+			"cookieTableHeaderName": "Cookie Name",
+			"cookieTableHeaderPurpose": "Cookie Purpose",
+			"cookieTableHeaderProvenance": "Provenance",
+			"cookieTableHeaderDuration": "Duration"
+		},
+		"consents": {
+			"strictly_necessary": {
+				"title": "Strictly Necessary Cookies",
+				"description": "These cookies are essential for you to browse the website and use its features, such as accessing secure areas of the site. Cookies that allow web shops to hold your items in your cart while you are shopping online are an example of strictly necessary cookies."
+			},
+			"preferences_functionality": {
+				"title": "Preferences Cookies",
+				"description": "Preference cookies enable a website to remember information that changes the way the website behaves or looks, such as your preferred language or the region that you are in."
+			},
+			"statistics_performance": {
+				"title": "Statistics Cookies",
+				"description": "Statistic cookies help website owners to understand how visitors interact with websites by collecting and reporting information anonymously."
+			},
+			"marketing_advertising": {
+				"title": "Marketing Cookies",
+				"description": "Marketing cookies are used to track visitors across websites. The intention is to display ads that are relevant and engaging for the individual user and thereby more valuable for publishers and third party advertisers."
+			}
+		}
+	};
+}
