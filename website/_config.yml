@@ -17,8 +17,8 @@ author:
 url                     : "http://localhost:4001"
 repository_url          : "https://github.com/ChrisMavrommatis/consentio"
 
-# The version this documentation describes. Shown in the header and in the release note.
-docs_version            : "0.2.0"
+# The version this documentation describes is read from package.json at build time - shown in
+# the header and in the release note. It is not set here.
 
 # How this build loads Consentio, and how the banner behaves once it is loaded.
 #
@@ -31,6 +31,11 @@ docs_version            : "0.2.0"
 #
 # debug     the loader's console logging.
 #
+# sample_held_scripts
+#           true injects three <script type="text/plain" data-consentio="..."> tags, one per
+#           category the visitor can refuse, each printing one console line when it runs.
+#           For checking that a held script runs on grant and not before. Off unless testing.
+#
 # settings  one flat mapping; the build routes each key to where it works. Write policyUrl
 #           site-relative and the build puts baseurl in front of it. Changing version
 #           discards every answer already stored. Leaving consents out gives the four
@@ -39,6 +44,7 @@ consentio:
   route                 : "direct"
   language              : "/data/i18n/en.json"
   debug                 : false
+  sample_held_scripts   : false
   settings:
     cookieName          : "consentio"
     version             : 3

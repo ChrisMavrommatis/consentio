@@ -102,6 +102,18 @@ module Jekyll
     end
   end
 
+  # The header and the release note name the version this site describes. package.json is the
+  # one place that version is written, so the site reads it rather than carrying a copy.
+  class ConsentioVersionGenerator < Generator
+    safe true
+    priority :highest
+
+    def generate(site)
+      package = File.expand_path('../package.json', site.source)
+      site.config['docs_version'] = JSON.parse(File.read(package))['version']
+    end
+  end
+
   class ConsentioSettingsGenerator < Generator
     safe true
 
