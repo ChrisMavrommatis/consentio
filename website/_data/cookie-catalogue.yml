@@ -22,6 +22,11 @@
       provenance: Consentio
       duration: 90 days by default; the cookieLifetime setting changes it
       category: strictly_necessary
+    - name: consentio_probe
+      purpose: Written and deleted in the same moment to find which domain the browser accepts, only when the answer is shared across subdomains.
+      provenance: Consentio
+      duration: none; it is removed as soon as it is read, and has no expiry so it dies with the tab
+      category: strictly_necessary
 
 - vendor: Google Analytics 4
   documentation: https://support.google.com/analytics/answer/11397207
