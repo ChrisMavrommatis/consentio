@@ -37,16 +37,26 @@ test('the locale picker lists every language file and nothing else', () => {
 	const tpl = composedTag();
 	const locales = readdirSync(new URL('i18n/', ROOT)).filter((f) => f.endsWith('.yaml'))
 		.map((f) => parse(readFileSync(new URL(`i18n/${f}`, ROOT), 'utf8')).locale as string).sort();
-	const picker = /"name": "textsPack",[\s\S]*?"selectItems": (\[[\s\S]*?\])/.exec(tpl)?.[1];
-	assert.ok(picker, 'the tag has no textsPack picker');
+	const picker = /"name": "languagePack",[\s\S]*?"selectItems": (\[[\s\S]*?\])/.exec(tpl)?.[1];
+	assert.ok(picker, 'the tag has no languagePack picker');
 	const listed = (JSON.parse(picker) as { value: string }[]).map((item) => item.value).sort();
 	assert.deepEqual(listed, locales);
 });
 
 test('the pack picker is only shown for the pack source, and builtin stays the default', () => {
 	const tpl = composedTag();
-	assert.match(tpl, /"name": "textSource",[\s\S]*?"defaultValue": "builtin"/);
-	assert.match(tpl, /"name": "textsPack",[\s\S]*?"paramName": "textSource",\s*"paramValue": "pack"/);
+	assert.match(tpl, /"name": "languageSource",[\s\S]*?"defaultValue": "builtin"/);
+	assert.match(tpl, /"name": "languagePack",[\s\S]*?"paramName": "languageSource",\s*"paramValue": "pack"/);
+});
+
+test('the tag has five parameters and no field for anything a settings file can say', () => {
+	const files = readdirSync(new URL('gtm/consentio-tag/src/parameters/', ROOT)).sort();
+	assert.deepEqual(files, ['01-settings.json', '02-languageSource.json', '03-languageVariable.json', '04-languagePack.json', '05-cookies.json']);
+	const tpl = composedTag();
+	assert.doesNotMatch(tpl, /"\$text"|Custom - fill/, 'the pre-filled English fields are gone');
+	for (const name of ['settings', 'languageVariable', 'cookies']) {
+		assert.match(tpl, new RegExp(`"name": "${name}",[\\s\\S]*?"macrosInSelect": true`), `${name} does not take a variable`);
+	}
 });
 
 test('issue 49 - the tag reads ConsentioDefault and declares it, read-only', () => {
@@ -55,6 +65,9 @@ test('issue 49 - the tag reads ConsentioDefault and declares it, read-only', () 
 	const tests = readFileSync(new URL('gtm/consentio-tag/src/tests.yaml', ROOT), 'utf8');
 	assert.match(code, /copyFromWindow\('ConsentioDefault'\)/);
 	assert.ok(permissions.includes('"ConsentioDefault"'), 'permissions.json does not name ConsentioDefault');
-	assert.ok(permissions.includes('"ConsentioLanguage"'), 'permissions.json does not name ConsentioLanguage');
+	assert.ok(permissions.includes('"ConsentioLanguage"'), 'permissions.json does not name ConsentioLanguage, which the CDN pack load needs');
+	for (const name of ['ConsentioSettings', 'ConsentioCookies']) {
+		assert.ok(!permissions.includes(`"${name}"`), `permissions.json still names ${name}; a picker at None reads nothing off the page`);
+	}
 	assert.match(tests, /ConsentioDefault[\s\S]*?assertApi\('injectScript'\)\.wasNotCalled\(\)/);
 });

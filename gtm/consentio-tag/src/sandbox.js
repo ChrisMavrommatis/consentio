@@ -14,8 +14,8 @@ const setDefaultConsentState = require('setDefaultConsentState');
 const gtagSet = require('gtagSet');
 const templateStorage = require('templateStorage');
 const makeNumber = require('makeNumber');
+const getType = require('getType');
 const JSON = require('JSON');
-const Object = require('Object');
 
 // Not a field: the get_cookies permission can only name a cookie known at publish time.
 const COOKIE_NAME = 'consentio';
@@ -37,7 +37,7 @@ const BASELINE_CONSENTS = { strictly_necessary: 'granted' };
 
 const RAN_KEY = 'consentio-tag-ran';
 
-// What <locale>.js assigns the pack to.
+// What a published <locale>.js assigns the pack to when the tag loads one from the CDN.
 const PACK_GLOBAL = 'ConsentioLanguage';
 
 log('Consentio Tag =', data);
@@ -102,11 +102,64 @@ function toGoogleSignals(consents) {
 }
 
 
+// ## The three inputs ##
+// Each picker takes the same file the loader fetches: JSON text from a Constant, or the
+// parsed value from any other variable. None is the built-in default.
+
+function readInput(value) {
+  if (value === 'none') {
+    return undefined;
+  }
+  if (getType(value) === 'string') {
+    // Malformed JSON returns undefined here rather than throwing.
+    value = JSON.parse(value);
+  }
+  return value;
+}
+
+function readObject(value, what) {
+  value = readInput(value);
+  if (getType(value) !== 'object') {
+    if (value !== undefined && value !== null) {
+      log('Consentio Tag: the ' + what + ' is not a JSON object, so it is ignored');
+    }
+    return {};
+  }
+  return value;
+}
+
+const settings = readObject(data.settings, 'Settings');
+
+// The get_cookies permission names one cookie at publish time, so a settings file naming
+// another would leave this tag reading a cookie the banner never writes.
+if (settings.cookieName !== undefined && settings.cookieName !== COOKIE_NAME) {
+  log('Consentio Tag: cookieName is fixed to ' + COOKIE_NAME + ' on this route, so ' + settings.cookieName + ' is ignored');
+}
+settings.cookieName = COOKIE_NAME;
+
+// The banner defaults to 1; the tag has to agree, or it discards every stored answer.
+const version = settings.version === undefined ? 1 : makeNumber(settings.version);
+
+// The cookie table is one file however it arrives, and it is an array or nothing.
+function readCookies() {
+  const value = readInput(data.cookies);
+  if (getType(value) !== 'array') {
+    if (value !== undefined && value !== null) {
+      log('Consentio Tag: the Cookie table is not a JSON array, so the settings panel shows no table');
+    }
+    return [];
+  }
+  return value;
+}
+
+const cookies = readCookies();
+
+const fromVariable = data.languageSource === 'variable';
+const fromPack = data.languageSource === 'pack' && !!data.languagePack;
+
+
 // ## Consent default ##
 // Before injectScript, which is always async: a default pushed after it is already too late.
-
-// A text field hands back a string once it has been edited.
-const version = makeNumber(data.version);
 
 const storedConsents = readStoredConsents(version);
 const signals = toGoogleSignals(storedConsents || BASELINE_CONSENTS);
@@ -118,150 +171,27 @@ if (!storedConsents) {
 
 setDefaultConsentState(signals);
 gtagSet({ ads_data_redaction: adsDataRedaction });
+// Off unless the settings file says so: it puts a click id in every internal link.
+if (settings.urlPassthrough === true) {
+  gtagSet({ url_passthrough: true });
+}
 
 log('consent default =', signals);
 
 
-// ## Config Setup ##
-function removeEmptyValues(obj){
-  for(const key in obj){
-    const value = obj[key];
-    if(value === null || value === undefined || value === ""){
-      Object.delete(obj, key);
-    }
-  }
-}
-
-function hasSelectedVariable(obj){
-  return obj !== 'none';
-}
-
-const hasCookiesVariable = hasSelectedVariable(data.cookies);
-
-const fromFields = data.textSource === 'custom';
-const fromVariable = data.textSource === 'variable' && hasSelectedVariable(data.textsVariable);
-const fromPack = data.textSource === 'pack' && !!data.textsPack;
-
-const cookies = hasCookiesVariable ? data.cookies : [];
-
-// A pack is a published <locale>.json unchanged, whether a variable held it or the CDN
-// served it: the words under `texts`, the four categories keyed under `consents`. The
-// custom fields are flat on `data`. Null is the built-in English.
-function buildConfig(pack) {
-  const packTexts = pack && pack.texts ? pack.texts : {};
-  const packConsents = pack && pack.consents ? pack.consents : {};
-
-  function text(key) {
-    if (pack) {
-      return packTexts[key];
-    }
-    if (fromFields) {
-      return data[key];
-    }
-    return null;
-  }
-
-  function category(key, titleField, descriptionField) {
-    if (!pack) {
-      return { title: text(titleField), description: text(descriptionField) };
-    }
-    const words = packConsents[key];
-    return { title: words ? words.title : null, description: words ? words.description : null };
-  }
-
-  // A blank policyUrl in a pack means this language has no link; only a missing key falls
-  // back to the tag's own field.
-  const policyUrl = pack && pack.policyUrl !== undefined && pack.policyUrl !== null
-    ? pack.policyUrl
-    : data.policyUrl;
-
-  const strictlyNecessary = category('strictly_necessary', 'strictlyNecessaryTitle', 'strictlyNecessaryDescription');
-  const preferencesFunctionality = category('preferences_functionality', 'preferencesFunctionalityTitle', 'preferencesFunctionalityDescription');
-  const statisticsPerformance = category('statistics_performance', 'statisticsPerformanceTitle', 'statisticsPerformanceDescription');
-  const marketingAdvertising = category('marketing_advertising', 'marketingAdvertisingTitle', 'marketingAdvertisingDescription');
-
-  const config = {
-    cookieName: COOKIE_NAME,
-    version: version,
-    debug: data.debug,
-    consentRequired: data.consentRequired,
-    hideFloatingButton: data.hideFloatingButton,
-    policyUrl: policyUrl,
-    texts: {
-      barTitle: text('barTitle'),
-      barDescription: text('barDescription'),
-      buttonSettings: text('buttonSettings'),
-      buttonSave: text('buttonSave'),
-      buttonCancel: text('buttonCancel'),
-      buttonAcceptAll: text('buttonAcceptAll'),
-      buttonRejectAll: text('buttonRejectAll'),
-      modalTitle: text('modalTitle'),
-      modalDescription: text('modalDescription'),
-      alwaysOnLabel: text('alwaysOnLabel'),
-      policyLinkLabel: text('policyLinkLabel'),
-      cookieTableHeaderName: text('cookieTableHeaderName'),
-      cookieTableHeaderPurpose: text('cookieTableHeaderPurpose'),
-      cookieTableHeaderProvenance: text('cookieTableHeaderProvenance'),
-      cookieTableHeaderDuration: text('cookieTableHeaderDuration')
-    },
-    consents: [
-      {
-        key: 'strictly_necessary',
-        title: strictlyNecessary.title,
-        description: strictlyNecessary.description,
-        alwaysOn: true,
-        defaultState: 'granted'
-      },
-      {
-        key: 'preferences_functionality',
-        title: preferencesFunctionality.title,
-        description: preferencesFunctionality.description,
-        alwaysOn: false,
-        defaultState: data.preferencesFunctionalityDefaultState
-      },
-      {
-        key: 'statistics_performance',
-        title: statisticsPerformance.title,
-        description: statisticsPerformance.description,
-        alwaysOn: false,
-        defaultState: data.statisticsPerformanceDefaultState
-      },
-      {
-        key: 'marketing_advertising',
-        title: marketingAdvertising.title,
-        description: marketingAdvertising.description,
-        alwaysOn: false,
-        defaultState: data.marketingAdvertisingDefaultState
-      }
-    ]
-  };
-  if (data.cookieLifetime) {
-    config.cookieLifetime = makeNumber(data.cookieLifetime);
-  }
-  if (data.shareAcrossSubdomains) {
-    config.shareAcrossSubdomains = true;
-  }
-
-  removeEmptyValues(config.texts);
-  for (const consent of config.consents) {
-    removeEmptyValues(consent);
-  }
-
-  return config;
-}
-
-
 // ## load script ##
 
-function loadBanner(pack) {
-  const config = buildConfig(pack);
-  log('config =', config);
+// A pack is a published <locale>.json unchanged, whether a variable held it, the page
+// carried it or the CDN served it. Built-in English is an empty object.
+function loadBanner(language) {
+  log('settings =', settings);
+  log('language =', language);
   log('cookies =', cookies);
 
   const scriptLoaded = function () {
-    // Two arguments and the merged shape on purpose: the pinned bundle may be older than
-    // this template, and it splits a config carrying `texts` itself.
-    const consentioInstance = callInWindow('Consentio.Create', config, cookies);
+    // Three objects, one per concern - the shape the loader sends. The template loads
+    // the release it shipped in, so the bundle always speaks it.
+    const consentioInstance = callInWindow('Consentio.Create', settings, language, cookies);
     // The banner sets this too; setting it here is what makes the guard above work against
     // an older pinned bundle.
     setInWindow('ConsentioInstance', consentioInstance, true);
@@ -277,17 +207,17 @@ function loadBanner(pack) {
 }
 
 if (!fromPack) {
-  loadBanner(fromVariable ? data.textsVariable : null);
+  loadBanner(readObject(fromVariable ? data.languageVariable : 'none', 'Language pack'));
   return;
 }
 
 // The pack first, then the bundle either way: a pack that does not load must not cost the
 // visitor the banner.
-const packUrl = packBaseUrl + data.textsPack + '.js';
+const packUrl = packBaseUrl + data.languagePack + '.js';
 
 const packNotLoaded = function () {
   log('Consentio Tag: the language pack did not load, so the banner keeps its built-in English', packUrl);
-  loadBanner(null);
+  loadBanner({});
 };
 
 const packLoaded = function () {

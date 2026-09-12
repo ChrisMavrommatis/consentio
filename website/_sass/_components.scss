@@ -277,8 +277,16 @@
 	text-align: right;
 }
 
-.catalogue td:first-child code {
+.catalogue td:nth-child(2) code {
 	white-space: nowrap;
+}
+
+.catalogue__pick {
+	width: 1.05rem;
+	height: 1.05rem;
+	margin: 0;
+	vertical-align: middle;
+	cursor: pointer;
 }
 
 // The purpose is the only cell with a sentence in it; without a floor it is the column the
@@ -287,17 +295,31 @@
 	min-width: 16rem;
 }
 
-.catalogue__row {
+.catalogue__row,
+.packs__row {
 	cursor: pointer;
 }
 
-.catalogue__open {
+.catalogue__open,
+.packs__open {
 	padding: .2rem .6rem;
 	font-size: .8rem;
 	white-space: nowrap;
 }
 
-.catalogue-panel {
+.packs th:last-child,
+.packs td:last-child {
+	text-align: right;
+}
+
+// Four short columns: the base table is a scrolling block sized to its content, which
+// leaves this one at half the page.
+.packs {
+	display: table;
+	width: 100%;
+}
+
+.panel {
 	position: fixed;
 	inset: 0 0 0 auto;
 	width: min(30rem, 100%);
@@ -313,33 +335,33 @@
 	box-shadow: var(--shadow);
 }
 
-.catalogue-panel:focus-visible {
+.panel:focus-visible {
 	outline: none;
 }
 
-.catalogue-panel::backdrop {
+.panel::backdrop {
 	background: rgba(15, 30, 40, .45);
 }
 
-.catalogue-panel[open] {
-	animation: catalogue-slide .2s ease-out;
+.panel[open] {
+	animation: panel-slide .2s ease-out;
 }
 
-@keyframes catalogue-slide {
+@keyframes panel-slide {
 	from {
 		transform: translateX(100%);
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.catalogue-panel[open] {
+	.panel[open] {
 		animation: none;
 	}
 }
 
 // The inner box fills the dialog, so a click that reports the dialog itself as its target
 // can only have landed on the backdrop.
-.catalogue-panel__inner {
+.panel__inner {
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
@@ -348,14 +370,14 @@
 	overflow-y: auto;
 }
 
-.catalogue-panel__bar {
+.panel__bar {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: .6rem;
 }
 
-.catalogue-panel__title {
+.panel__title {
 	margin: 0;
 	font-family: var(--font-mono);
 	font-size: 1rem;
@@ -363,19 +385,32 @@
 	overflow-wrap: anywhere;
 }
 
-.catalogue-panel__lead {
+.panel__lead {
 	margin: 0;
 	color: var(--fg-muted);
 	font-size: .9rem;
 }
 
-.catalogue-panel pre {
+.panel pre {
 	margin: 0;
 	white-space: pre-wrap;
 	overflow-wrap: anywhere;
 }
 
-.catalogue-panel__actions {
+.panel__switch {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	font-size: .9rem;
+}
+
+.panel__switch label {
+	display: inline-flex;
+	align-items: center;
+	gap: .35rem;
+}
+
+.panel__actions {
 	display: flex;
 	gap: .6rem;
 }
@@ -415,4 +450,127 @@
 	overflow-x: auto;
 	white-space: pre-wrap;
 	overflow-wrap: anywhere;
+}
+
+.fixture__embed {
+	margin-top: 1rem;
+	aspect-ratio: 16 / 9;
+	max-width: 100%;
+	border: 1px solid var(--rule);
+	border-radius: 6px;
+	background: var(--bg);
+	overflow: hidden;
+}
+
+.fixture__embed iframe {
+	display: block;
+	width: 100%;
+	height: 100%;
+	border: 0;
+}
+
+.fixture__embed-note {
+	margin: .5rem 0 0;
+	color: var(--fg-muted);
+	font-size: .9rem;
+}
+
+// ---- the builders: a strip that follows the ticked rows, and a form that writes a file ---
+
+.builder-strip {
+	position: sticky;
+	bottom: 0;
+	z-index: 2;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: .6rem;
+	margin: 1.5rem 0;
+	padding: .7rem .9rem;
+	border: 1px solid var(--rule-strong);
+	border-radius: var(--radius);
+	background: var(--bg-soft);
+	box-shadow: 0 -4px 16px rgba(0, 0, 0, .06);
+	font-size: .9rem;
+}
+
+.builder-strip__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: .5rem;
+}
+
+.builder-strip .button {
+	padding: .3rem .8rem;
+	font-size: .85rem;
+}
+
+.builder {
+	margin: 0 0 1.5rem;
+	padding: 1.1rem 1.25rem;
+	border: 1px solid var(--rule-strong);
+	border-radius: var(--radius);
+	background: var(--bg-soft);
+}
+
+.builder__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
+	gap: .6rem 1.5rem;
+}
+
+// min-width: 0 on the row and the label, or a long key like
+// consents.marketing_advertising.defaultState widens the column past the page.
+.builder__row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: .8rem;
+	min-width: 0;
+	padding: .35rem 0;
+	border-bottom: 1px solid var(--rule);
+	font-size: .92rem;
+}
+
+.builder__label {
+	min-width: 0;
+}
+
+.builder__label code {
+	display: block;
+	font-size: .78rem;
+	opacity: .75;
+	overflow-wrap: anywhere;
+}
+
+.builder__row input,
+.builder__row select {
+	flex-shrink: 0;
+}
+
+.builder__row input[type="text"],
+.builder__row input[type="number"],
+.builder__row select {
+	max-width: 11rem;
+	padding: .3rem .5rem;
+	border: 1px solid var(--rule-strong);
+	border-radius: 6px;
+	background: var(--bg);
+	color: inherit;
+	font: inherit;
+	font-size: .88rem;
+}
+
+.builder__row input[type="checkbox"] {
+	width: 1.05rem;
+	height: 1.05rem;
+	margin: 0;
+}
+
+.builder__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: .6rem;
+	margin-top: .8rem;
 }

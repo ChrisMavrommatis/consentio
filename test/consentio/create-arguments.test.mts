@@ -5,9 +5,9 @@ import Consentio from '../../src/consentio.js';
 import type { CookieTableRow } from '../../src/types.js';
 
 /**
- * `Create(settings, language, cookies)` - three objects, one per concern. The two shapes
- * 0.1.0 accepted still work, because a container running an older template sends them and
- * nothing tells its owner a newer one exists.
+ * `Create(settings, language, cookies)` - three objects, one per concern, and the only
+ * shape there is. 0.1.0's merged config and its positional call were retired in 1.0.0:
+ * a template loads the release it shipped in, so it speaks that release's shape.
  */
 
 const COOKIES: CookieTableRow[] = [
@@ -29,44 +29,16 @@ test('three objects, each read for its own concern', () => {
 	assert.equal(instance.cookies.length, 1);
 });
 
-test('an Array in argument two is 0.1.0 calling, and it is the cookie table', () => {
-	const instance = new Consentio({ consentRequired: true }, COOKIES, null);
+test('defect 51 - Create keeps the console as its logger, and a debug line does not throw', () => {
+	const instance = Consentio.Create({ debug: true }, { texts: { barTitle: 'Ours' } }, COOKIES);
+	assert.equal(instance.logger.logger, window.console);
 	assert.equal(instance.cookies.length, 1);
-	assert.equal(instance.config.consentRequired, true);
+	assert.doesNotThrow(() => instance.logger.log('[Consentio] a debug line', 'info'));
 });
 
-test('a settings carrying texts is 0.1.0 config, and is split rather than refused', () => {
-	const instance = new Consentio({ cookieName: 'legacy', texts: { barTitle: 'Ours' } }, COOKIES, null);
-	assert.equal(instance.settings.cookieName, 'legacy');
-	assert.equal(instance.language.texts.barTitle, 'Ours');
-	assert.equal(instance.config.texts.barTitle, 'Ours');
-	assert.equal(instance.cookies.length, 1);
-});
-
-test('0.1.0 categories split into words and behaviour, and alwaysOn is dropped', () => {
-	const instance = new Consentio({
-		consents: [
-			{ key: 'marketing_advertising', title: 'Ads', description: 'Tracking', defaultState: 'granted' },
-			{ key: 'preferences_functionality', alwaysOn: true }
-		]
-	}, [], null);
-	const marketing = instance.config.consents.find((c) => c.key === 'marketing_advertising')!;
-	assert.equal(marketing.title, 'Ads');
-	assert.equal(marketing.description, 'Tracking');
-	assert.equal(marketing.defaultState, 'granted');
-	const preferences = instance.config.consents.find((c) => c.key === 'preferences_functionality')!;
-	assert.equal(preferences.alwaysOn, false, 'only strictly_necessary is ever always-on, and it is derived');
-});
-
-test('a pack in argument two beats the wording inside an old config', () => {
-	const instance = new Consentio(
-		{ texts: { barTitle: 'From the old config', buttonSave: 'Keep' } },
-		{ texts: { barTitle: 'From the pack' } },
-		[],
-		null
-	);
-	assert.equal(instance.config.texts.barTitle, 'From the pack');
-	assert.equal(instance.config.texts.buttonSave, 'Keep', 'what the pack says nothing about still comes through');
+test('anything but an Array in argument three is no cookie table', () => {
+	const instance = new Consentio({}, {}, { name: 'consentio' } as never, null);
+	assert.equal(instance.cookies.length, 0);
 });
 
 test('Create takes the same three arguments', () => {

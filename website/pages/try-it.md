@@ -6,11 +6,14 @@ permalink: /try-it/
 # answering for one visitor.
 loader: true
 description: The banner on this site is the real thing, running the direct install route. Clear the cookie here and it asks again, or reopen the settings from this page's own link.
+scripts: [try-it]
 ---
 
-**The banner on this site is not a screenshot.** Every page here loads `consentio-loader.min.js` as a
+**The banner on this site is not a screenshot.** This page loads `consentio-loader.min.js` as a
 blocking script in `<head>` — [route 1]({{ '/install/direct/' | relative_url }}#route-1-directly-in-the-site),
-the same markup the documentation gives you.
+the same markup the documentation gives you. On the published site every other page gets the banner from a
+Tag Manager container instead — route 2 — and [the container page]({{ '/try-it/tag-manager/' | relative_url }})
+is where to look at that one.
 
 It also runs with `consentRequired: true`, which is the hardest setting to get right: a full-screen
 blocking overlay that a visitor has to answer before they can reach the page. If you have already answered,
@@ -26,6 +29,20 @@ clear the cookie below and it comes back.
 </div>
 
 <p class="fixture__state" id="consentio-readout" role="status">Reading&hellip;</p>
+</div>
+
+<div class="fixture" markdown="1">
+### 🖼️ A held embed {#a-held-embed}
+
+An OpenStreetMap frame with its address on `data-src`, marked `preferences_functionality`. It is empty until
+that category is granted and loads in place when it is — on this visit, or as the page loads if you granted
+it on an earlier one; the caption under it says which — [hold a script until consent]({{ '/hold-scripts/' | relative_url }}#an-embed-before-and-after)
+is the page for it. Revoking leaves it loaded until the next page load.
+
+<div class="fixture__embed" markdown="0">
+<iframe data-consentio="preferences_functionality" data-src="https://www.openstreetmap.org/export/embed.html?bbox=23.70%2C37.96%2C23.74%2C37.99&amp;layer=mapnik" title="A map, held until preferences are granted" loading="lazy"></iframe>
+</div>
+<p class="fixture__embed-note" markdown="0">Empty until preferences_functionality is granted.</p>
 </div>
 
 ## 🔍 What to look at {#what-to-look-at}
@@ -46,8 +63,8 @@ clear the cookie below and it comes back.
 
 ## 🏷️ The other route, on the same site {#the-other-route-on-the-same-site}
 
-[Try it through a tag manager]({{ '/try-it/tag-manager/' | relative_url }}) is the one page here that does
-**not** have the script tag. It is where the two ways of installing are checked against each other: answer
+[Try it through a tag manager]({{ '/try-it/tag-manager/' | relative_url }}) is the page that never has
+the script tag, whatever the build. It is where the two ways of installing are checked against each other: answer
 the banner on this page, then open that one and see whether it agrees about you.
 
 ## 📡 Watching what it sends {#watching-the-pushes}
@@ -60,77 +77,3 @@ sets out both.
 ```js
 document.addEventListener('consentio:consent-update', (e) => console.log(e.detail));
 ```
-
-{% raw %}
-<script>
-	(function () {
-		var readout = document.getElementById('consentio-readout');
-		var reset = document.getElementById('consentio-reset');
-		var refresh = document.getElementById('consentio-refresh');
-		var openPanel = document.getElementById('consentio-open');
-		if (!readout || !reset || !refresh || !openPanel) return;
-
-		// The banner publishes the name it actually used. Reading it back beats hard-coding
-		// the default here and quietly drifting from the page that documents it.
-		function cookieName() {
-			var d = window.ConsentioDefault;
-			return (d && d.cookieName) || 'consentio';
-		}
-
-		function readCookie(name) {
-			var parts = document.cookie ? document.cookie.split('; ') : [];
-			for (var i = 0; i < parts.length; i++) {
-				var eq = parts[i].indexOf('=');
-				if (eq > -1 && parts[i].slice(0, eq) === name) {
-					return decodeURIComponent(parts[i].slice(eq + 1));
-				}
-			}
-			return null;
-		}
-
-		function show() {
-			var name = cookieName();
-			var raw = readCookie(name);
-			if (raw === null) {
-				readout.textContent = 'No "' + name + '" cookie. You have not answered yet, '
-					+ 'so the banner should be showing.';
-				return;
-			}
-			try {
-				readout.textContent = name + ' = ' + JSON.stringify(JSON.parse(raw), null, 2);
-			} catch (err) {
-				readout.textContent = name + ' = ' + raw + '  (does not parse as JSON, '
-					+ 'which reads as no stored answer)';
-			}
-		}
-
-		reset.addEventListener('click', function () {
-			// A cookie is only removed at the Domain it was written at. With the answer shared
-			// across subdomains it sits on the domain the hostnames share, so this expires it
-			// host-only and at every parent domain the browser could have accepted.
-			var name = cookieName();
-			var labels = window.location.hostname.split('.');
-			document.cookie = name + '=; path=/; max-age=0; SameSite=Lax';
-			for (var i = 0; i <= labels.length - 2; i++) {
-				document.cookie = name + '=; path=/; max-age=0; SameSite=Lax; domain=' + labels.slice(i).join('.');
-			}
-			window.location.reload();
-		});
-
-		openPanel.addEventListener('click', function () {
-			// The guard the events page asks every site for: the bundle is injected by the
-			// loader, so a click in the first moment of a page load can arrive before it.
-			if (!window.ConsentioInstance) {
-				readout.textContent = 'The banner has not loaded yet. That is what the guard around '
-					+ 'openSettings() is for.';
-				return;
-			}
-			window.ConsentioInstance.openSettings();
-		});
-
-		refresh.addEventListener('click', show);
-		document.addEventListener('consentio:consent-update', show);
-		show();
-	})();
-</script>
-{% endraw %}

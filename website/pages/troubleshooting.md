@@ -9,7 +9,7 @@ Symptom first. If you are not sure which one you have, start with
 
 ## 🚫 The banner never appears {#the-banner-never-appears}
 
-**Check the console first.** Three messages account for nearly all of it.
+**Check the console first.** A few messages account for nearly all of it.
 
 `[Consentio Loader] script not found`
 : The tag is missing `data-consentio-loader`. The script finds itself by that attribute and cannot start
@@ -19,11 +19,16 @@ without it. Put it on exactly one tag.
 : The two files are not in the same folder. The small one works out where the big one is by looking next to
 itself, so moving one without the other breaks it. Put them back together.
 
-**A 404 on your settings or cookies file**
-: Check `data-settings-url` and `data-cookies-url` are paths your site actually serves. Both are optional —
-if you remove them the banner still runs on built-in defaults, which is a quick way to prove the rest
-works. A language file that does not load is not this: the banner still appears, in English, and
-[says so](#the-banner-is-in-english) on the console.
+**`[Consentio Loader] Initialization failed: Error: /data/consentio-settings.json did not load: HTTP 404`**
+: Your settings file did not load. Check `data-settings-url` is the path in the message and that your site
+serves it. The file is optional — remove the attribute and
+the banner still runs on built-in defaults, which is a quick way to prove the rest works. A language file or a
+cookie table that does not load is not this: the banner still appears, in English or with
+[empty tables](#the-settings-panel-tables-are-empty), and says so on the console.
+
+`[Consentio Loader] the loader tag has no src, so the banner cannot be located`
+: The tag was pasted inline. The small file finds the big one next to its own `src`, so it has to be
+linked, not pasted.
 
 **Nothing on the console at all**
 : The tag is probably not running. View source on the built page and confirm the tag is really in the
@@ -71,12 +76,11 @@ everything.
 Pages**, not *All Pages*. Only that trigger is guaranteed to run before everything else in the container.
 
 **On the Tag Manager route, a tag is not in the container.** Anything pasted straight into a page — a video
-embed, a chat widget, a pixel in a footer include — is outside the banner's reach on that route. The fix is
-to move it into the container, or to switch to the HTML route and
-[mark the script]({{ '/hold-scripts/' | relative_url }}). [Choose a route]({{ '/routes/' | relative_url }})
-has the two side by side.
+embed, a chat widget, a pixel in a footer include — is outside the container's reach. The fix is to move it
+into the container, or to [mark the script]({{ '/hold-scripts/' | relative_url }}) — marking works on
+either route. [Choose a route]({{ '/routes/' | relative_url }}) has the two side by side.
 
-**On the HTML route, a script you pasted into the page is not marked.** Consentio holds back only a tag
+**A script you pasted into the page is not marked.** Consentio holds back only a tag
 carrying `type="text/plain"` and `data-consentio`; everything else runs as it always did.
 [Hold a script until consent]({{ '/hold-scripts/' | relative_url }}) is the one change to make.
 
@@ -105,7 +109,7 @@ The console says which file:
 `data-language` is one a published pack exists for — `el`, not `gr`.
 
 `Consentio Tag: the language pack did not load, so the banner keeps its built-in English`
-: On the Tag Manager route, with *Text source* set to *A published language pack*. The tag loads the pack
+: On the Tag Manager route, with **Language** set to *A published language pack*. The tag loads the pack
 from the CDN at the same version as the banner, so something between the visitor and the CDN stopped it.
 
 ## 🧩 Two banners at once {#two-banners-at-once}
@@ -120,7 +124,8 @@ that do not know about each other, each writing over the other's answer.
 The cookie list is a separate file and it is optional, so an empty table is what "not configured yet" looks
 like.
 
-- `data-cookies-url` is missing, or points at a 404.
+- `data-cookies-url` is missing, or points at a 404 — the console then says `the cookie table did not
+  load, so the settings panel shows no table`, with the address.
 - The file loads, but every entry's `category` matches none of the four category keys. An entry whose
   `category` matches nothing is never shown. The keys are `strictly_necessary`,
   `preferences_functionality`, `statistics_performance` and `marketing_advertising` — spelled exactly.
@@ -143,8 +148,9 @@ reading.
 
 In order, cheapest first:
 
-**1. Turn on logging.** Put `data-debug="true"` on the tag. It prints what the script is doing at each step.
-Errors and the async/defer warning are printed either way.
+**1. Turn on logging.** Put `data-debug="true"` on the tag. It prints each address the script fetches, what
+came back, and the consent default it pushed. Every other line is printed either way.
+[Every console message](#every-console-message) is at the bottom.
 
 **2. Read the cookie.** In the console:
 
@@ -184,3 +190,50 @@ document.addEventListener('consentio:consent-update', (e) => console.log(e.detai
 ```
 
 Fires every time someone saves settings or accepts all. See [Events]({{ '/events/' | relative_url }}#events).
+
+## 🖨️ Every console message {#every-console-message}
+
+Everything Consentio prints, and when. The loader's lines are always printed unless the table says
+`data-debug`; the banner's warnings are always printed, and its `[Consentio:Event]` and `[Consentio:GTM]`
+lines only with `debug` on in the settings file.
+
+| Message | When |
+|---|---|
+| `[Consentio Loader] script not found` | no tag carries `data-consentio-loader` |
+| `[Consentio Loader] loaded with async or defer, so the consent default cannot arrive before the tag manager` | the tag has `async` or `defer` |
+| `[Consentio Loader] Consent default pushed:` | the first message to Google went out. `data-debug` |
+| `[Consentio Loader] data-version "<value>" is not a whole number, so version 1 is used` | the attribute holds something other than a whole number |
+| `[Consentio Loader] Consentio is already initialized` | a second loader tag, or the banner already running. `data-debug` |
+| `[Consentio Loader] the loader tag has no src, so the banner cannot be located` | the tag was pasted inline |
+| `[Consentio Loader] Failed to load script:` | `consentio.min.js` did not load from the address shown |
+| `[Consentio Loader] Constructor not found after script load` | the file at that address loaded but is not the banner |
+| `[Consentio Loader] settings URL:`, `language URL:`, `cookies URL:` | the address about to be fetched. `data-debug` |
+| `[Consentio Loader] both data-language and data-language-url are set - data-language-url wins` | both attributes are on the tag |
+| `[Consentio Loader] the language file did not load, so the banner keeps its built-in English:` | the address that failed, and the reason |
+| `[Consentio Loader] the cookie table did not load, so the settings panel shows no table:` | the address that failed, and the reason |
+| `[Consentio Loader] settings loaded:`, `language loaded:`, `cookies loaded:` | what each file held. `data-debug` |
+| `[Consentio Loader] Initialized successfully` | the banner is built |
+| `[Consentio Loader] Initialization failed:` | the settings file did not load — `<url> did not load: HTTP 404` — or the banner threw while being built |
+| `[Consentio] unknown consent category "<key>" ignored - the four categories are fixed` | a settings file or language pack names a fifth category |
+| `[Consentio] "cookieName" in the settings file is ignored - the loader tag reads the cookie before the file arrives. Set data-cookie-name on the tag instead.` | the settings file names a cookie the tag does not. The same line for `"version"` and `data-version`, and for `"urlPassthrough"` and `data-url-passthrough` |
+| `[Consentio] policy URL "<value>" ignored - it must start with http://, https:// or /` | a `policyUrl` in either file that is not one of those |
+| `[Consentio] hideFloatingButton is set - the site now owes the visitor a link of its own calling window.ConsentioInstance.openSettings()` | the setting is on |
+| `[Consentio] the answer did not read back - the browser did not keep the "<name>" cookie. Nothing Consentio asks for should be refused, so look for something else on the page clearing cookies.` | the cookie was written and was not there afterwards |
+| `[Consentio] openSettings ignored - the banner is not on the page yet` | `openSettings()` was called too early. `debug` |
+| `[Consentio:Event] open-settings`, `accept-all-consents`, `reject-all-consents`, `cancel-settings`, `save-settings` | a button was pressed. `debug` |
+| `[Consentio:GTM] Pushed event: consent`, `Pushed event: set`, `Consent updated` | the update went out. `debug` |
+
+The Tag Manager template prints only in preview mode, and every line starts with `Consentio Tag`:
+
+| Message | When |
+|---|---|
+| `Consentio Tag =` | what the pickers held, on every run |
+| `Consentio Tag: the direct install route is on this page, so the tag stands down` | `window.ConsentioDefault` was already set by the script tag |
+| `Consentio Tag: already initialized` | the tag fired twice on one page |
+| `Consentio Tag: the Settings is not a JSON object, so it is ignored` | the Settings picker gave something that is not an object. The same line for `Language pack` |
+| `Consentio Tag: cookieName is fixed to consentio on this route, so <name> is ignored` | the settings file names another cookie |
+| `Consentio Tag: the Cookie table is not a JSON array, so the settings panel shows no table` | the Cookie table picker gave something that is not an array |
+| `consent default =` | the signals it set, before loading anything |
+| `settings =`, `language =`, `cookies =` | the three inputs as handed to the banner |
+| `Consentio Tag: the language pack did not load, so the banner keeps its built-in English` | the pack's address follows; the banner still loads |
+| `Consentio Tag: the banner script did not load` | the tag fails; the consent default was already set |

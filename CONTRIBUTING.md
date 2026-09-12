@@ -21,7 +21,7 @@ npm run build:js      # the four bundles, into build/
 |---|---|---|
 | `npm run build:js` | `build/` | the four bundles |
 | `npm run build:i18n` | `build/i18n/` | the language files people paste |
-| `npm run build:gtm` | `build/<name>.tpl` | the two tag manager templates |
+| `npm run build:gtm` | `build/<name>.tpl` | the tag manager template |
 | `npm run build:site` | `website/` | the site, assets and all |
 | `npm run watch` | `website/js/` | the bundles, rebuilt as you edit |
 | `npm run publish:js` | `dist/` | **the release workflow only.** See below |
@@ -61,10 +61,10 @@ way — they once acquired a DOM by accident through a shared helper and died wi
 test that needs no page imports from `test/basics.mts`, never from `test/helpers.mts`, and is named
 `*.plain.test.mts` — the second command globs that name, so there is no list to remember.
 
-**Some tests are marked `todo`, and the run still exits 0.** That is correct. They describe behaviour the
-code does not have yet, and deleting the flag is how a fix proves itself. Do not delete a `todo` flag
-without making its test pass. [`test/README.md`](test/README.md) explains the layout and why the files are
-so small.
+**A test marked `todo` does not fail the run.** That is correct. It describes behaviour the code does not
+have yet, and deleting the flag is how a fix proves itself; there are none at the moment. Do not delete a
+`todo` flag without making its test pass. [`test/README.md`](test/README.md) explains the layout and why
+the files are so small.
 
 ## 🚫 Never commit dist/
 

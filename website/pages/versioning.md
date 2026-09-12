@@ -15,8 +15,8 @@ That is the only way to ask everyone again, and raising the number is how you do
 Raise `version` by one, in whichever place applies to you:
 
 - **In your HTML:** `data-version="2"` on the tag. This one wins if you set both.
-- **In your settings file:** `"version": 2`.
-- **In Tag Manager:** the version field on the template.
+- **In your settings file:** `"version": 2`. On the Tag Manager route this is the only place — the tag
+  reads it from the file it is given.
 
 Set it in every place your site uses. A page that still says `1` will keep honouring old answers while the
 rest of your site asks again.

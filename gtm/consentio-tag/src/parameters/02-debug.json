@@ -1,8 +1,0 @@
-{
-	"type": "CHECKBOX",
-	"name": "debug",
-	"checkboxText": "Debug",
-	"simpleValueType": true,
-	"alwaysInSummary": true,
-	"help": "Logs what the tag decided to the browser console. Turn it off before publishing."
-}

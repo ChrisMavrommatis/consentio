@@ -21,7 +21,7 @@ Both are fired on `document`, and both carry the visitor's answers.
 | Event | When it fires |
 |---|---|
 | `consentio:consent-update` | Every time someone accepts all, rejects all, or saves their choices |
-| `consentio:initialized` | Once, when the banner first appears — carrying whatever was already stored |
+| `consentio:initialized` | Once, when the banner is put on the page — carrying the stored answer, or each category's default state when there is none |
 
 ## 📄 Loading something only when it is allowed {#loading-something-only-when-it-is-allowed}
 
@@ -51,6 +51,11 @@ document.addEventListener('consentio:initialized', (e) => onAllowed(e.detail));
   marketing_advertising: 'denied'
 }
 ```
+
+For a visitor with no stored answer, `detail` is what the switches start at. With the defaults every
+category but `strictly_necessary` starts denied, so the listener above loads nothing for them. A category
+you start at `granted` in the [settings file]({{ '/configuration/' | relative_url }}#consents) is the
+exception: it reads as granted before anyone has answered.
 
 <div class="callout callout--warn" markdown="1">
 **Register the `consentio:initialized` listener early** — in the `<head>`, or at the top of your own script.
@@ -96,11 +101,12 @@ panel.
 ```
 
 Calling it while the panel is already open does nothing, so a second click cannot disturb where the visitor
-has tabbed to.
+has tabbed to. Calling it before the banner is on the page is ignored too, and with `debug` on the console
+says `openSettings ignored - the banner is not on the page yet`.
 
 <div class="callout callout--warn" markdown="1">
 **If you turn the round button off, this link is the only way back in.** Set
-[`hideFloatingButton`]({{ '/configuration/' | relative_url }}#top-level) — or tick **Hide Floating Button**
-on the tag — only once your own link is on every page. Consentio warns on the console when the option is
+[`hideFloatingButton`]({{ '/configuration/' | relative_url }}#top-level) — on either route — only once
+your own link is on every page. Consentio warns on the console when the option is
 set, because it cannot see whether you added one.
 </div>

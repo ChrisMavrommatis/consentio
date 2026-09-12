@@ -52,6 +52,12 @@ export function needsAdsDataRedaction(signals: ConsentSignals): boolean {
 	return signals.ad_storage === 'denied';
 }
 
+/**
+ * The gtag `set` key that carries the ad-click id across same-site links in the URL while
+ * ad storage is denied. Off unless the site asks: it puts a click id in every internal link.
+ */
+export const URL_PASSTHROUGH = 'url_passthrough';
+
 export type ConsentDefault = ConsentSignals & { wait_for_update?: number };
 
 // `null` for waitForUpdate when there is a stored choice: waiting for a banner that will

@@ -1,7 +1,0 @@
-{
-	"type": "CHECKBOX",
-	"name": "shareAcrossSubdomains",
-	"checkboxText": "Share the answer across subdomains",
-	"simpleValueType": true,
-	"help": "Turn this on if your site answers on more than one hostname. The answer is stored on the domain those hostnames share, so someone who answers on www.example.com is not asked again on shop.example.com. Left off, the answer belongs to the one hostname it was given on."
-}

@@ -102,6 +102,9 @@ jobs:
 
       - run: npm ci --ignore-scripts
       - run: npm run typecheck
+      # Nothing else ever deletes from dist/, so a file a release stopped producing would
+      # stay in the tree and be served at every later tag.
+      - run: rm -rf dist
       - run: npm run publish:i18n
       - run: npm run publish:gtm
       - run: npm run publish:js
@@ -163,7 +166,7 @@ jobs:
             dist/consentio.js dist/consentio.min.js
             dist/consentio-loader.js dist/consentio-loader.min.js
             dist/consentio.min.js.LICENSE.txt dist/consentio-loader.min.js.LICENSE.txt
-            dist/consentio-tag.tpl dist/consentio-tag-cookies.tpl
+            dist/consentio-tag.tpl
             dist/i18n/en.json dist/i18n/el.json
             dist/i18n/en.js dist/i18n/el.js
             dist/i18n/en.gtm.js dist/i18n/el.gtm.js

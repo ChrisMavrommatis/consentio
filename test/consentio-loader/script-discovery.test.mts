@@ -8,7 +8,7 @@ const LOADER = new URL('../../src/consentio-loader.js', import.meta.url);
 // The loader is an IIFE that runs on import, so each scenario needs an uncached module
 // and therefore its own file. The DOM is arranged at module scope, before the import.
 
-document.head.innerHTML = '<script data-consentio-loader src="/js/consentio-loader.min.js" data-config-url="/c.json"></script>';
+document.head.innerHTML = '<script data-consentio-loader src="/js/consentio-loader.min.js" data-settings-url="/c.json"></script>';
 
 test('the loader injects the bundle that matches its own build', async () => {
 	await importScript(LOADER);

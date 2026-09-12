@@ -38,7 +38,7 @@ review what moved.
 
 ```html
 <!-- an exact tag -->
-<script src="https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@0.2.0/dist/consentio-loader.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@0.3.0/dist/consentio-loader.min.js"></script>
 ```
 
 The same applies to the tag manager template: it pins the banner version in its own CDN URL, so the
@@ -66,8 +66,9 @@ These are known and documented, and a report about them will be closed as such:
 
 - **The loader blocks.** It has to. A consent default pushed after the tag manager has read consent gates
   nothing, so the script tag carries no `async` and no `defer`.
-- **The tag manager route only covers that container.** A template can gate what the container loads and
-  nothing else. Anything pasted straight into the page fires regardless of the answer.
+- **The container only covers what it loads.** A template can gate what the container loads and nothing
+  else. Anything pasted straight into the page and not marked with `type="text/plain"` and its category
+  fires regardless of the answer.
 - **A known bug in an already-published tag.** It stays there. See *What is supported* above.
 
 ## 📄 Licence

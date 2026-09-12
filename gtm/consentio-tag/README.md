@@ -25,36 +25,37 @@ On any other trigger the default arrives after the tags it is meant to hold back
 pixel in the HTML - sits outside consent control. The direct install route can hold a script like that back
 until its category is granted; this one cannot.
 
-## ⚙️ Fields {#fields}
+## ⚙️ Pickers {#pickers}
 
-| Field | What it does |
+Three inputs, the same three files the direct route fetches, each from a variable - the file's JSON text in
+a Constant, or the parsed value from any other variable. Left at *None*, the banner's own default. The
+tag reads nothing off the page.
+
+| Picker | What it takes | At *None* |
+|---|---|---|
+| Settings | `consentio-settings.json` - how the banner behaves | the banner's defaults |
+| Language | *Built-in English*, *From a variable* or *A published language pack* - see below | the built-in English |
+| Language pack variable | a whole language pack, `en.json` or `el.json` as published. Shown for *From a variable* | - |
+| Language pack | which published pack to load from the CDN. Shown for *A published language pack* | - |
+| Cookie table | `consentio-cookies.json` - the rows the settings panel shows | no table |
+
+Two keys of the settings file read differently here. `cookieName` is ignored - the permission below names
+the cookie, so it is always `consentio`, and the tag logs one line when the file says otherwise. `version`
+is read from the file, before the cookie, because there is no script tag to carry it.
+
+## 💬 Where the wording comes from {#language}
+
+| Language | What happens |
 |---|---|
-| Version | The version of your consent question. Raise it and every visitor is asked again |
-| Debug | Logs what the tag decided to the console |
-| Consent Required | Shows the banner as a full-screen overlay the visitor has to answer |
-| Hide Floating Button | Removes the round settings button in the bottom right corner. Only tick it if your site has its own link calling `window.ConsentioInstance.openSettings()` |
-| Preferences / Statistics / Marketing Default State | What each category starts at in the settings panel |
-| Text source | Where the banner's wording comes from - see below |
-| Texts | Every string it shows, filled in with the English text. Shown when Text source is *Custom* |
-| Language pack variable | A variable holding the whole set. Shown when Text source is *From a variable* |
-| Language pack | Which published pack to load. Shown when Text source is *A published language pack* |
-| Cookies Variable | A **Consentio Tag - Cookies** variable, listing the cookies your site sets |
-| Privacy Policy URL | Where the banner's privacy policy link points. Leave it empty and no link is shown |
-| Cookie Lifetime (days) | How long an answer is kept before the visitor is asked again. 90 unless you change it |
-| Share the answer across subdomains | One answer for every hostname under the domain your site's hosts share |
-
-## 💬 Where the wording comes from {#text-source}
-
-| Text source | What happens |
-|---|---|
-| **Built-in English** | the tag sends no strings and the banner uses its own, so a later correction to them reaches you with the next version |
-| **Custom** | every string appears in a field, already filled in with the English text. Edit what you want, or paste a translation over it |
-| **From a variable** | the whole set comes from any Tag Manager variable - a Custom JavaScript variable, or a Lookup Table keyed on the page's language |
+| **Built-in English** | the tag sends no words and the banner uses its own, so a later correction to them reaches you with the next version. A page that carries `window.ConsentioLanguage` is read here |
+| **From a variable** | the whole pack comes from any Tag Manager variable - the JSON text in a Constant, a Custom JavaScript variable, or a Lookup Table keyed on the page's language |
 | **A published language pack** | the tag loads `dist/i18n/<locale>.js` from the CDN at the same version as the banner, before the banner, so the words move with each release. If the pack does not load, the tag logs one line and the banner keeps its built-in English |
 
 Pick one. There is no blending: a language you supply is a language you own.
 
-The Cookies variable is optional and independent of all four. At *None* the banner shows no cookie table.
+**Until 1.0.0 every setting was a field, the words could be typed into fields under a *Custom* source, and
+a second template held the cookie table a row at a time.** All three are gone; the three files are the
+whole interface, on both routes.
 
 ## 🍪 The cookie {#the-cookie}
 
@@ -70,8 +71,8 @@ The value is one JSON object, URI-encoded:
 **How it is read**, and the order matters:
 
 1. no cookie, or a value that will not parse as a JSON object - **no stored answer**
-2. `version` is not the Version field's value - **no stored answer.** The whole value is discarded, never
-   partly applied
+2. `version` is not the settings file's `version` (1 when the file says nothing) - **no stored answer.** The
+   whole value is discarded, never partly applied
 3. no `consents` key - **no stored answer**
 4. otherwise `consents` is the answer
 
@@ -88,12 +89,12 @@ drift from the banner's is one more way the two can disagree.
 |---|---|
 | Reads cookie value(s): `consentio` | the stored answer |
 | Accesses consent state, write | the consent default |
-| Writes data layer: `ads_data_redaction` | redacts ad identifiers while ad storage is denied |
+| Writes data layer: `ads_data_redaction`, `url_passthrough` | redacts ad identifiers while ad storage is denied; carries the ad-click id in links when the settings ask |
 | Injects script: `cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio*` | the banner, and a published language pack |
 | Accesses globals: `Consentio.Create`, `ConsentioInstance` | starts the banner, and stops a second trigger starting a second one |
-| Reads globals: `ConsentioDefault`, `ConsentioLanguage` | stands down when the direct route's script tag ran; reads the pack it loaded |
+| Reads globals: `ConsentioDefault`, `ConsentioLanguage` | stands down when the direct route's script tag ran; reads the pack it loaded from the CDN |
 | Template storage | the same guard, before the banner has loaded |
-| Logging | debug output |
+| Logging | what it read and decided, in preview mode |
 
 ## 🧪 Tests {#tests}
 

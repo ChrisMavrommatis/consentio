@@ -5,7 +5,7 @@ import { pushes, resetDataLayer } from '../basics.mjs';
 
 // See ./README.md - this is a proxy for a page-level check that does not exist yet.
 
-document.head.innerHTML = '<script data-consentio-loader src="/js/consentio-loader.min.js" data-config-url="/c.json"></script>';
+document.head.innerHTML = '<script data-consentio-loader src="/js/consentio-loader.min.js" data-settings-url="/c.json"></script>';
 
 test('issue 1 - the loader pushes consent default while it is still evaluating', async () => {
 	resetDataLayer();

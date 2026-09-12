@@ -3,6 +3,8 @@ title: The language pack
 anchor: language-pack
 permalink: /language/
 description: The file that holds every word the banner shows - each text key with its English, the four categories, and how to load a published pack or your own.
+scripts: [packs]
+panel: true
 ---
 
 The language pack is the words file: every string the visitor reads, the title and description of each of
@@ -10,14 +12,18 @@ the four categories, and the address of a privacy policy in that language. Nothi
 banner behaves — that is the [settings file]({{ '/configuration/' | relative_url }}). A translator can be
 given this one file and can break nothing else.
 
-**A published pack is a valid language pack exactly as downloaded.** `en.json` and `el.json` are attached
-to [every release]({{ site.repository_url }}/releases/latest), built from one YAML file per language in
-the source repository. Point the banner at one, or copy it and edit the strings.
-[Tag Manager language packs]({{ '/language/tag-manager/' | relative_url }}) has the same packs as
-variables to paste.
-
 Keys merge the way the [settings file's]({{ '/configuration/' | relative_url }}) do: leave one out and the
 banner uses its built-in English for that one, and `""` is a value, not a gap.
+
+## 🌍 The published packs {#the-published-packs}
+
+**A published pack is a valid language pack exactly as downloaded.** Each one is built from one YAML file
+per language in the source repository and attached to [every release]({{ site.repository_url }}/releases/latest).
+Open one here, copy it, and host it as your own file — or point `data-language` at it and host nothing.
+The panel also shows it as the variable [the Tag Manager route]({{ '/language/tag-manager/' | relative_url }})
+pastes.
+
+{% consentio_packs file %}
 
 ## 📄 A complete example {#a-complete-example}
 
@@ -130,11 +136,19 @@ Two attributes on the loader tag, and you set one of them:
 Set both and `data-language-url` wins, with a line on the console. Set neither and the banner uses its
 built-in English.
 
+**The page picks the language, not the browser.** Consentio reads neither `<html lang>` nor the browser's
+language list. A site with pages in two languages puts a different `data-language` or `data-language-url`
+on each page's tag, which a static site knows when it builds the page. A visitor's browser setting and
+the page's language are different things, and the banner should read as the page does.
+
 ## 🏷️ On the Tag Manager route {#on-the-tag-manager-route}
 
-The tag's **Text source** field picks where the words come from: its own fields, a published pack it loads
-itself, or a variable holding a pack. [Tag Manager language packs]({{ '/language/tag-manager/' | relative_url }})
-has the packs ready to paste into a variable, and the one paragraph on letting the tag load one.
+The tag's **Language** picker has three choices: its built-in English, a published pack it loads itself,
+or a variable holding a pack — the same file as above, pasted into a Constant as JSON text or returned by a
+Custom JavaScript variable.
+[Tag Manager language packs]({{ '/language/tag-manager/' | relative_url }}) has the packs ready to paste
+into a variable, and the one paragraph on letting the tag load one.
+[The tag]({{ '/tag/' | relative_url }}#the-three-language-choices) has the detail.
 
 ## ⚠️ When the file is missing or wrong {#when-the-file-is-missing-or-wrong}
 
@@ -148,3 +162,5 @@ built-in English and the console names the file that failed:
 [Troubleshooting]({{ '/troubleshooting/' | relative_url }}#the-banner-is-in-english) has the usual causes.
 
 A `consents` key that is not one of the four is ignored with a warning, and the rest of the file is used.
+A `policyUrl` that does not start with `http://`, `https://` or `/` is dropped with a warning, the same as
+in the settings file, and no link is shown.

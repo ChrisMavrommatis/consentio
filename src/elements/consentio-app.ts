@@ -208,11 +208,13 @@ class ConsentioAppElement extends HTMLElement {
 		if (this.config.hideFloatingButton) {
 			this.floatingButton?.remove();
 			this.floatingButton = null;
-		} else if (!this.floatingButton) {
-			this.floatingButton = this.renderNode<ConsentioFloatingButtonElement>(floatingButtonTemplate, {
-
-			});
-			this._shadow.appendChild(this.floatingButton);
+		} else {
+			if (!this.floatingButton) {
+				this.floatingButton = this.renderNode<ConsentioFloatingButtonElement>(floatingButtonTemplate, {});
+				this._shadow.appendChild(this.floatingButton);
+			}
+			// An icon-only button has no name of its own. Issue 52.
+			this.floatingButton.button?.setAttribute('aria-label', this.config.texts.buttonSettings);
 		}
 	}
 

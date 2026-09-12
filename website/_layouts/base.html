@@ -38,6 +38,14 @@
 
 	{{ content }}
 
+	{%- if page.panel %}
+	{% include panel.html %}
+	{%- endif %}
+
+	{%- for script in page.scripts %}
+	<script src="{{ '/js/pages/' | append: script | append: '.js' | relative_url }}" defer></script>
+	{%- endfor %}
+
 	<footer class="site-footer">
 		<div class="site-footer__inner">
 			<span>{{ site.title }} - a frontend-only consent banner. Apache-2.0.</span>

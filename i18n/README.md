@@ -27,7 +27,7 @@ JavaScript variable to paste into Tag Manager, shown on the site's tag-manager p
 
 The json is read three ways, which is the point of it: it is argument two of `Consentio.Create`, it is
 what `data-language-url` fetches on the direct route, and it is what a **Language pack variable** holds on
-the tag manager route. A pack that had to be edited before one of the three would accept it was defect 34.
+the tag manager route. None of the three needs it edited first.
 
 `node scripts/i18n.mjs --check` reads the language files and writes nothing.
 
@@ -40,13 +40,13 @@ release:
 
 - on the direct route, `data-language="el"` on the loader tag fetches `dist/i18n/el.json` at the loader's
   own version. `data-language-url` wins when both are set
-- on the tag manager route, *Text source* set to *A published language pack* injects `dist/i18n/el.js`
+- on the tag manager route, **Language** set to *A published language pack* injects `dist/i18n/el.js`
   before the banner and reads it off `window.ConsentioLanguage`
 
 **A pack that does not load costs the language, not the banner.** Both routes log one line naming the
 file and the banner appears in its built-in English. On the direct route that used to be an initialisation
 failure - no language file, no banner - for any file that did not load; it is one now only for the
-settings and cookies files.
+settings file, and a cookie table that does not load costs the table.
 
 ## 🌍 Adding a language
 

@@ -147,6 +147,19 @@ scenarios:
     mock('getCookieValues', () => ['{"version":1,"consents":{"strictly_necessary":"granted","preferences_functionality":"granted","statistics_performance":"granted","marketing_advertising":"granted"}}']);
     runCode(mockData);
     assertThat(redaction, 'a visitor who granted ad storage does not need it').isEqualTo(false);
+- name: url_passthrough is pushed only when the settings say so
+  code: |-
+    const sets = [];
+    mock('gtagSet', (obj) => { sets.push(obj); });
+    mock('getCookieValues', () => []);
+
+    runCode(mockData);
+    assertThat(sets.some((obj) => obj.url_passthrough !== undefined), 'nothing asked for it').isEqualTo(false);
+
+    storage = {};
+    mockData.settings = '{"urlPassthrough": true}';
+    runCode(mockData);
+    assertThat(sets.some((obj) => obj.url_passthrough === true), 'the settings asked for it').isEqualTo(true);
 - name: a second firing pushes nothing and injects nothing
   code: |-
     mock('templateStorage', {
@@ -170,96 +183,192 @@ scenarios:
     assertApi('setDefaultConsentState').wasNotCalled();
     assertApi('injectScript').wasNotCalled();
     assertApi('gtmOnSuccess').wasCalled();
-- name: built-in English sends no strings at all
+- name: every picker at None on a bare page sends the defaults
   code: |-
+    // No variables, nothing on window: the banner gets an empty settings object apart
+    // from the cookie name, no words and no table, and reads the cookie at version 1.
     mock('getCookieValues', () => []);
 
-    const config = captureConfig();
+    const sent = capture();
 
-    assertThat(config.texts).isEqualTo({});
-    assertThat(config.consents[0].title).isEqualTo(undefined);
-- name: custom text reaches the banner and the rest still falls back
+    assertThat(sent.settings).isEqualTo({ cookieName: 'consentio' });
+    assertThat(sent.language).isEqualTo({});
+    assertThat(sent.cookies).isEqualTo([]);
+- name: the settings as JSON text are parsed
+  code: |-
+    // A Constant holding the site's consentio-settings.json, pasted in whole. The values
+    // are gtm/settings.fixture.json.
+    mock('getCookieValues', () => []);
+    mockData.settings = settingsText;
+
+    const sent = capture();
+
+    assertThat(sent.settings.consentRequired).isEqualTo(true);
+    assertThat(sent.settings.policyUrl).isEqualTo('/privacy/');
+    assertThat(sent.settings.consents.statistics_performance.defaultState).isEqualTo('granted');
+    assertThat(sent.settings.cookieLifetime).isEqualTo(365);
+    assertThat(sent.settings.shareAcrossSubdomains).isEqualTo(true);
+- name: the settings as an object are sent as they are
+  code: |-
+    // A Custom JavaScript variable returning the object.
+    mock('getCookieValues', () => []);
+    mockData.settings = { debug: true, hideFloatingButton: true };
+
+    const sent = capture();
+
+    assertThat(sent.settings.debug).isEqualTo(true);
+    assertThat(sent.settings.hideFloatingButton).isEqualTo(true);
+    assertThat(sent.settings.consentRequired).isEqualTo(undefined);
+- name: the settings left at None are the banner's defaults
   code: |-
     mock('getCookieValues', () => []);
-    mockData.textSource = 'custom';
-    mockData.barTitle = 'Cookies on this site';
-    mockData.strictlyNecessaryTitle = 'Necessary';
+    mock('copyFromWindow', (key) => key === 'ConsentioSettings' ? { policyUrl: '/page/' } : undefined);
 
-    const config = captureConfig();
+    const sent = capture();
 
-    assertThat(config.texts.barTitle).isEqualTo('Cookies on this site');
-    assertThat(config.texts.barDescription).isEqualTo(undefined);
-    assertThat(config.consents[0].title).isEqualTo('Necessary');
-- name: a language pack variable supplies the whole set
+    assertThat(sent.settings).isEqualTo({ cookieName: 'consentio' });
+- name: settings that are not a JSON object are ignored
+  code: |-
+    mock('getCookieValues', () => []);
+    mockData.settings = '[1, 2]';
+
+    const sent = capture();
+
+    assertThat(sent.settings).isEqualTo({ cookieName: 'consentio' });
+    assertApi('gtmOnSuccess').wasCalled();
+- name: the cookie name is fixed on this route
+  code: |-
+    // The get_cookies permission names one cookie at publish time, so a file naming
+    // another is overridden rather than obeyed.
+    mock('getCookieValues', () => []);
+    mockData.settings = '{"cookieName":"other"}';
+
+    const sent = capture();
+
+    assertThat(sent.settings.cookieName).isEqualTo('consentio');
+- name: the version is read from the settings before the cookie
+  code: |-
+    // A site at version 2 with a visitor who answered at version 2: the stored answer
+    // counts, which it would not if the tag read the cookie at the default of 1.
+    mock('getCookieValues', () => ['{"version":2,"consents":{"strictly_necessary":"granted","preferences_functionality":"granted","statistics_performance":"granted","marketing_advertising":"granted"}}']);
+    mockData.settings = '{"version":2}';
+
+    runCode(mockData);
+
+    assertApi('setDefaultConsentState').wasCalledWith({
+      ad_storage: 'granted',
+      ad_user_data: 'granted',
+      ad_personalization: 'granted',
+      analytics_storage: 'granted',
+      functionality_storage: 'granted',
+      personalization_storage: 'granted',
+      security_storage: 'granted'
+    });
+- name: a language pack variable is sent unchanged
   code: |-
     // A published <locale>.json, unedited: the words under texts, the categories keyed
     // under consents. The values are gtm/settings.fixture.json.
     mock('getCookieValues', () => []);
-    mockData.textSource = 'variable';
-    mockData.policyUrl = '/privacy/';
-    mockData.textsVariable = pack('/el/privacy/');
+    mockData.settings = settingsText;
+    mockData.languageSource = 'variable';
+    mockData.languageVariable = pack('/el/privacy/');
 
-    const config = captureConfig();
+    const sent = capture();
 
-    assertThat(config.texts.barTitle).isEqualTo('\u03a0\u03bf\u03bb\u03b9\u03c4\u03b9\u03ba\u03ae Cookies');
-    assertThat(config.consents[0].title).isEqualTo('\u0391\u03c0\u03bf\u03bb\u03cd\u03c4\u03c9\u03c2 \u03b1\u03c0\u03b1\u03c1\u03b1\u03af\u03c4\u03b7\u03c4\u03b1');
-    assertThat(config.consents[0].description).isEqualTo('\u03a7\u03c9\u03c1\u03af\u03c2 \u03b1\u03c5\u03c4\u03ac \u03bf \u03b9\u03c3\u03c4\u03cc\u03c4\u03bf\u03c0\u03bf\u03c2 \u03b4\u03b5\u03bd \u03bb\u03b5\u03b9\u03c4\u03bf\u03c5\u03c1\u03b3\u03b5\u03af.');
-    assertThat(config.policyUrl).isEqualTo('/el/privacy/');
-- name: what a pack leaves out falls back rather than arriving blank
+    assertThat(sent.language.texts.barTitle).isEqualTo('\u03a0\u03bf\u03bb\u03b9\u03c4\u03b9\u03ba\u03ae Cookies');
+    assertThat(sent.language.consents.strictly_necessary.title).isEqualTo('\u0391\u03c0\u03bf\u03bb\u03cd\u03c4\u03c9\u03c2 \u03b1\u03c0\u03b1\u03c1\u03b1\u03af\u03c4\u03b7\u03c4\u03b1');
+    assertThat(sent.language.consents.strictly_necessary.description).isEqualTo('\u03a7\u03c9\u03c1\u03af\u03c2 \u03b1\u03c5\u03c4\u03ac \u03bf \u03b9\u03c3\u03c4\u03cc\u03c4\u03bf\u03c0\u03bf\u03c2 \u03b4\u03b5\u03bd \u03bb\u03b5\u03b9\u03c4\u03bf\u03c5\u03c1\u03b3\u03b5\u03af.');
+    assertThat(sent.language.policyUrl).isEqualTo('/el/privacy/');
+    assertThat(sent.settings.policyUrl).isEqualTo('/privacy/');
+- name: a language pack as JSON text is parsed
+  code: |-
+    // A Constant holding a downloaded el.json.
+    mock('getCookieValues', () => []);
+    mockData.languageSource = 'variable';
+    mockData.languageVariable = JSON.stringify(pack('/el/privacy/'));
+
+    const sent = capture();
+
+    assertThat(sent.language.locale).isEqualTo('el');
+    assertThat(sent.language.texts.barTitle).isEqualTo('\u03a0\u03bf\u03bb\u03b9\u03c4\u03b9\u03ba\u03ae Cookies');
+- name: what a pack leaves out is left out, so the banner falls back
   code: |-
     mock('getCookieValues', () => []);
-    mockData.textSource = 'variable';
-    mockData.textsVariable = pack('/el/privacy/');
+    mockData.languageSource = 'variable';
+    mockData.languageVariable = pack('/el/privacy/');
 
-    const config = captureConfig();
+    const sent = capture();
 
     // Absent, not empty: the banner keeps its built-in English for these.
-    assertThat(config.texts.buttonSave).isEqualTo(undefined);
-    assertThat(config.consents[1].title).isEqualTo(undefined);
-- name: a pack with no policy address of its own falls back to the field
+    assertThat(sent.language.texts.buttonSave).isEqualTo(undefined);
+    assertThat(sent.language.consents.preferences_functionality).isEqualTo(undefined);
+- name: a pack with no policy address of its own leaves the banner the settings
+  code: |-
+    // The banner resolves the address: a language that names one wins, blank included,
+    // and only a missing key falls back to the settings. The tag sends both untouched.
+    mock('getCookieValues', () => []);
+    mockData.settings = settingsText;
+    mockData.languageSource = 'variable';
+    mockData.languageVariable = pack(undefined);
+
+    const sent = capture();
+
+    assertThat(sent.language.policyUrl).isEqualTo(undefined);
+    assertThat(sent.settings.policyUrl).isEqualTo('/privacy/');
+- name: a blank policy address in a pack is sent blank
   code: |-
     mock('getCookieValues', () => []);
-    mockData.textSource = 'variable';
-    mockData.policyUrl = '/privacy/';
-    mockData.textsVariable = pack(undefined);
+    mockData.settings = settingsText;
+    mockData.languageSource = 'variable';
+    mockData.languageVariable = pack('');
 
-    const config = captureConfig();
+    const sent = capture();
 
-    assertThat(config.policyUrl).isEqualTo('/privacy/');
-- name: a blank policy address in a pack means no link in that language
+    assertThat(sent.language.policyUrl).isEqualTo('');
+- name: built-in English ignores a pack the page happens to carry
+  code: |-
+    // The global is how a pack the tag loads from the CDN reaches it, not a setting: a
+    // page that assigned it itself gets the built-in English it picked.
+    mock('getCookieValues', () => []);
+    mock('copyFromWindow', (key) => key === 'ConsentioLanguage' ? pack('/el/privacy/') : undefined);
+
+    const sent = capture();
+
+    assertThat(sent.language).isEqualTo({});
+- name: a language variable that is not a JSON object is built-in English
   code: |-
     mock('getCookieValues', () => []);
-    mockData.textSource = 'variable';
-    mockData.policyUrl = '/privacy/';
-    mockData.textsVariable = pack('');
+    mockData.languageSource = 'variable';
+    mockData.languageVariable = 'not json';
 
-    const config = captureConfig();
+    const sent = capture();
 
-    assertThat(config.policyUrl).isEqualTo('');
-- name: a published pack is injected before the bundle and fills the texts
+    assertThat(sent.language).isEqualTo({});
+    assertApi('gtmOnSuccess').wasCalled();
+- name: a published pack is injected before the bundle and is the language
   code: |-
     mock('getCookieValues', () => []);
-    mockData.textSource = 'pack';
-    mockData.textsPack = 'el';
+    mockData.languageSource = 'pack';
+    mockData.languagePack = 'el';
     mock('copyFromWindow', (key) => key === 'ConsentioLanguage' ? pack('/el/privacy/') : undefined);
 
     const injected = [];
     let sent = null;
     mock('injectScript', (url, onSuccess) => { injected.push(url); onSuccess(); });
-    mock('callInWindow', (path, config) => { sent = config; });
+    mock('callInWindow', (path, settings, language, cookies) => { sent = { settings, language, cookies }; });
     runCode(mockData);
 
     assertThat(injected).hasLength(2);
     assertThat(injected[0]).contains('consentio@__VERSION__/dist/i18n/el.js');
     assertThat(injected[1]).contains('consentio@__VERSION__/dist/consentio.min.js');
-    assertThat(sent.texts.barTitle).isEqualTo('\u03a0\u03bf\u03bb\u03b9\u03c4\u03b9\u03ba\u03ae Cookies');
-    assertThat(sent.consents[0].title).isEqualTo('\u0391\u03c0\u03bf\u03bb\u03cd\u03c4\u03c9\u03c2 \u03b1\u03c0\u03b1\u03c1\u03b1\u03af\u03c4\u03b7\u03c4\u03b1');
-    assertThat(sent.policyUrl).isEqualTo('/el/privacy/');
+    assertThat(sent.language.texts.barTitle).isEqualTo('\u03a0\u03bf\u03bb\u03b9\u03c4\u03b9\u03ba\u03ae Cookies');
+    assertThat(sent.language.consents.strictly_necessary.title).isEqualTo('\u0391\u03c0\u03bf\u03bb\u03cd\u03c4\u03c9\u03c2 \u03b1\u03c0\u03b1\u03c1\u03b1\u03af\u03c4\u03b7\u03c4\u03b1');
+    assertThat(sent.language.policyUrl).isEqualTo('/el/privacy/');
 - name: a pack that does not load still gives the visitor the banner
   code: |-
     mock('getCookieValues', () => []);
-    mockData.textSource = 'pack';
-    mockData.textsPack = 'el';
+    mockData.languageSource = 'pack';
+    mockData.languagePack = 'el';
 
     const injected = [];
     let sent = null;
@@ -267,45 +376,67 @@ scenarios:
       injected.push(url);
       if (url.indexOf('/dist/i18n/') !== -1) { onFailure(); } else { onSuccess(); }
     });
-    mock('callInWindow', (path, config) => { sent = config; });
+    mock('callInWindow', (path, settings, language, cookies) => { sent = { settings, language, cookies }; });
     runCode(mockData);
 
     assertThat(injected).hasLength(2);
-    assertThat(sent.texts).isEqualTo({});
-    assertThat(sent.consents[0].title).isEqualTo(undefined);
+    assertThat(sent.language).isEqualTo({});
     assertApi('gtmOnSuccess').wasCalled();
-- name: the cookie lifetime and the subdomain setting reach the banner
+- name: the cookie table left at None is no table
   code: |-
-    // The banner writes the cookie, so both are config fields rather than anything this
-    // template does. The banner works out the shared domain from the page it is on.
-    mock('getCookieValues', () => []);
-    mockData.cookieLifetime = 365;
-    mockData.shareAcrossSubdomains = true;
-
-    const config = captureConfig();
-
-    assertThat(config.cookieLifetime).isEqualTo(365);
-    assertThat(config.shareAcrossSubdomains).isEqualTo(true);
-- name: untouched cookie fields send nothing and the banner keeps its own defaults
-  code: |-
-    // The field's own default is 90 days; cleared, it is left out rather than sent blank.
     mock('getCookieValues', () => []);
 
-    const config = captureConfig();
+    const sent = capture();
 
-    assertThat(config.cookieLifetime).isEqualTo(undefined);
-    assertThat(config.shareAcrossSubdomains).isEqualTo(undefined);
+    assertThat(sent.cookies).isEqualTo([]);
+- name: the cookie table as JSON text is parsed
+  code: |-
+    // A Constant holding the site's consentio-cookies.json, pasted in whole.
+    mock('getCookieValues', () => []);
+    mockData.cookies = '[{"name":"consentio","purpose":"The stored answer","provenance":"First-party","duration":"1 year","category":"strictly_necessary"}]';
+
+    const sent = capture();
+
+    assertThat(sent.cookies).hasLength(1);
+    assertThat(sent.cookies[0].name).isEqualTo('consentio');
+- name: the cookie table as an array is sent as it is
+  code: |-
+    // A Custom JavaScript variable returning the rows.
+    mock('getCookieValues', () => []);
+    mockData.cookies = [{ name: 'consentio', purpose: 'The stored answer', provenance: 'First-party', duration: '1 year', category: 'strictly_necessary' }];
+
+    const sent = capture();
+
+    assertThat(sent.cookies).hasLength(1);
+    assertThat(sent.cookies[0].category).isEqualTo('strictly_necessary');
+- name: the cookie table left at None is no table
+  code: |-
+    mock('getCookieValues', () => []);
+    mock('copyFromWindow', (key) => key === 'ConsentioCookies' ? [{ name: '_ga' }] : undefined);
+
+    const sent = capture();
+
+    assertThat(sent.cookies).isEqualTo([]);
+- name: a cookie table that is not a JSON array is no table
+  code: |-
+    mock('getCookieValues', () => []);
+    mockData.cookies = '{"name":"consentio"}';
+
+    const sent = capture();
+
+    assertThat(sent.cookies).isEqualTo([]);
+    assertApi('gtmOnSuccess').wasCalled();
 setup: |-
+  // Every picker at None: what a tag that was only added and published sends.
   const mockData = {
-    version: 1,
-    debug: false,
-    consentRequired: true,
-    preferencesFunctionalityDefaultState: 'denied',
-    statisticsPerformanceDefaultState: 'denied',
-    marketingAdvertisingDefaultState: 'denied',
-    textSource: 'builtin',
+    settings: 'none',
+    languageSource: 'builtin',
+    languageVariable: 'none',
     cookies: 'none'
   };
+
+  // gtm/settings.fixture.json's settings object, as the JSON text a Constant holds.
+  const settingsText = '{"cookieName":"consentio","cookieLifetime":365,"shareAcrossSubdomains":true,"version":1,"debug":false,"consentRequired":true,"policyUrl":"/privacy/","hideFloatingButton":false,"consents":{"strictly_necessary":{"defaultState":"granted"},"preferences_functionality":{"defaultState":"denied"},"statistics_performance":{"defaultState":"granted"},"marketing_advertising":{"defaultState":"denied"}}}';
 
   // gtm/settings.fixture.json's language pack, which the banner's own tests assert
   // against. The Greek is escaped so this file stays ascii; the editor unescapes it.
@@ -329,11 +460,11 @@ setup: |-
   };
 
   // injectScript does nothing in the test sandbox, so the success callback - and with it
-  // Consentio.Create - only runs when it is mocked.
-  const captureConfig = () => {
+  // Consentio.Create - only runs when it is mocked. What it captures is the three objects.
+  const capture = () => {
     let sent = null;
     mock('injectScript', (url, onSuccess) => onSuccess());
-    mock('callInWindow', (path, config) => { sent = config; });
+    mock('callInWindow', (path, settings, language, cookies) => { sent = { settings, language, cookies }; });
     runCode(mockData);
     return sent;
   };

@@ -2,61 +2,76 @@
 title: The Tag Manager tag
 anchor: tag
 permalink: /tag/
-description: Every field on the Consentio tag template, the Cookies variable template, what the tag does in order, the permissions it asks for, and what goes wrong.
+description: The three pickers on the Consentio tag template - settings, language, cookie table - the three ways each input reaches it, what the tag does in order, the permissions it asks for, and what goes wrong.
 ---
 
-The Tag Manager route has no script tag and no files. Two templates come with each release:
-**Consentio Tag**, the tag itself, and **Consentio Tag - Cookies**, a variable that holds the cookie table.
-Every option is a field on the tag. The HTML route's equivalent is [the loader
-tag]({{ '/loader/' | relative_url }}).
+The Tag Manager route has no script tag and nothing to host. One template comes with each release,
+**Consentio Tag**, and it takes the same three inputs the HTML route does — the
+[settings file]({{ '/configuration/' | relative_url }}), the [language pack]({{ '/language/' | relative_url }})
+and the [cookie table]({{ '/cookies/' | relative_url }}) — each from a variable instead of a URL. The HTML
+route's equivalent is [the loader tag]({{ '/loader/' | relative_url }}).
 
 ## 📄 The smallest working tag {#the-smallest-working-tag}
 
-Import `consentio-tag.tpl`, add a tag from it, leave every field at its default, and fire it on **Consent
+Import `consentio-tag.tpl`, add a tag from it, leave every picker at its default, and fire it on **Consent
 Initialization - All Pages**. That is a banner in English, asking once, keeping the answer for 90 days, with
 no cookie table. [Use Google Tag Manager]({{ '/install/tag-manager/' | relative_url }}) walks the four
 steps.
 
-## ⚙️ The fields {#the-fields}
+## ⚙️ The pickers {#the-pickers}
 
-| Field | Default | What it does | On the HTML route |
+| Picker | Default | What it takes | On the HTML route |
 |---|---|---|---|
-| **Version** | `1` | Which stored answers are still valid. Raise it and every visitor is asked again — [Asking everyone again]({{ '/versioning/' | relative_url }}) | `data-version` |
-| **Debug** | off | Logs what the tag decided to the browser console. Turn it off before publishing | `data-debug` |
-| **Consent Required** | off | Shows the banner as a full-screen overlay the visitor has to answer before using the page. Off, the banner sits at the bottom and the page stays usable | `consentRequired` in the settings file |
-| **Consents** — a Default State per category | `Denied` | What each category starts at in the settings panel. It is not what is sent to Google before the visitor answers — that is always denied. `strictly_necessary` has no field, because it is always on | `consents.<key>.defaultState` |
-| **Text source** | *Built-in English* | Where the banner's words come from. Four choices, below | `data-language-url` or `data-language` |
-| **Language pack variable** | *None* | Shown for *From a variable*. Any variable returning a whole [language pack]({{ '/language/tag-manager/' | relative_url }}) | — |
+| **Settings** | *None* | A variable holding the [settings file]({{ '/configuration/' | relative_url }}) — its JSON text in a Constant, or the object from any variable. Left at *None*, the banner uses its defaults. [Two ways in](#two-ways-in) | `data-settings-url` |
+| **Language** | *Built-in English* | Where the words come from. Three choices, [below](#the-three-language-choices) | `data-language-url` or `data-language` |
+| **Language pack variable** | *None* | Shown for *From a variable*. A variable holding a whole [language pack]({{ '/language/tag-manager/' | relative_url }}) — its JSON text, or the object | — |
 | **Language pack** | English | Shown for *A published language pack*. Which pack the tag loads from the CDN, at the same version as the banner | `data-language` |
-| **Cookies Variable** | *None* | A variable returning the [cookie table]({{ '/cookies/' | relative_url }}#on-the-tag-manager-route). Left at *None*, the settings panel shows no table | `data-cookies-url` |
-| **Privacy Policy URL** | empty | Where the banner's privacy policy link points. Empty means no link. Must start with `http://`, `https://` or a single `/` | `policyUrl` |
-| **Hide Floating Button** | off | Removes the round settings button in the bottom right corner. Turn it on only if your site has its own link calling `window.ConsentioInstance.openSettings()` | `hideFloatingButton` |
-| **Cookie Lifetime (days)** | `90` | How long an answer is kept before the visitor is asked again | `data-cookie-lifetime` |
-| **Share the answer across subdomains** | off | One answer for every hostname your site answers on, stored on the domain they share | `data-share-across-subdomains` |
+| **Cookie table** | *None* | A variable holding the [cookie table]({{ '/cookies/' | relative_url }}#on-the-tag-manager-route) — its JSON text, or the rows. Left at *None*, the settings panel shows no table. [Two ways in](#two-ways-in) | `data-cookies-url` |
 
-**The cookie's name is not a field.** A template has to name the cookie it reads when it is published, so on
-this route it is always `consentio`.
+**Three keys of the settings file behave differently on this route.** `cookieName` is ignored: a template has
+to name the cookie it reads when it is published, so here it is always `consentio`, and the console says so
+when the file names another. `version` is read from the file — there is no tag attribute to put it on — and
+it is read before the cookie, so a site at version 2 must say so in the file or every stored answer is
+discarded. `urlPassthrough` is read from the file the same way, and sent as a `set` after the default when it
+is `true` — [what it tells Google]({{ '/datalayer/' | relative_url }}#url-passthrough) says what it does.
+On a site running both routes, keep the file's `version` and `urlPassthrough` equal to the loader tag's
+`data-version` and `data-url-passthrough`.
 
-## 💬 The four text sources {#the-four-text-sources}
+## 🔀 Two ways in {#two-ways-in}
+
+Each input is one file, however it arrives. The same two ways work for the **Settings** picker, the
+**Language pack variable** and the **Cookie table**.
+
+| Fill it with | What to do |
+|---|---|
+| **A Constant** | Make a *Constant* variable, paste the whole text of the file into it, pick it here. The tag parses the JSON. This is the usual way, and what the [catalogue]({{ '/cookies/catalogue/' | relative_url }}) and the [packs page]({{ '/language/tag-manager/' | relative_url }}) give you |
+| **A Custom JavaScript variable** | `function () { return { ... }; }` returning the object — or the rows, for the cookie table. A Lookup Table returning one of these per page works the same |
+| **Nothing** | Leave it at *None*. The banner uses its defaults, its English, or no table. The tag reads nothing off the page |
+
+A value that is not what the input expects is treated as nothing. An array where an object should be, or
+an object where the rows should be, is said on the console in Tag Manager's preview mode:
+`the Settings is not a JSON object, so it is ignored`, `the Language pack is not a JSON object, so it is
+ignored`, `the Cookie table is not a JSON array, so the settings panel shows no table`. Text that does not
+parse as JSON is treated as nothing too, and nothing is said — the `settings =`, `language =` and
+`cookies =` lines show what the tag ended up with.
+
+## 💬 The three language choices {#the-three-language-choices}
 
 | Choice | What the banner says |
 |---|---|
 | **Built-in English** | Its own words. Nothing is sent, so the wording picks up each release's fixes on its own |
-| **Custom - fill in the fields below** | The fields that appear, one per text, already filled in with the English. Change the ones you want |
-| **From a variable** | Whatever the **Language pack variable** returns — a [pack you pasted]({{ '/language/tag-manager/' | relative_url }}) into a Custom JavaScript variable, or a Lookup Table keyed on the page's language |
+| **From a variable** | Whatever the **Language pack variable** holds — a [pack you pasted]({{ '/language/tag-manager/' | relative_url }}) into a Constant or a Custom JavaScript variable, or a Lookup Table keyed on the page's language |
 | **A published language pack** | The pack named in **Language pack**, loaded from the CDN before the banner, at the banner's own version. If it does not load, the banner keeps its English and the console says so |
 
-The fields under *Custom* are every key of the [language pack]({{ '/language/' | relative_url }}), with the
-same names.
+## 🗑️ What the tag no longer has {#what-was-removed}
 
-## 🍪 The Cookies variable template {#the-cookies-variable-template}
-
-`consentio-tag-cookies.tpl` is a variable template with one table: **Name**, **Purpose**, **Provenance**,
-**Duration** and **Category**, one row per cookie, the category picked from the four. Import it under
-*Variable Templates*, add a variable from it, fill the rows, and choose that variable in the tag's
-**Cookies Variable** field. Any other variable returning the same rows works too — [the cookie
-table]({{ '/cookies/' | relative_url }}#on-the-tag-manager-route) shows the paste-in shape, and the [cookie
-catalogue]({{ '/cookies/catalogue/' | relative_url }}) has rows to start from.
+**Up to 0.3.0 every setting was its own field on the tag, the words could be typed into twenty-three text
+boxes under a *Custom* text source, and a second template, `consentio-tag-cookies.tpl`, held the cookie
+table one row at a time.** All of that is gone. A container holding an older template keeps working as it
+did, but nothing new reaches it: re-import the template, then paste your settings file, your language pack
+and your cookie table into three Constants and pick them. The old second template's variable still returns
+rows the new **Cookie table** picker accepts, so it can be picked until you have replaced it; then delete
+it.
 
 ## 🧩 What the tag does, in order {#what-the-tag-does-in-order}
 
@@ -64,14 +79,15 @@ catalogue]({{ '/cookies/catalogue/' | relative_url }}) has rows to start from.
    is what stops a page carrying both routes from showing two banners.
 2. **It reads the cookie and pushes the consent default** — before anything else in the container runs.
    That is why it has to be on the Consent Initialization trigger and nowhere else.
-3. **It loads the language pack**, if *Text source* asks for one.
-4. **It loads the banner** from the CDN, at the version the template was released with, and hands it your
-   fields.
+3. **It loads the language pack**, if **Language** asks for one, from
+   `https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@<version>/dist/i18n/<locale>.js`.
+4. **It loads the banner** from `https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@<version>/dist/consentio.min.js`,
+   at the version the template was released with, and hands it the three inputs.
 
 [How it works]({{ '/how-it-works/' | relative_url }}#the-sequence-in-tag-manager) has the sequence step by
 step and why step 2 cannot wait for step 4.
 
-## 🔐 What the template asks permission for {#permissions}
+## 🔒 What the template asks permission for {#permissions}
 
 Tag Manager shows these when you import it. Each is the least the tag can work with.
 
@@ -79,23 +95,28 @@ Tag Manager shows these when you import it. Each is the least the tag can work w
 |---|---|
 | Inject scripts from `cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio*` | The banner and the language pack, pinned to one released version |
 | Read the `consentio` cookie | The stored answer |
-| Set consent state | The consent default and the update, for the Google signals it drives |
-| Write `ads_data_redaction` to the data layer | Sent alongside the default |
-| Read and call `Consentio.Create`, read `ConsentioInstance`, `ConsentioDefault` and `ConsentioLanguage` on `window` | Start the banner; see the HTML route or a second run; read the loaded pack |
+| Set consent state | The consent default, for the seven Google signals. The update comes from the banner, on `dataLayer`, and needs no permission |
+| Write `ads_data_redaction` and `url_passthrough` to the data layer | Sent alongside the default; the second only when the settings ask for it |
+| Call `Consentio.Create`; read and write `ConsentioInstance`; read `ConsentioDefault` and `ConsentioLanguage` on `window` | Start the banner and record that it did; see the HTML route or a second run; read the pack it loaded from the CDN |
 | Template storage | Remember that it ran, so a second trigger on the same page does nothing |
-| Log to the console in debug | **Debug** |
+| Log to the console in preview mode | What the tag read and decided, while you are in Tag Assistant |
 
 ## ⚠️ When it goes wrong {#when-it-goes-wrong}
 
 - **The tag is not on Consent Initialization:** the consent default arrives after your other tags have
   started. Nothing warns you; [Try it through a tag manager]({{ '/try-it/tag-manager/' | relative_url }})
   is how to see it.
-- **The banner script does not load:** the tag fails, and with **Debug** on the console says
+- **The banner script does not load:** the tag fails, and in preview mode the console says
   `the banner script did not load`. The consent default was still pushed.
 - **The language pack does not load:** the banner starts in English, and the console names the pack.
 - **A published pack and an older template:** the pack is loaded at the version the template pins, so a
   template imported from an older release loads that release's pack. Re-import to move both.
 - **Both routes on one page:** the tag stands down and says so. With a template older than this release it
   does not, and you get two banners.
-- **The `version` field and the HTML route's `data-version` disagree** on a site running both: one route's
-  answer is invalid on the other, and the visitor is asked twice. Keep them equal.
+- **The settings file's `version` and the HTML route's `data-version` disagree** on a site running both: one
+  route's answer is invalid on the other, and the visitor is asked twice. Keep them equal — the loader
+  warns on the console when they differ.
+- **A settings file that is not picked up:** the picker is at *None*, or the Constant holds something
+  that is not the file. In preview mode
+  `settings =` shows what the tag read — `{}` when it read nothing.
+- **The tag fires twice on one page:** the second run stops and says `already initialized`.

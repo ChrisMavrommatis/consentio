@@ -14,7 +14,9 @@ answer reaches your tag manager before it starts, and a script you mark waits fo
 **1. Put two files where your site can serve them.**
 
 `consentio-loader.min.js` and `consentio.min.js`, both in the same folder — say `/js/`. Get them from a
-release on the [source repository]({{ site.repository_url }}/releases).
+release on the [source repository]({{ site.repository_url }}/releases). A release attaches those two, the
+unminified `consentio-loader.js` and `consentio.js`, the two `.LICENSE.txt` files the minified ones refer
+to, `consentio-tag.tpl` for the other route, and each language pack as `en.json`, `en.js` and `en.gtm.js`.
 
 **They have to sit together and keep their names.** The small file finds the big one by looking next to
 itself, and it decides which one to ask for from its own filename: `consentio-loader.min.js` loads
@@ -42,7 +44,9 @@ in a row.
 change the wording or run in another language, put a [language pack]({{ '/language/' | relative_url }})
 beside the other two and point `data-language-url` at it.
 
-[Settings]({{ '/configuration/' | relative_url }}) lists every key in the settings file.
+[Settings]({{ '/configuration/' | relative_url }}) lists every key in the settings file, and
+[builds one]({{ '/configuration/' | relative_url }}#build-the-file) from switches;
+[the catalogue]({{ '/cookies/catalogue/' | relative_url }}) builds a cookie table from ticked rows.
 
 **3. Paste the tag into `<head>`, above everything else.**
 
@@ -82,17 +86,16 @@ With a tag manager underneath it, in the order it has to go:
 </head>
 ```
 
-This site is built with Jekyll and does exactly that. Its own layout file is a working example:
+This site is built with Jekyll and does exactly that. Its layout prints the tag through a plugin, and on
+[the try-it page]({{ '/try-it/' | relative_url }}) it comes out as:
 
-{% raw %}
-```liquid
-<script src="{{ '/js/consentio-loader.min.js' | relative_url }}" data-consentio-loader
-        data-debug="false"
-        data-settings-url="{{ '/data/consentio-settings.json' | relative_url }}"
-        data-language-url="{{ '/data/consentio-language.json' | relative_url }}"
-        data-cookies-url="{{ '/data/consentio-cookies.json' | relative_url }}"></script>
+```html
+<script src="/consentio/js/consentio-loader.min.js" data-consentio-loader data-debug="false"
+        data-settings-url="/consentio/data/consentio-settings.json"
+        data-language-url="/consentio/data/i18n/en.json"
+        data-cookies-url="/consentio/data/consentio-cookies.json"
+        data-cookie-name="consentio" data-version="5"></script>
 ```
-{% endraw %}
 
 **Serving the files from a CDN instead of your own site is fine**, as long as the URL names an exact
 version. Never a floating one — a URL that follows the newest release will change what your site runs
@@ -136,13 +139,13 @@ That warning is printed whatever `data-debug` says. A banner that silently arriv
 
 ## ⚖️ What it costs {#what-it-costs}
 
-The tag blocks, so **5.3 KB has to download and run before the page appears** — about 2.3 KB once your
-server compresses it. That is the price of the answer arriving in time. There is no version of this that is
+The tag blocks, so **5.4 KB has to download and run before the page appears** — 2.4 KB once your server
+compresses it, measured on the 0.3.0 release. That is the price of the answer arriving in time. There is no version of this that is
 both correct and non-blocking, so it is better to know the number now than to find it in a performance
 audit later.
 
-The main file, `consentio.min.js`, is 42.5 KB (about 13 KB compressed) and loads in the background. It
-blocks nothing.
+The main file, `consentio.min.js`, is 42.5 KB (13.1 KB compressed) and loads in the background. It blocks
+nothing.
 
 [How it works]({{ '/how-it-works/' | relative_url }}#what-it-weighs) has both figures in one table.
 

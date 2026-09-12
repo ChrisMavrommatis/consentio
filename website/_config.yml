@@ -40,6 +40,11 @@ repository_url          : "https://github.com/ChrisMavrommatis/consentio"
 #           site-relative and the build puts baseurl in front of it. Changing version
 #           discards every answer already stored. Leaving consents out gives the four
 #           defaults one home, and it is the banner.
+#
+# The two routes do not share configuration. The container holds its own copy of the
+# three files as Constants; what is here drives the loader on /try-it/ and a local build,
+# and is kept equal to the container by hand - version above all, or one route discards
+# every stored answer while the other keeps them.
 consentio:
   route                 : "direct"
   language              : "/data/i18n/en.json"
@@ -47,11 +52,11 @@ consentio:
   sample_held_scripts   : false
   settings:
     cookieName          : "consentio"
-    version             : 3
+    version             : 5
     consentRequired     : true
     policyUrl           : "/cookie/"
     cookieLifetime      : 90
-    shareAcrossSubdomains : true
+    shareAcrossSubdomains : false
     hideFloatingButton  : false
 
 # The Google Tag Manager container. Empty here, so a local build emits no snippet at all.

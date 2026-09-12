@@ -7,7 +7,7 @@ const LOADER = new URL('../../src/consentio-loader.js', import.meta.url);
 
 /**
  * The loader fetches three files, one per concern, and hands them to Create as three
- * objects. `data-config-url` is 0.1.0's merged one and has its own file next door.
+ * objects.
  */
 
 const FILES: Record<string, unknown> = {

@@ -47,9 +47,9 @@ CDN at a version you pin. Apache-2.0, no dependencies.
 
 ## 🧭 Choose a route first {#choose-a-route-first}
 
-There are two ways to install it, and **they are not the same**. The choice decides what your banner can
-stop. **If anything on your site sets a cookie from outside the container, the Tag Manager route does not
-cover it.**
+There are two ways to install it, and **they are not the same**. One is a script tag in every page's
+`<head>`; the other is a template in your container. **The container covers only what it loads**; a script
+or an embed pasted into a page is held back by marking it, on either route.
 
 [Choose a route]({{ '/routes/' | relative_url }}) puts the two side by side — what each can stop, what
 each costs, where the words and the settings come from.
@@ -69,7 +69,7 @@ Start at the top. The reference is split by route: read your route's pages, then
 |---|---|
 | [How it works]({{ '/how-it-works/' | relative_url }}) | load order, what runs when, and why the script cannot wait |
 | [Try it on this page]({{ '/try-it/' | relative_url }}) | the live banner, and a button that clears your answer so it shows again |
-| [Try it through a tag manager]({{ '/try-it/tag-manager/' | relative_url }}) | the one page here with no script tag, for checking that both ways agree about the same visitor |
+| [Try it through a tag manager]({{ '/try-it/tag-manager/' | relative_url }}) | the page that never has the script tag, for checking that both ways agree about the same visitor |
 | [Choose a route]({{ '/routes/' | relative_url }}) | the two ways to install, side by side |
 | [Put it in your HTML]({{ '/install/direct/' | relative_url }}) | four steps, then the detail |
 | [Use Google Tag Manager]({{ '/install/tag-manager/' | relative_url }}) | four steps, then the detail |
@@ -81,13 +81,13 @@ Start at the top. The reference is split by route: read your route's pages, then
 | Page | What is in it |
 |---|---|
 | [The loader tag]({{ '/loader/' | relative_url }}) | every attribute on the tag, which ones win, what it leaves on `window` |
-| [The settings file]({{ '/configuration/' | relative_url }}) | every key, the four categories, the older single file |
+| [The settings file]({{ '/configuration/' | relative_url }}) | every key, the four categories, the older single file that was removed |
 
 **Reference: Tag Manager**
 
 | Page | What is in it |
 |---|---|
-| [The tag]({{ '/tag/' | relative_url }}) | every field on the template, the four text sources, the Cookies variable, the permissions |
+| [The tag]({{ '/tag/' | relative_url }}) | the three pickers on the template, the three ways a file reaches each, the language choices, the permissions |
 | [Language packs to paste]({{ '/language/tag-manager/' | relative_url }}) | the published packs as variables to paste into a container |
 
 **Reference: both routes**

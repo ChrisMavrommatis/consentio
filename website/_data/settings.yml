@@ -1,0 +1,53 @@
+# The settings builder on the configuration page: one control per key, in this order.
+# `default` is what the banner uses when the file says nothing, and a control left at it
+# writes nothing - test/website/settings-data.test.mts holds this file to the banner's
+# own defaults. A dotted key is a nested one. `state` is granted or denied.
+
+- key: consentRequired
+  type: boolean
+  default: false
+  label: Ask before the page can be used
+- key: policyUrl
+  type: string
+  default: ""
+  label: Privacy policy address
+- key: hideFloatingButton
+  type: boolean
+  default: false
+  label: Hide the round settings button
+- key: cookieLifetime
+  type: number
+  default: 90
+  label: Days an answer is kept
+- key: shareAcrossSubdomains
+  type: boolean
+  default: false
+  label: One answer across subdomains
+- key: version
+  type: number
+  default: 1
+  label: Version of the question
+- key: cookieName
+  type: string
+  default: consentio
+  label: Name of the cookie
+- key: debug
+  type: boolean
+  default: false
+  label: Log what the banner does
+- key: urlPassthrough
+  type: boolean
+  default: false
+  label: Carry the ad-click id across your links
+- key: consents.preferences_functionality.defaultState
+  type: state
+  default: denied
+  label: Preferences and functionality starts
+- key: consents.statistics_performance.defaultState
+  type: state
+  default: denied
+  label: Statistics and performance starts
+- key: consents.marketing_advertising.defaultState
+  type: state
+  default: denied
+  label: Marketing and advertising starts

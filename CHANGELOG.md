@@ -11,6 +11,79 @@ release body, so write these entries for the people using Consentio, not for the
 
 ## [Unreleased]
 
+## [1.0.0]
+
+### ✨ Added
+
+- **An embed waits for the visitor's answer too.** An `<iframe>` with `data-consentio` naming its category
+  and its address on `data-src` instead of `src` loads nothing until that category is granted; then the
+  address moves to `src` and it loads in place. The same rule as a held script: nothing marked loads before
+  there is an answer, and revoking does not unload it. The **Hold a script until consent** page has the
+  tag before and after.
+- **`url_passthrough`, if you ask for it.** Google's third flag beside `wait_for_update` and
+  `ads_data_redaction`: with ad storage denied it carries the ad-click id across your own links in the URL,
+  so a Google Ads click still counts for a visitor who refused. Off unless you turn it on —
+  `data-url-passthrough="true"` on the loader tag, or `"urlPassthrough": true` in the settings file on the
+  Tag Manager route — because it puts a click id in every internal link. The settings builder has the
+  switch, and the template asks for one more write permission, `url_passthrough`.
+- **The documentation site builds your files.** [The settings file](https://chrismavrommatis.github.io/consentio/configuration/#build-the-file)
+  page has a control per key and hands back `consentio-settings.json` with only what you changed; the
+  [cookie catalogue](https://chrismavrommatis.github.io/consentio/cookies/catalogue/) has a tick box per
+  row and hands back `consentio-cookies.json` from the ones you ticked. Each also copies as a Custom
+  JavaScript variable for the Tag Manager route, in the same shape as the language packs to paste.
+- **Anything you copy from the site opens in one panel.** The published language packs are a list on
+  [the language pack](https://chrismavrommatis.github.io/consentio/language/) page and on the
+  [packs to paste](https://chrismavrommatis.github.io/consentio/language/tag-manager/) page — open one and
+  the panel shows it as the file or as the Tag Manager variable, with a copy control. The two builders and
+  the catalogue's rows use the same panel. Code blocks on the site are now only for reference.
+
+### 🗑️ Removed
+
+- **The older single settings file.** `data-config-url` is no longer read, and a file carrying `texts` or a
+  `consents` array is no longer taken apart. Split it into a settings file and a language pack — the
+  configuration page says how — and put `data-settings-url` and `data-language-url` on the loader tag.
+- **The `Consentio Tag - Cookies` variable template.** `consentio-tag-cookies.tpl` is not attached to
+  releases any more. A container still holding one keeps working, but the **Cookie table** picker below is
+  the way now.
+- **Every settings field on the tag** — Version, Debug, Consent Required, the three Default States, Privacy
+  Policy URL, Hide Floating Button, Cookie Lifetime, Share the answer across subdomains — and the ***Custom -
+  fill in the fields below*** text source with its twenty-three text boxes. The tag takes the settings file
+  and the language pack whole instead, below. A container holding an older template keeps working as it did
+  until the newer file is imported; then paste the two files into Constants and pick them.
+- **The two-argument `Consentio.Create(config, cookies)` call.** `Create` takes three objects — settings,
+  language, cookie table — and nothing else.
+
+### 🔀 Changed
+
+- **The tag is three pickers — Settings, Language, Cookie table — and each takes the same JSON file the
+  HTML route fetches.** Paste the file's text into a Constant, or return it from any variable, and pick it.
+  Left at *None*, the banner uses its defaults, its built-in English, or shows no table; the tag reads
+  nothing off the page. A new banner setting now ships with the banner; the template does not change for
+  it.
+- **On the tag, `version` comes from the settings file** and `cookieName` in it is ignored — the template
+  can only read the cookie it named when it was published, `consentio`, and says so on the console when the
+  file names another. A site running both routes keeps the file's `version` equal to the loader tag's
+  `data-version`.
+- **The tag calls the banner with three objects**, the same ones the loader sends, instead of composing the
+  older merged config. A released template loads the release it shipped in, so it speaks that release's
+  shape.
+
+### 🛠️ Fixed
+
+- **The round reopen button has a name.** It was an icon and nothing else, so a screen reader announced
+  "button". It now carries the same word as the bar's settings button, in whichever language the pack
+  gives it.
+- **A cookie table that does not load no longer stops the banner.** On the HTML route a 404 on
+  `data-cookies-url` used to leave the visitor with no banner at all. The banner now starts with empty
+  tables and the console names the address, the same as the Tag Manager route already did. A settings
+  file that does not load still stops it.
+- **A release starts from an empty `dist/`.** A file a release stopped producing used to stay in the tree
+  and be served at every later tag; `consentio-tag-cookies.tpl` is the one that was.
+- **The Tag Manager route no longer throws with debug on.** The tag called the banner with the older
+  two-argument shape, and the banner took its own empty cookie list for the console. The first debug line
+  after saving was `this.logger?.info is not a function`. The HTML route was never affected. Gone by
+  construction now that the two-argument shape is.
+
 ## [0.3.0] - 2026-09-11
 
 ### ✨ Added
