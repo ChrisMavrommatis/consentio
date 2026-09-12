@@ -12,7 +12,7 @@ variable*, and a **Language pack variable** holding a [language pack]({{ '/langu
 The packs below are the published ones, each wrapped the way a Custom JavaScript variable expects. Paste
 one in, change the words you want, and pick the variable on the tag. The plain JSON of a pack, from the
 [latest release](https://github.com/ChrisMavrommatis/consentio/releases/latest), pasted into a **Constant**
-works the same way.
+works the same way, but a Constant's field is one line and a pack does not fit in it readably.
 
 ## 🏷️ Three things Tag Manager does not say {#three-things-tag-manager-does-not-say}
 

@@ -21,8 +21,8 @@ change: the `<head>` of every page, or the container.
 | What it costs the first paint | one blocking file, around 5.4 KB, before the page paints — [what it weighs]({{ '/how-it-works/' | relative_url }}#what-it-weighs) | nothing in the page; the container's own cost |
 | What it can stop | every script you mark with `type="text/plain" data-consentio` and every iframe you mark with `data-consentio data-src`, held until its category is granted — and nothing you do not mark. [Hold a script until consent]({{ '/hold-scripts/' | relative_url }}) | tags in that container, through its own consent settings, and the same marked scripts and iframes — the banner releases them on both routes. A script pasted into the page and not marked is outside consent |
 | Where the words come from | the built-in English; a language file at any URL — one of your own, or a published pack; or `data-language="el"` for the published pack at the CDN | the built-in English; the same file in a variable; or a published pack the tag loads from the CDN |
-| Where the cookie table comes from | a file at any URL | the same file in a Constant, or on the page, or nothing |
-| Where the settings come from | a JSON file the script tag fetches | the same file in a Constant, or on the page, or nothing |
+| Where the cookie table comes from | a file at any URL | the same file in a variable, or nothing |
+| Where the settings come from | a JSON file the script tag fetches | the same file in a variable, or nothing |
 | What you edit to change a word | a file on your site | the pack in a variable, then publish the container |
 | What can rename the cookie | `data-cookie-name` on the tag | nothing — it is `consentio` |
 | Where the version is set | `data-version` on the tag | `version` in the settings file |
@@ -47,6 +47,6 @@ page with the template and no script tag runs the template. Both read and write 
 visitor who answered on one is remembered on the other — as long as the version matches on both.
 
 The two routes do not share configuration. A site that runs both has two copies of each file — the ones
-the script tag fetches, and the Constants in the container — and keeps them equal by hand, `version`
+the script tag fetches, and the variables in the container — and keeps them equal by hand, `version`
 above all: a `version` that differs is an answer honoured on one route and discarded on the other. This
 site runs both, on one page, and does exactly that.

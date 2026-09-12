@@ -73,10 +73,11 @@ but any address your site serves. Leave the attribute out and the panel shows no
 
 The tag's **Cookie table** picker takes the same file, two ways:
 
-- **A Constant variable** holding the JSON text above, pasted in whole. The tag parses it. This is the
-  usual way.
 - **A Custom JavaScript variable** returning the array, `function () { return [ ... ]; }` — what the
-  catalogue's *Copy as Tag Manager variable* gives you.
+  catalogue's *Copy as Tag Manager variable* gives you. This is the usual way; the variable editor is a
+  code box.
+- **A Constant variable** holding the JSON text above, pasted in whole. The tag parses it. Its field is
+  one line, so the file cannot be read in it.
 
 Left at *None*, the panel shows no table. [The tag]({{ '/tag/' | relative_url }}#two-ways-in) has the
 detail.

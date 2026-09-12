@@ -38,13 +38,15 @@ only reason the answer arrives in time.
 table** — and every one of them can stay at its default, so you can publish first and come back. Left
 alone, that is a banner in English with the default behaviour and no cookie table.
 
-Each picker takes the same file the HTML route fetches. Make a **Constant** variable, paste the whole text
-of the file into it, and pick it: your [`consentio-settings.json`]({{ '/configuration/' | relative_url }})
-as the **Settings**, your [`consentio-cookies.json`]({{ '/cookies/' | relative_url }}) as the **Cookie
-table**. You do not have to write either by hand: [the settings file]({{ '/configuration/' | relative_url }}#build-the-file)
-page builds one from switches, and [the catalogue]({{ '/cookies/catalogue/' | relative_url }}) builds a
-cookie table from ticked rows — each with a *Tag Manager variable* output to paste into a Custom JavaScript
-variable instead of a Constant. For the words, **Language** has three choices: leave it at *Built-in English*, pick *A published
+Each picker takes the same file the HTML route fetches, as a **Custom JavaScript** variable —
+**Variables → User-Defined → New → Custom JavaScript** — whose whole value is the file wrapped in a
+function that returns it. Make one for your [`consentio-settings.json`]({{ '/configuration/' | relative_url }})
+and pick it as the **Settings**, one for your [`consentio-cookies.json`]({{ '/cookies/' | relative_url }})
+and pick it as the **Cookie table**. You do not have to write either by hand:
+[the settings file]({{ '/configuration/' | relative_url }}#build-the-file) page builds one from switches,
+and [the catalogue]({{ '/cookies/catalogue/' | relative_url }}) builds a cookie table from ticked rows —
+*Copy as Tag Manager variable* on each is the whole value to paste. A **Constant** holding the file's JSON
+text works too, but its field is one line, so a file of any size is unreadable in it. For the words, **Language** has three choices: leave it at *Built-in English*, pick *A published
 language pack* and choose the language, or pick *From a variable* and point it at a
 [language pack you pasted](#words-from-a-variable).
 [The Tag Manager tag]({{ '/tag/' | relative_url }}#the-pickers) lists every picker and the three ways a

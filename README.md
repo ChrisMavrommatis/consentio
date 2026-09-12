@@ -109,7 +109,7 @@ cookie file itself.
 reaches your container when you import the newer file.
 
 The tag has three pickers - **Settings**, **Language**, **Cookie table** - and each takes the same JSON file
-the HTML route fetches, pasted into a Constant or returned by any variable; left at *None*, the banner uses
+the HTML route fetches, returned by a Custom JavaScript variable or pasted into a Constant; left at *None*, the banner uses
 its defaults, its English, or no table.
 **Language** can also load a published pack from the CDN at the same version as the banner; a pack that
 does not load is logged and the banner keeps its English.

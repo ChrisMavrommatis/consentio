@@ -122,9 +122,10 @@ lists every attribute.
 
 The tag's **Settings** picker takes the same file, two ways:
 
-- **A Constant variable** holding the JSON text above, pasted in whole. The tag parses it. This is the
-  usual way.
-- **A Custom JavaScript variable** returning the object, `function () { return { ... }; }`.
+- **A Custom JavaScript variable** returning the object, `function () { return { ... }; }` — what
+  *Copy as Tag Manager variable* above gives you. This is the usual way; the variable editor is a code box.
+- **A Constant variable** holding the JSON text above, pasted in whole. The tag parses it. Its field is
+  one line, so the file cannot be read in it.
 
 Left at *None*, the banner uses the defaults above.
 

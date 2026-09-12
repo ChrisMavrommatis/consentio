@@ -22,11 +22,11 @@ steps.
 
 | Picker | Default | What it takes | On the HTML route |
 |---|---|---|---|
-| **Settings** | *None* | A variable holding the [settings file]({{ '/configuration/' | relative_url }}) — its JSON text in a Constant, or the object from any variable. Left at *None*, the banner uses its defaults. [Two ways in](#two-ways-in) | `data-settings-url` |
+| **Settings** | *None* | A variable holding the [settings file]({{ '/configuration/' | relative_url }}) — a Custom JavaScript variable returning the object, or its JSON text in a Constant. Left at *None*, the banner uses its defaults. [Two ways in](#two-ways-in) | `data-settings-url` |
 | **Language** | *Built-in English* | Where the words come from. Three choices, [below](#the-three-language-choices) | `data-language-url` or `data-language` |
 | **Language pack variable** | *None* | Shown for *From a variable*. A variable holding a whole [language pack]({{ '/language/tag-manager/' | relative_url }}) — its JSON text, or the object | — |
 | **Language pack** | English | Shown for *A published language pack*. Which pack the tag loads from the CDN, at the same version as the banner | `data-language` |
-| **Cookie table** | *None* | A variable holding the [cookie table]({{ '/cookies/' | relative_url }}#on-the-tag-manager-route) — its JSON text, or the rows. Left at *None*, the settings panel shows no table. [Two ways in](#two-ways-in) | `data-cookies-url` |
+| **Cookie table** | *None* | A variable holding the [cookie table]({{ '/cookies/' | relative_url }}#on-the-tag-manager-route) — a Custom JavaScript variable returning the rows, or its JSON text in a Constant. Left at *None*, the settings panel shows no table. [Two ways in](#two-ways-in) | `data-cookies-url` |
 
 **Three keys of the settings file behave differently on this route.** `cookieName` is ignored: a template has
 to name the cookie it reads when it is published, so here it is always `consentio`, and the console says so
@@ -44,8 +44,8 @@ Each input is one file, however it arrives. The same two ways work for the **Set
 
 | Fill it with | What to do |
 |---|---|
-| **A Constant** | Make a *Constant* variable, paste the whole text of the file into it, pick it here. The tag parses the JSON. This is the usual way, and what the [catalogue]({{ '/cookies/catalogue/' | relative_url }}) and the [packs page]({{ '/language/tag-manager/' | relative_url }}) give you |
-| **A Custom JavaScript variable** | `function () { return { ... }; }` returning the object — or the rows, for the cookie table. A Lookup Table returning one of these per page works the same |
+| **A Custom JavaScript variable** | `function () { return { ... }; }` returning the object — or the rows, for the cookie table. This is the usual way: the editor is a code box, and *Copy as Tag Manager variable* on the [settings builder]({{ '/configuration/' | relative_url }}#build-the-file), the [catalogue]({{ '/cookies/catalogue/' | relative_url }}) and the [packs page]({{ '/language/tag-manager/' | relative_url }}) gives you the whole value. A Lookup Table returning one of these per page works the same |
+| **A Constant** | Paste the whole text of the file into a *Constant* variable and pick it here; the tag parses the JSON. It works, but a Constant's field is one line, so a file of any size cannot be read or edited in it |
 | **Nothing** | Leave it at *None*. The banner uses its defaults, its English, or no table. The tag reads nothing off the page |
 
 A value that is not what the input expects is treated as nothing. An array where an object should be, or
