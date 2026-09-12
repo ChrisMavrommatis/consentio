@@ -21,7 +21,7 @@ release body, so write these entries for the people using Consentio, not for the
   instead — *Copy as Tag Manager variable* on the settings builder, the catalogue and the packs page is
   the whole value to paste. A Constant still works. Nothing in the tag's behaviour changed.
 
-## [1.0.1]
+## [1.0.1] - 2026-09-12
 
 ### 🛠️ Fixed
 

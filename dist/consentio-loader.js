@@ -307,7 +307,7 @@ function clearConsents(cookieName) {
     // `data-language="el"` is the published pack at this loader's own version; a url beats it.
     const languageCode = loaderScript.dataset.language || null;
     const languageUrl = loaderScript.dataset.languageUrl
-        || (languageCode ? `https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@${"1.0.0"}/dist/i18n/${languageCode}.json` : null);
+        || (languageCode ? `https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@${"1.0.1"}/dist/i18n/${languageCode}.json` : null);
     if (global.ConsentioInstance) {
         debug && logger.warn('[Consentio Loader] Consentio is already initialized');
         return;

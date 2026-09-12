@@ -140,9 +140,9 @@ ___SANDBOXED_JS_FOR_WEB_TEMPLATE___
 
 // `scripts/gtm.mjs` fills the version in from package.json when it composes the .tpl, so a
 // released template loads the release it shipped in. Do not type a version here.
-const url = 'https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@1.0.0/dist/consentio.min.js';
+const url = 'https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@1.0.1/dist/consentio.min.js';
 // The published language packs, at the same release as the bundle so the two cannot disagree.
-const packBaseUrl = 'https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@1.0.0/dist/i18n/';
+const packBaseUrl = 'https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@1.0.1/dist/i18n/';
 
 const log = require('logToConsole');
 const injectScript = require('injectScript');
@@ -1281,8 +1281,8 @@ scenarios:
     runCode(mockData);
 
     assertThat(injected).hasLength(2);
-    assertThat(injected[0]).contains('consentio@1.0.0/dist/i18n/el.js');
-    assertThat(injected[1]).contains('consentio@1.0.0/dist/consentio.min.js');
+    assertThat(injected[0]).contains('consentio@1.0.1/dist/i18n/el.js');
+    assertThat(injected[1]).contains('consentio@1.0.1/dist/consentio.min.js');
     assertThat(sent.language.texts.barTitle).isEqualTo('\u03a0\u03bf\u03bb\u03b9\u03c4\u03b9\u03ba\u03ae Cookies');
     assertThat(sent.language.consents.strictly_necessary.title).isEqualTo('\u0391\u03c0\u03bf\u03bb\u03cd\u03c4\u03c9\u03c2 \u03b1\u03c0\u03b1\u03c1\u03b1\u03af\u03c4\u03b7\u03c4\u03b1');
     assertThat(sent.language.policyUrl).isEqualTo('/el/privacy/');
@@ -1331,7 +1331,7 @@ scenarios:
 
     assertThat(sent.cookies).hasLength(1);
     assertThat(sent.cookies[0].category).isEqualTo('strictly_necessary');
-- name: the cookie table left at None is no table
+- name: the cookie table left at None ignores a table the page happens to carry
   code: |-
     mock('getCookieValues', () => []);
     mock('copyFromWindow', (key) => key === 'ConsentioCookies' ? [{ name: '_ga' }] : undefined);
