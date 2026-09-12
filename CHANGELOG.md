@@ -54,6 +54,15 @@ release body, so write these entries for the people using Consentio, not for the
 
 ### 🛠️ Fixed
 
+- **The round reopen button has a name.** It was an icon and nothing else, so a screen reader announced
+  "button". It now carries the same word as the bar's settings button, in whichever language the pack
+  gives it.
+- **A cookie table that does not load no longer stops the banner.** On the HTML route a 404 on
+  `data-cookies-url` used to leave the visitor with no banner at all. The banner now starts with empty
+  tables and the console names the address, the same as the Tag Manager route already did. A settings
+  file that does not load still stops it.
+- **A release starts from an empty `dist/`.** A file a release stopped producing used to stay in the tree
+  and be served at every later tag; `consentio-tag-cookies.tpl` is the one that was.
 - **The Tag Manager route no longer throws with debug on.** The tag called the banner with the older
   two-argument shape, and the banner took its own empty cookie list for the console. The first debug line
   after saving was `this.logger?.info is not a function`. The HTML route was never affected. Gone by

@@ -102,6 +102,9 @@ jobs:
 
       - run: npm ci --ignore-scripts
       - run: npm run typecheck
+      # Nothing else ever deletes from dist/, so a file a release stopped producing would
+      # stay in the tree and be served at every later tag.
+      - run: rm -rf dist
       - run: npm run publish:i18n
       - run: npm run publish:gtm
       - run: npm run publish:js

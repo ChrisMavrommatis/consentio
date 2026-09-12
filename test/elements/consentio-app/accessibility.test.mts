@@ -22,3 +22,9 @@ test('issue 14 - the bar announces itself as a region rather than as anonymous m
 	const labelled = app.bar!.getAttribute('role') ?? app.bar!.getAttribute('aria-label');
 	assert.ok(labelled, 'the consent bar is unlabelled markup appended to the end of the document');
 });
+
+test('issue 52 - the floating button carries the settings word as its name, and follows the pack', () => {
+	assert.equal(app.floatingButton!.button!.getAttribute('aria-label'), 'Settings', 'an icon-only button has no name');
+	app.config = { texts: { ...app.config.texts, buttonSettings: 'Ρυθμίσεις' } };
+	assert.equal(app.floatingButton!.button!.getAttribute('aria-label'), 'Ρυθμίσεις');
+});

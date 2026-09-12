@@ -24,18 +24,16 @@ import type { ConsentioDefaultState } from './types.js';
 (function (global: Window & typeof globalThis, doc: Document, logger: Console, customElementsRegistry: CustomElementRegistry) {
 
 
+	// Every failure names the address: the console is the only place a wrong URL shows. Issue 55.
 	const getResource = function (url: string): Promise<any> {
-		return new Promise((resolve, reject) => {
-			fetch(url)
-				.then(response => {
-					if (!response.ok) {
-						reject(`HTTP error! status: ${response.status}`);
-					}
-					return response.json();
-				})
-				.then(data => resolve(data))
-				.catch(error => reject(`Fetch error: ${error}`));
-		});
+		return fetch(url)
+			.then(response => {
+				if (!response.ok) {
+					throw new Error(`HTTP ${response.status}`);
+				}
+				return response.json();
+			})
+			.catch(error => { throw new Error(`${url} did not load: ${error instanceof Error ? error.message : error}`); });
 	}
 
 	const loaderScript = doc.querySelector<HTMLScriptElement>('script[data-consentio-loader]');
@@ -77,7 +75,12 @@ import type { ConsentioDefaultState } from './types.js';
 		}
 
 		const cookieName = loaderScript.dataset.cookieName || 'consentio';
-		const version = Number(loaderScript.dataset.version || 1);
+		// NaN matches no stored answer, so a typo would ask every visitor on every page. Issue 54.
+		let version = Number(loaderScript.dataset.version || 1);
+		if (!Number.isInteger(version) || version < 1) {
+			logger.warn(`[Consentio Loader] data-version "${loaderScript.dataset.version}" is not a whole number, so version 1 is used`);
+			version = 1;
+		}
 		const waitForUpdate = Number(loaderScript.dataset.waitForUpdate || 500);
 
 		const stored = readConsents(cookieName, version);
@@ -156,12 +159,17 @@ import type { ConsentioDefaultState } from './types.js';
 		try {
 
 			if (resources.length > 0) {
-				// A pack that does not load costs the visitor its language, not the banner.
-				const results = await Promise.all(resources.map(([name, url]) => name !== 'language'
+				// Only the settings file can stop the banner: the other two cost their own
+				// words or table, and the tag route already forgives them. Issue 53.
+				const forgiven: Record<string, [string, unknown]> = {
+					language: ['the language file did not load, so the banner keeps its built-in English', {}],
+					cookies: ['the cookie table did not load, so the settings panel shows no table', []]
+				};
+				const results = await Promise.all(resources.map(([name, url]) => !forgiven[name]
 					? getResource(url)
 					: getResource(url).catch((error) => {
-						logger.warn(`[Consentio Loader] the language file did not load, so the banner keeps its built-in English: ${url}`, error);
-						return {};
+						logger.warn(`[Consentio Loader] ${forgiven[name][0]}: ${url}`, error);
+						return forgiven[name][1];
 					})));
 				resources.forEach(([name], index) => {
 					const loaded = results[index];

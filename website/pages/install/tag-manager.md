@@ -10,10 +10,11 @@ nothing is hosted by you. [Choose a route]({{ '/routes/' | relative_url }}) puts
 other one.
 
 <div class="callout callout--warn" markdown="1">
-**Check one thing before you start.** This route covers what Tag Manager loads. If anything on your site is
-pasted straight into a page — a video embed, a chat widget, a tracking pixel in a footer — it will keep
-running whatever the visitor answers, and the banner will look like it is working. The
-[HTML route]({{ '/install/direct/' | relative_url }}) can hold a script like that back; this one cannot.
+**Check one thing before you start.** The container covers what Tag Manager loads. If anything on your site
+is pasted straight into a page — a video embed, a chat widget, a tracking pixel in a footer — it will keep
+running whatever the visitor answers, and the banner will look like it is working. Move it into the
+container, or [mark it]({{ '/hold-scripts/' | relative_url }}) with the category it needs; the banner holds
+a marked script back on this route too.
 </div>
 
 ## 🚀 Four steps {#four-steps}
@@ -49,8 +50,8 @@ language pack* and choose the language, or pick *From a variable* and point it a
 [The Tag Manager tag]({{ '/tag/' | relative_url }}#the-pickers) lists every picker and the three ways a
 file can reach it.
 
-**4. Publish, then move everything else into the container.** Anything still pasted into a page is not
-covered by the banner. On this route that clean-up is most of the work.
+**4. Publish, then move everything else into the container, or mark it.** Anything still pasted into a
+page and not marked is outside consent. On this route that clean-up is most of the work.
 
 ## 🌍 Words from a variable {#words-from-a-variable}
 

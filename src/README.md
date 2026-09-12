@@ -8,18 +8,18 @@ recoverable from the filenames, which is why this page exists.
 | | `consentio-loader.ts` | `consentio.ts` |
 |---|---|---|
 | Ships as | `consentio-loader.js` / `.min.js` | `consentio.js` / `.min.js` |
-| Size, minified | **4.6 KB**, 2.0 KB gzipped | **36.3 KB**, 11.3 KB gzipped |
+| Size, minified, in the 0.3.0 release | **5.4 KB**, 2.4 KB gzipped | **42.5 KB**, 13.1 KB gzipped |
 | Output shape | a plain script. Exports nothing | a UMD library named `Consentio` |
 | Runs | **blocking, in `<head>`, before the tag manager** | async, after |
 | Does | reads the cookie, pushes `consent default`, then injects and configures the banner | the banner itself — six custom elements, the SCSS, the HTML templates, the state |
 
 **One thing has to be blocking, and it is not the banner.** A tag manager reads consent the moment it
 loads. A consent default pushed after that gates nothing at all, so the push cannot wait for a fetch, for
-the banner, or for anything async. But the banner is 36.3 KB with the stylesheet and the templates
+the banner, or for anything async. But the banner is 42.5 KB with the stylesheet and the templates
 compiled into it, and blocking a page's first paint on that would be indefensible.
 
 So the split is: **the smallest thing that must be blocking, blocking; everything else after.** The loader
-reads the cookie and pushes the signals in its first pass, and only then fetches the config, injects
+reads the cookie and pushes the signals in its first pass, and only then fetches the three files, injects
 `consentio.min.js` and calls `Consentio.Create`.
 
 **The tag manager route never loads the loader.** A custom template cannot inject a blocking script —
@@ -29,8 +29,8 @@ the banner is a named UMD library and the loader is not: one of them is called b
 
 ## ⚖️ Three modules are in both bundles, twice
 
-The loader imports two of these and the banner imports all three. Webpack builds the two entry points
-independently, so **each bundle carries its own copy**.
+Both entry points reach all three - the loader through `consent-store.ts`, which imports `cookies.ts`.
+Webpack builds the two entry points independently, so **each bundle carries its own copy**.
 
 | Module | Holds |
 |---|---|

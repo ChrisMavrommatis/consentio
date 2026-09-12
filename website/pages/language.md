@@ -130,6 +130,11 @@ Two attributes on the loader tag, and you set one of them:
 Set both and `data-language-url` wins, with a line on the console. Set neither and the banner uses its
 built-in English.
 
+**The page picks the language, not the browser.** Consentio reads neither `<html lang>` nor the browser's
+language list. A site with pages in two languages puts a different `data-language` or `data-language-url`
+on each page's tag, which a static site knows when it builds the page. A visitor's browser setting and
+the page's language are different things, and the banner should read as the page does.
+
 ## 🏷️ On the Tag Manager route {#on-the-tag-manager-route}
 
 The tag's **Language** picker has three choices: its built-in English, a published pack it loads itself,
@@ -152,3 +157,5 @@ built-in English and the console names the file that failed:
 [Troubleshooting]({{ '/troubleshooting/' | relative_url }}#the-banner-is-in-english) has the usual causes.
 
 A `consents` key that is not one of the four is ignored with a warning, and the rest of the file is used.
+A `policyUrl` that does not start with `http://`, `https://` or `/` is dropped with a warning, the same as
+in the settings file, and no link is shown.

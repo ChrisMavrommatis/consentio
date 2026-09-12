@@ -21,7 +21,7 @@ it is strictly necessary. You set it, so list it.
 | **What it holds** | the visitor's answer for each of the four categories, a version number, and the date they answered |
 | **How long** | 90 days by default, counted from the last time they answered. `cookieLifetime` changes it |
 | **Scope** | this hostname only, unless you turn on `shareAcrossSubdomains`. `example.com` and `shop.example.com` otherwise ask separately |
-| **Size** | about 265 bytes |
+| **Size** | about 250 bytes |
 | **Sent to** | your own server, on every request, like any other cookie |
 
 The value is a small piece of JSON, encoded the way anything in a cookie has to be — so what you see in the
@@ -40,6 +40,12 @@ a cookie that already exists is to throw the cookie away and ask everyone again.
 **A cookie with no `date` is a perfectly good answer.** Every one written before this release has none, and
 they are all still honoured. If you read this cookie yourself, do not require the key.
 
+**This cookie is your record of consent.** Consentio keeps no log anywhere else: there is no server, so
+there is nothing to export. What you can show is what the cookie holds — which categories the visitor
+granted, when, and against which `version` of your wording. If a hosted platform's consent log is
+something you are asked for, this is the answer, and it lives in the visitor's browser and on your server's
+request logs, nowhere else.
+
 ## ⚙️ The exact attributes {#the-exact-attributes}
 
 `path=/`, `expires` from the lifetime you set, `SameSite=Lax`, `Secure` **over `https` only**, and `Domain`
@@ -51,8 +57,8 @@ local development behaves like the deployed site.
 **The expiry runs from each write, not from the first one.** Answering again pushes it out again. A visitor
 who answers once and never opens the settings after that is asked again a lifetime later.
 
-**Size: about 265 bytes.** 195 bytes of JSON, and the rest is the encoding — `"` and `,` survive as `%22` and
-`%2C`. Renaming your categories in the settings does not change it; only the four fixed keys are stored, never
+**Size: about 250 bytes.** The value above is 195 bytes of JSON and 253 bytes once encoded — `"` and `,`
+survive as `%22` and `%2C` — and the name adds `consentio=` in front. Renaming your categories in the settings does not change it; only the four fixed keys are stored, never
 your wording.
 
 ## ⏳ How long it lasts {#how-long-it-lasts}

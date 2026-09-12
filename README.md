@@ -39,13 +39,14 @@ it is written for.
 | Where settings come from | three JSON files, fetched by URL | the same three files, each in a variable or on the page |
 | Where the words come from | built-in English, a language file at any URL, or `data-language="el"` for the published pack at the CDN | built-in English, the same file in a variable, or a published pack the tag loads from the CDN |
 | Uses the loader | yes | **no — never** |
-| What it holds back | scripts marked `type="text/plain" data-consentio`, released when their category is granted — nothing it is not told about | tags in the container |
-| The cost | it blocks. Around 5.4 KB has to download before the page paints | **it only covers tags in that container** |
+| What it holds back | scripts marked `type="text/plain" data-consentio`, released when their category is granted — nothing it is not told about | tags in the container, and the same marked scripts — the banner releases them on both routes |
+| The cost | it blocks. Around 5.4 KB has to download before the page paints | **the container covers only what it loads**; a script pasted into the page still has to be marked |
 
 **The tag manager route's catch belongs in the open.** A template can only gate what the tag manager loads.
-Take that route and *every* tag and cookie-setting script on the site has to be managed from the container —
-anything pasted straight into the page fires regardless of what the visitor answered, while the banner looks
-as if it is working. The [routes page](website/pages/routes.md) puts the two side by side.
+Take that route and every tag and cookie-setting script on the site has to be managed from the container
+or marked — anything pasted straight into the page and not marked fires regardless of what the visitor
+answered, while the banner looks as if it is working. The [routes page](website/pages/routes.md) puts the
+two side by side.
 
 > **Do not install both.** The template never loads the loader; it injects `consentio.min.js` itself and
 > calls `Consentio.Create` on its own. The template stands down on a page where the loader ran, and says
@@ -79,8 +80,9 @@ relative to its own `src` — then:
 > sees one, whatever `data-debug` says.
 
 `data-language="el"` in place of `data-language-url` fetches the published Greek pack from the CDN at the
-loader's own version. A language file that does not load costs the language, not the banner: it falls back
-to built-in English with one warning on the console.
+loader's own version. A language file or a cookie table that does not load costs that file, not the banner:
+built-in English, or empty tables, with one warning on the console. Only a settings file that does not
+load stops it.
 
 A script pasted into the page — a widget, an embed, a vendor's pixel — runs whatever the visitor answered,
 unless it is marked:
@@ -93,14 +95,14 @@ unless it is marked:
 Consentio replaces it with a live copy once that category is granted, and not before.
 [`website/pages/hold-scripts.md`](website/pages/hold-scripts.md) has what it reaches and what it does not.
 
-[`website/_layouts/base.html`](website/_layouts/base.html) is a live working example of this route.
+[`website/_layouts/base.html`](website/_layouts/base.html) is a live working example of this route: it prints the tag through [`website/_plugins/consentio.rb`](website/_plugins/consentio.rb).
 
 ## 🏷️ Tag manager template
 
 One template you import into your container by hand, built by `npm run build:gtm` from the parts in
 **[`gtm/`](gtm/)**, which explains what it is and how it is edited. It is attached to every release as
-`consentio-tag.tpl`. Until 1.0.0 there was a second one holding the cookie table a row at a time; the tag
-now takes the cookie file itself.
+`consentio-tag.tpl`. Up to 0.3.0 a second one held the cookie table a row at a time; the tag now takes the
+cookie file itself.
 
 **It is provided as it is.** It is not listed anywhere, and there is nothing to subscribe to - a fix
 reaches your container when you import the newer file.

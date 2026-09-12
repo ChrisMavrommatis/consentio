@@ -21,8 +21,8 @@ Four folders do not mirror `src/`, because what they cover is not in `src/`:
 - `test/scripts/` covers the release machinery — `scripts/changelog.mjs` and `.github/scripts/dist-guard.sh`
   — by running each against a throwaway file or repository. Both would otherwise only ever be exercised by a
   real release
-- `test/gtm/` covers the tag manager templates: that the sandboxed cookie reader still answers to
-  `gtm/contract.fixture.json`, and that every template still composes from its parts
+- `test/gtm/` covers the tag manager template: that the sandboxed cookie reader still answers to
+  `gtm/contract.fixture.json`, and that the template still composes from its parts
 - `test/i18n/` covers the language files: that every translation carries exactly English's keys and no blanks
 - `test/website/` covers the docs site's page scripts under `website/scripts/` - the readout, the catalogue
   panel, the copy buttons - against the markup the pages print, and the rule that a markdown page carries no
@@ -30,10 +30,11 @@ Four folders do not mirror `src/`, because what they cover is not in `src/`:
 
 ## 🧩 Why the files are so small
 
-**node:test gives each test FILE its own process**, and the suite leans on that hard. `defineCustomElements`
-registers six tag names with no `customElements.get` guard, so a second `new Consentio()` in one process
-throws. One scenario per file means each gets a pristine document, cookie jar and custom element registry,
-and every failure means what it says instead of inheriting the last test's wreckage.
+**node:test gives each test FILE its own process**, and the suite leans on that hard. The element classes
+extend `HTMLElement` the moment their module loads, and a tag name is registered once per process -
+`defineCustomElements` skips a name already taken, so a second `new Consentio()` keeps the first one's
+classes. One scenario per file means each gets a pristine document, cookie jar and custom element
+registry, and every failure means what it says instead of inheriting the last test's wreckage.
 
 ## 🧪 Two bootstraps
 
@@ -107,7 +108,7 @@ something owed.
   before the bundle is injected — and the async bundle never pushes a default at all. **That is a proxy, and
   a weak one.** What would settle it: a real page with the loader as a blocking `<script>` above the tag
   manager snippet, a real container, and Tag Assistant showing the `consent default` arriving before the
-  container loads. `website/_layouts/page.html` is wired for the first part; the rest has not been done.
+  container loads. `website/_layouts/base.html` is wired for the first part; the rest has not been done.
 - **The Google Tag Manager template route, entirely.** A custom template cannot inject a blocking script, so
   it has to set the default itself in the tag manager's sandbox and never runs `consentio-loader.js`. That
   code is `gtm/consentio-tag/src/sandbox.js` and only the tag manager can run it — `test/gtm/` checks it by

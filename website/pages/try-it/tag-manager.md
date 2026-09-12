@@ -6,11 +6,14 @@ description: The same site, the same cookie, no loader - the page that shows whe
 scripts: [try-it]
 ---
 
-**This page has no Consentio script tag.** Every other page here has one. This one is left to a Google Tag
-Manager container instead — [the other way of installing]({{ '/install/tag-manager/' | relative_url }}#route-2-google-tag-manager-custom-template).
+**This page never has the Consentio script tag.** [Try it on this page]({{ '/try-it/' | relative_url }})
+always has one. This one is left to a Google Tag Manager container instead —
+[the other way of installing]({{ '/install/tag-manager/' | relative_url }}#route-2-google-tag-manager-custom-template)
+— and on the published site so is every page but that one.
 
 It exists because there is one failure that never fails loudly — **the two routes disagreeing about the same
-visitor**. Answer the banner on any other page here, then come back to this one. Both routes read the same
+visitor**. Answer the banner on [Try it on this page]({{ '/try-it/' | relative_url }}), then come back to
+this one. Both routes read the same
 cookie by the same rules, so the answer has to survive the trip. If it does not, one of the two readers is
 wrong, and the [cookie contract]({{ '/cookie/' | relative_url }}#the-cookie-contract) says which.
 
@@ -31,7 +34,7 @@ disagree, and a mismatch discards the whole stored value.
 
 ## 🔍 What to compare {#what-to-compare}
 
-| | Every other page | This page |
+| | Try it on this page | This page |
 |---|---|---|
 | What runs first | the Consentio script tag, in `<head>` | the template, on the Consent Initialization trigger |
 | Who tells Google what is allowed | the script tag | the Tag Manager template |

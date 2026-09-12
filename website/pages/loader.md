@@ -38,8 +38,8 @@ required; the smallest working tag is the `src` and that one attribute.
 | `data-cookie-name` | no | `consentio` | Name of the cookie the answer is stored in |
 | `data-cookie-lifetime` | no | `90` | Days an answer is kept before the visitor is asked again |
 | `data-share-across-subdomains` | no | `false` | `"true"` stores one answer for every hostname your site answers on, instead of one each |
-| `data-version` | no | `1` | Which stored answers are still valid. [Asking everyone again]({{ '/versioning/' | relative_url }}) is what raising it does |
-| `data-debug` | no | `false` | `"true"` prints what it is doing to the console. Errors and the async/defer warning are always printed |
+| `data-version` | no | `1` | Which stored answers are still valid. [Asking everyone again]({{ '/versioning/' | relative_url }}) is what raising it does. A value that is not a whole number is read as `1`, with a warning |
+| `data-debug` | no | `false` | `"true"` prints each address it fetches, what came back, and the consent default it pushed. Every other line — the errors, the warnings and `Initialized successfully` — is printed either way. The banner's own logging is `debug` in the [settings file]({{ '/configuration/' | relative_url }}#top-level) |
 | `data-wait-for-update` | no | `500` | Milliseconds tags should wait for an answer before giving up. Only sent to a visitor who has not answered yet |
 
 ## 🥇 The tag wins over the settings file {#the-tag-wins}
@@ -62,7 +62,7 @@ happened.
 
 | Type this | You get |
 |---|---|
-| `window.ConsentioDefault` | What the first message to Google was built from: the cookie name, the version, the answers, and `consentGiven` — which is `false` when the visitor has not answered yet |
+| `window.ConsentioDefault` | What the first message to Google was built from: `cookieName`, `version`, `consents`, and `consentGiven` — which is `false` when the visitor has not answered yet. `cookieLifetime` and `shareAcrossSubdomains` are there too when their attributes are on the tag |
 | `window.ConsentioInstance` | The banner itself. While this exists, the script will not start a second one, and a Tag Manager tag on the same page stands down |
 | `window.Consentio` | The code that builds a banner, once the main file has loaded |
 
@@ -76,11 +76,23 @@ three.
   tag manager`, whatever `data-debug` says. [Why the tag has to be
   first]({{ '/install/direct/' | relative_url }}#do-not-put-async-or-defer-on-the-loader-tag).
 - **No `data-consentio-loader`:** `script not found` on the console, and nothing happens.
-- **The settings file or the cookie table does not load:** the banner does not start, and the console has
-  an initialisation error naming the address.
+- **The settings file does not load:** the banner does not start, and the console has
+  `Initialization failed:` naming the address and the reason — `/data/consentio-settings.json did not
+  load: HTTP 404` for a missing file. This is the one file that is not forgiven.
 - **The language pack does not load:** the banner starts in its built-in English, and the console names
-  the address. Only this file is forgiven.
+  the address.
+- **The cookie table does not load:** the banner starts with empty tables in the settings panel, and the
+  console names the address.
 - **`data-language` names a code with no published pack:** the same — English, and the address on the
   console.
 - **Both `data-language` and `data-language-url`:** the URL wins, and the console says so.
-- **`data-config-url` on the tag:** not read since 1.0.0 — [the older single file]({{ '/configuration/' | relative_url }}#the-older-single-file) says what to split it into. The banner starts with its built-in settings as if the attribute were not there.
+- **The tag is pasted inline instead of linked:** `the loader tag has no src, so the banner cannot be
+  located`. The consent default is still pushed; nothing else happens.
+- **`consentio.min.js` does not load:** `Failed to load script:` with the address it tried. The two files
+  have to sit in the same folder under the same name stem.
+- **A second loader tag:** put one on the page, and only one. A second tag that runs after the banner has
+  loaded stops and says `Consentio is already initialized` with `data-debug="true"`; one that runs before
+  that is not noticed, reads the first tag's attributes and loads the banner twice.
+- **`data-config-url` on the tag:** no longer read — 0.3.0 was the last release that read it.
+  [The older single file]({{ '/configuration/' | relative_url }}#the-older-single-file) says what to split
+  it into. The banner starts with its built-in settings as if the attribute were not there.

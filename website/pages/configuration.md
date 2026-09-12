@@ -2,7 +2,7 @@
 title: The settings file
 anchor: configuration
 permalink: /configuration/
-description: Every key in Consentio's settings file with its type and default, the four categories, the same file on the Tag Manager route, and the single file that 1.0.0 removed.
+description: Every key in Consentio's settings file with its type and default, the four categories, the same file on the Tag Manager route, and the older single file that was removed.
 scripts: [settings-builder]
 ---
 
@@ -45,10 +45,10 @@ Every key, with something in it. Nothing here is required.
 | `cookieName` | string | `consentio` | Name of the cookie the answer is stored in. **Not read on the HTML route at all** — set `data-cookie-name` on the tag instead, and Consentio says so on the console if you put it here. **The Tag Manager route always uses `consentio`**: a template has to name the cookie it reads when it is published, so the file's value is ignored there |
 | `cookieLifetime` | number | `90` | Days an answer is kept before the visitor is asked again. **Ignored if you also set `data-cookie-lifetime` on the tag.** Anything that is not a positive number falls back to 90. See [How long it lasts]({{ '/cookie/' | relative_url }}#how-long-it-lasts) |
 | `shareAcrossSubdomains` | boolean | `false` | One answer for every hostname your site answers on, instead of one each. There is no domain to type: Consentio works out the one your hosts share by asking the browser. **Ignored if you also set `data-share-across-subdomains` on the tag.** See [One answer across subdomains]({{ '/cookie/' | relative_url }}#one-answer-across-subdomains) |
-| `debug` | boolean | `false` | Turns on the banner's informational logging |
+| `debug` | boolean | `false` | Prints the banner's `[Consentio:Event]` and `[Consentio:GTM]` lines to the console. Its warnings are printed either way. The loader's own logging is `data-debug` on the [tag]({{ '/loader/' | relative_url }}#the-attributes) |
 | `version` | number | `1` | Raise it to throw away every stored answer and ask everyone again. **Not read on the HTML route at all** — set `data-version` on the tag instead, and Consentio says so on the console if you put it here. **On the Tag Manager route this file is where it lives.** See [Asking everyone again]({{ '/versioning/' | relative_url }}#versioning-stored-consent) |
 | `consentRequired` | boolean | `false` | Shows a full-screen blocking overlay behind the bar and modal until the visitor answers |
-| `policyUrl` | string | none | Where the banner's privacy policy link points, on the bar and in the panel. Leave it out and no link is shown. A language pack may name [its own address]({{ '/language/' | relative_url }}#the-keys) instead. It must start with `http://`, `https://` or a single `/` for a page on your own site — anything else is dropped with a warning on the console, because the address goes into an `href` and is not escaped the way a text is |
+| `policyUrl` | string | none | Where the banner's privacy policy link points, on the bar and in the panel. It opens in a new tab. Leave it out and no link is shown. A language pack may name [its own address]({{ '/language/' | relative_url }}#the-keys) instead. It must start with `http://`, `https://` or a single `/` for a page on your own site — anything else is dropped with a warning on the console, because the address goes into an `href` and is not escaped the way a text is |
 | `hideFloatingButton` | boolean | `false` | Removes the round settings button the banner leaves in the bottom right corner. **Only set it once your own link is on every page** — see [Reopening the settings]({{ '/events/' | relative_url }}#reopening-the-settings-from-your-own-link). With it on and no link, a visitor cannot change their answer, and Consentio says so on the console |
 | `consents` | object | the four categories | Keyed by category. The only thing in it is `defaultState` — see below |
 
@@ -139,8 +139,8 @@ there is no loader tag to carry it; a site running both routes keeps it equal to
 ## ⚠️ When the file is missing or wrong {#when-the-file-is-missing-or-wrong}
 
 - **No `data-settings-url`:** the built-in defaults, and no message.
-- **The file does not load:** the banner does not start, and the console has an initialisation error naming
-  the address. The language pack is forgiven that way; this file and the cookie table are not.
+- **The file does not load:** the banner does not start, and the console has `Initialization failed:`
+  with the address and the reason. The language pack and the cookie table are forgiven that way; this file is not.
 - **A category key that is not one of the four:** ignored with a warning, and the banner runs.
 - **`cookieName` or `version` in the file on the HTML route:** ignored with a warning saying which tag
   attribute to set instead.
@@ -150,8 +150,8 @@ there is no loader tag to carry it; a site running both routes keeps it equal to
 ## 🗂️ The older single settings file {#the-older-single-file}
 
 Before the language pack existed, `data-config-url` fetched one file carrying the behaviour, a `texts`
-object and a `consents` **array**. **That was removed in 1.0.0.** The attribute is no longer read and a file
-in that shape is not taken apart any more. Split it into [the settings file](#the-keys) and
+object and a `consents` **array**. **That is gone — 0.3.0 was the last release that read it.** The attribute is no longer read and a file
+in that shape is not taken apart any more. Split it into [the settings file](#top-level) and
 [the language pack]({{ '/language/' | relative_url }}) — the behaviour keys stay here, `texts` and the
 words of each category move to the pack, and `consents` becomes an object keyed by category in both — then
 put `data-settings-url` and `data-language-url` on the loader tag.

@@ -53,6 +53,8 @@ Two rules behind that, both worth knowing if something looks wrong:
 - **`wait_for_update` is only sent to someone who has not answered yet.** It tells tags to hold on briefly for
   an answer. Sending it to a returning visitor would delay tags waiting for a banner that is never going to
   appear.
+- **`ads_data_redaction` goes with every message**, `true` whenever `ad_storage` is denied, so revoking
+  marketing turns redaction back on rather than leaving it where the last message put it.
 
 ## 🔀 Categories map to signals {#categories-map-to-signals}
 
@@ -92,8 +94,8 @@ the banner and run it again: a second entry appears, `consent update`, naming al
    back.**
 
 If the default is missing or arrives late, the cause is ordering, not configuration —
-[troubleshooting]({{ '/troubleshooting/' | relative_url }}#tags-fire-before-anyone-answers) lists the four
-ways that happens.
+[troubleshooting]({{ '/troubleshooting/' | relative_url }}#tags-fire-before-anyone-answers) lists the ways
+that happens.
 
 ## ⚠️ This does not stop other scripts running {#consent-mode-does-not-stop-a-script-from-running}
 
@@ -104,7 +106,7 @@ heard of Consentio.
 **In Tag Manager**, that is what the container's own consent settings are for: a tag can be told to wait for
 a particular signal before it fires.
 
-**In your HTML**, a script you pasted into the page is held back by marking it: `type="text/plain"` and
+**A script you pasted into the page**, on either route, is held back by marking it: `type="text/plain"` and
 `data-consentio` naming the category it needs, and Consentio runs it once that category is granted.
 [Hold a script until consent]({{ '/hold-scripts/' | relative_url }}) shows the tag before and after. For
 anything a tag cannot say, [events]({{ '/events/' | relative_url }}#events) carry the same moment as
@@ -117,3 +119,16 @@ document.addEventListener('consentio:consent-update', (event) => {
   }
 });
 ```
+
+## 🚫 What Consentio does not send {#what-consentio-does-not-send}
+
+Two things Google's consent API takes and Consentio leaves alone:
+
+- **A default that depends on the visitor's country.** Google's `default` command takes a `region` list, so
+  a site can grant by default outside the EU. Consentio denies everywhere it runs. If you need a granted
+  default for some regions, that is a decision to make in the container's own consent settings, after the
+  tag — Consentio will not push one.
+- **`url_passthrough`.** With `ad_storage` denied, this flag carries Google's ad-click id across your own
+  pages in the URL instead of a cookie. It only matters to a site running Google Ads, and it puts a click id
+  in every internal link, so Consentio does not turn it on. If you want it, push `gtag('set',
+  'url_passthrough', true)` yourself, above the container snippet.

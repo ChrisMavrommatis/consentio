@@ -466,24 +466,37 @@
 
 .builder__grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
 	gap: .6rem 1.5rem;
 }
 
+// min-width: 0 on the row and the label, or a long key like
+// consents.marketing_advertising.defaultState widens the column past the page.
 .builder__row {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: .8rem;
+	min-width: 0;
 	padding: .35rem 0;
 	border-bottom: 1px solid var(--rule);
 	font-size: .92rem;
+}
+
+.builder__label {
+	min-width: 0;
 }
 
 .builder__label code {
 	display: block;
 	font-size: .78rem;
 	opacity: .75;
+	overflow-wrap: anywhere;
+}
+
+.builder__row input,
+.builder__row select {
+	flex-shrink: 0;
 }
 
 .builder__row input[type="text"],

@@ -87,12 +87,15 @@ Left at *None* on a page with no `ConsentioCookies`, the panel shows no table.
 
 - **No `data-cookies-url`, or the variable left at *None*:** every category's table is empty, and nothing
   is said. That is what "not configured yet" looks like.
-- **The file does not load:** the banner does not start, and the console has an initialisation error naming
-  the address.
+- **The file does not load:** the banner starts with empty tables, and the console names the address:
+  `the cookie table did not load, so the settings panel shows no table`.
+- **The file is not an array:** an object, say. It is treated as no table. On the HTML route nothing is
+  said; the tag says `the Cookie table is not a JSON array, so the settings panel shows no table` in
+  preview mode.
 - **Every row's `category` matches none of the four:** the file loaded and the tables are still empty.
   [Troubleshooting]({{ '/troubleshooting/' | relative_url }}#the-settings-panel-tables-are-empty) is the
   page for that symptom.
 
-**Declaring a cookie does not stop the script that sets it.** On the HTML route,
+**Declaring a cookie does not stop the script that sets it.**
 [Hold a script until consent]({{ '/hold-scripts/' | relative_url }}) is how the script waits for the
 category the row names.

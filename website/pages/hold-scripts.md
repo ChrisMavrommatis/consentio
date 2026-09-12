@@ -54,5 +54,8 @@ snippet pasted in without the two attributes is outside consent, and nothing wil
 **A tag inside a Google Tag Manager container.** The container holds those back on its own; see
 [the tag manager route]({{ '/install/tag-manager/' | relative_url }}#what-the-template-does).
 
+Marking works on both routes. The banner does the releasing, and the Tag Manager template loads the same
+banner.
+
 If a script needs more than a tag can say — a call with the visitor's answer in it, say — the
 [events]({{ '/events/' | relative_url }}#the-two-events) carry the same moment as JavaScript.

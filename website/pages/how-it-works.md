@@ -23,8 +23,9 @@ anything at all.
 4. **It publishes `window.ConsentioDefault`** — what that push was built from.
 5. Everything after this point is asynchronous and the page carries on: it injects `consentio.min.js`,
    fetches your settings, language and cookie files, builds the banner, and inserts it. A language file
-   that does not load is replaced by the built-in English, with one warning on the console; a settings or
-   cookies file that does not load stops the banner, with an error.
+   that does not load is replaced by the built-in English and a cookie table that does not load by an
+   empty one, each with one warning on the console; a settings file that does not load stops the banner,
+   with an error.
 6. **Once there is a stored answer** — one just given, or one from an earlier visit — the banner releases
    every script marked `type="text/plain" data-consentio` whose category is granted.
    [Hold a script until consent]({{ '/hold-scripts/' | relative_url }}) has what that reaches and what it
@@ -58,10 +59,6 @@ The template's entry point into the bundle:
 Consentio.Create(settings, language, cookies);
 ```
 
-The template sends the settings and the wording as one object, which `Create` takes apart itself. That is
-deliberate: the template pins an exact version of the bundle, so it has to call the bundle it pins in a way
-an older one also understands.
-
 `Create` puts the instance on `window.ConsentioInstance` itself, so there is nothing to assign afterwards.
 That is what the template's run-once guard reads, and what your own page calls to
 [reopen the settings]({{ '/events/' | relative_url }}#reopening-the-settings-from-your-own-link).
@@ -83,8 +80,8 @@ that is easiest to get wrong.
 | Where settings come from | three JSON files, fetched by URL | the same three files, each in a variable or on the page |
 | Where a published language pack comes from | your own copy at `data-language-url`, or the CDN at the loader's version with `data-language` | the CDN at the template's version, when **Language** asks for it |
 | Uses the loader | yes | **no — never** |
-| What it holds back | scripts marked `type="text/plain" data-consentio`, released when their category is granted | tags in the container, through its own consent settings |
-| The cost | it blocks. Around 5.4 KB has to download before the page paints | **it only covers tags in that container** |
+| What it holds back | scripts marked `type="text/plain" data-consentio`, released when their category is granted | the same marked scripts — the banner does the releasing on both routes — and tags in the container, through its own consent settings |
+| The cost | it blocks. Around 5.4 KB has to download before the page paints | **the container covers only what it loads**; a script pasted into the page still has to be marked |
 
 [Choose a route]({{ '/routes/' | relative_url }}) has the same comparison in the terms a site owner
 decides by.
@@ -101,17 +98,29 @@ The bar, the settings panel and the overlay are all rendered inside a shadow roo
 
 ## ⚖️ What it weighs {#what-it-weighs}
 
-Measured on the files this site is serving right now.
+Measured on the files attached to the 0.3.0 release.
 
 | File | Minified | Compressed | When it loads |
 |---|---|---|---|
-| `consentio-loader.min.js` | around 5.4 KB | about 2.4 KB | blocking, in `<head>`, before the page paints |
-| `consentio.min.js` | around 42.5 KB | about 13 KB | in the background, after the default is already pushed |
+| `consentio-loader.min.js` | 5.4 KB (5,515 bytes) | 2.4 KB | blocking, in `<head>`, before the page paints |
+| `consentio.min.js` | 42.5 KB (43,566 bytes) | 13.1 KB | in the background, after the default is already pushed |
 
 The compressed column is gzip, which is what almost any server will do for you. **Only the first file is on
 the critical path**, and only because the answer has to reach your tag manager before it decides anything.
-On the Tag Manager route neither file blocks — and neither does the banner cover anything outside the
-container.
+On the Tag Manager route neither file blocks.
+
+## ⌨️ Keyboard and screen readers {#keyboard-and-screen-readers}
+
+- **The bar** is a region named by `barTitle`. With `consentRequired` on it is a dialog instead, and Tab
+  stays inside it until the visitor answers.
+- **The settings panel** is a dialog named by `modalTitle`. Tab stays inside it while it is open, and
+  Escape closes it the way Cancel does.
+- **Each category** is a heading the visitor can expand with Enter or Space to read its description and
+  its cookie table. The switch is a checkbox named after the category; on `strictly_necessary` it is
+  disabled and shows `alwaysOnLabel`.
+- **The round reopen button** is named `buttonSettings`, in whichever language the pack gives it.
+- **After an answer** focus moves to the round button, or back to wherever it was on the page when the
+  button is hidden. Cancelling before answering puts it back on the bar.
 
 ## 🔍 What ends up on `window` {#what-ends-up-on-window}
 

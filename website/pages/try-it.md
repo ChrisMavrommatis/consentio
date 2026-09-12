@@ -11,8 +11,8 @@ scripts: [try-it]
 
 **The banner on this site is not a screenshot.** This page loads `consentio-loader.min.js` as a
 blocking script in `<head>` — [route 1]({{ '/install/direct/' | relative_url }}#route-1-directly-in-the-site),
-the same markup the documentation gives you. Every other page on this site gets the banner from a Tag
-Manager container instead — route 2 — and [the container page]({{ '/try-it/tag-manager/' | relative_url }})
+the same markup the documentation gives you. On the published site every other page gets the banner from a
+Tag Manager container instead — route 2 — and [the container page]({{ '/try-it/tag-manager/' | relative_url }})
 is where to look at that one.
 
 It also runs with `consentRequired: true`, which is the hardest setting to get right: a full-screen
@@ -49,8 +49,8 @@ clear the cookie below and it comes back.
 
 ## 🏷️ The other route, on the same site {#the-other-route-on-the-same-site}
 
-[Try it through a tag manager]({{ '/try-it/tag-manager/' | relative_url }}) is the one page here that does
-**not** have the script tag. It is where the two ways of installing are checked against each other: answer
+[Try it through a tag manager]({{ '/try-it/tag-manager/' | relative_url }}) is the page that never has
+the script tag, whatever the build. It is where the two ways of installing are checked against each other: answer
 the banner on this page, then open that one and see whether it agrees about you.
 
 ## 📡 Watching what it sends {#watching-the-pushes}

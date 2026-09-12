@@ -8,17 +8,18 @@ description: The two ways to install Consentio side by side - what each can stop
 There are two ways to install Consentio and they do not do the same things. This page is the comparison;
 each route has its own page with the steps.
 
-**If anything on your site sets a cookie from outside the container, the Tag Manager route does not
-cover it.** That is the one thing that decides between the two.
+**The container covers only what it loads.** A script pasted into the page is outside consent on either
+route until you mark it, and marking works on both. What decides between the two is where you can make a
+change: the `<head>` of every page, or the container.
 
 ## 🧭 Side by side {#side-by-side}
 
 | | **Put it in your HTML** | **Use Google Tag Manager** |
 |---|---|---|
-| What you add | one `<script>` tag in `<head>`, and two small files you host | one template in your container, on one trigger |
+| What you add | one `<script>` tag in `<head>`, and two files you host | one template in your container, on one trigger |
 | What tells Google what the visitor allows | the script tag, blocking, before anything is fetched | the template, on the Consent Initialization trigger, before it loads anything |
 | What it costs the first paint | one blocking file, around 5.4 KB, before the page paints — [what it weighs]({{ '/how-it-works/' | relative_url }}#what-it-weighs) | nothing in the page; the container's own cost |
-| What it can stop | every script you mark with `type="text/plain" data-consentio`, held until its category is granted — and nothing you do not mark. [Hold a script until consent]({{ '/hold-scripts/' | relative_url }}) | only tags in that container. A script pasted into the page is outside consent |
+| What it can stop | every script you mark with `type="text/plain" data-consentio`, held until its category is granted — and nothing you do not mark. [Hold a script until consent]({{ '/hold-scripts/' | relative_url }}) | tags in that container, through its own consent settings, and the same marked scripts — the banner releases them on both routes. A script pasted into the page and not marked is outside consent |
 | Where the words come from | the built-in English; a language file at any URL — one of your own, or a published pack; or `data-language="el"` for the published pack at the CDN | the built-in English; the same file in a variable; or a published pack the tag loads from the CDN |
 | Where the cookie table comes from | a file at any URL | the same file in a Constant, or on the page, or nothing |
 | Where the settings come from | a JSON file the script tag fetches | the same file in a Constant, or on the page, or nothing |
