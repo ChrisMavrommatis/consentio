@@ -28,11 +28,14 @@ steps.
 | **Language pack** | English | Shown for *A published language pack*. Which pack the tag loads from the CDN, at the same version as the banner | `data-language` |
 | **Cookie table** | *None* | A variable holding the [cookie table]({{ '/cookies/' | relative_url }}#on-the-tag-manager-route) — its JSON text, or the rows. Left at *None*, the tag reads `window.ConsentioCookies` from the page; without that, the settings panel shows no table. [Three ways in](#three-ways-in) | `data-cookies-url` |
 
-**Two keys of the settings file behave differently on this route.** `cookieName` is ignored: a template has
+**Three keys of the settings file behave differently on this route.** `cookieName` is ignored: a template has
 to name the cookie it reads when it is published, so here it is always `consentio`, and the console says so
 when the file names another. `version` is read from the file — there is no tag attribute to put it on — and
 it is read before the cookie, so a site at version 2 must say so in the file or every stored answer is
-discarded. On a site running both routes, keep the file's `version` equal to the loader tag's `data-version`.
+discarded. `urlPassthrough` is read from the file the same way, and sent as a `set` after the default when it
+is `true` — [what it tells Google]({{ '/datalayer/' | relative_url }}#url-passthrough) says what it does.
+On a site running both routes, keep the file's `version` and `urlPassthrough` equal to the loader tag's
+`data-version` and `data-url-passthrough`.
 
 ## 🔀 Three ways in {#three-ways-in}
 
@@ -93,7 +96,7 @@ Tag Manager shows these when you import it. Each is the least the tag can work w
 | Inject scripts from `cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio*` | The banner and the language pack, pinned to one released version |
 | Read the `consentio` cookie | The stored answer |
 | Set consent state | The consent default, for the seven Google signals. The update comes from the banner, on `dataLayer`, and needs no permission |
-| Write `ads_data_redaction` to the data layer | Sent alongside the default |
+| Write `ads_data_redaction` and `url_passthrough` to the data layer | Sent alongside the default; the second only when the settings ask for it |
 | Call `Consentio.Create`; read and write `ConsentioInstance`; read `ConsentioDefault`, `ConsentioSettings`, `ConsentioLanguage` and `ConsentioCookies` on `window` | Start the banner and record that it did; see the HTML route or a second run; read the loaded pack and what the page carries |
 | Template storage | Remember that it ran, so a second trigger on the same page does nothing |
 | Log to the console in preview mode | What the tag read and decided, while you are in Tag Assistant |

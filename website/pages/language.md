@@ -3,6 +3,8 @@ title: The language pack
 anchor: language-pack
 permalink: /language/
 description: The file that holds every word the banner shows - each text key with its English, the four categories, and how to load a published pack or your own.
+scripts: [packs]
+panel: true
 ---
 
 The language pack is the words file: every string the visitor reads, the title and description of each of
@@ -10,14 +12,18 @@ the four categories, and the address of a privacy policy in that language. Nothi
 banner behaves — that is the [settings file]({{ '/configuration/' | relative_url }}). A translator can be
 given this one file and can break nothing else.
 
-**A published pack is a valid language pack exactly as downloaded.** `en.json` and `el.json` are attached
-to [every release]({{ site.repository_url }}/releases/latest), built from one YAML file per language in
-the source repository. Point the banner at one, or copy it and edit the strings.
-[Tag Manager language packs]({{ '/language/tag-manager/' | relative_url }}) has the same packs as
-variables to paste.
-
 Keys merge the way the [settings file's]({{ '/configuration/' | relative_url }}) do: leave one out and the
 banner uses its built-in English for that one, and `""` is a value, not a gap.
+
+## 🌍 The published packs {#the-published-packs}
+
+**A published pack is a valid language pack exactly as downloaded.** Each one is built from one YAML file
+per language in the source repository and attached to [every release]({{ site.repository_url }}/releases/latest).
+Open one here, copy it, and host it as your own file — or point `data-language` at it and host nothing.
+The panel also shows it as the variable [the Tag Manager route]({{ '/language/tag-manager/' | relative_url }})
+pastes.
+
+{% consentio_packs file %}
 
 ## 📄 A complete example {#a-complete-example}
 

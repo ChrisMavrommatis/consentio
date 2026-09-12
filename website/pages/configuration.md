@@ -4,6 +4,7 @@ anchor: configuration
 permalink: /configuration/
 description: Every key in Consentio's settings file with its type and default, the four categories, the same file on the Tag Manager route, and the older single file that was removed.
 scripts: [settings-builder]
+panel: true
 ---
 
 The settings file holds how the banner behaves: the cookie, the version, whether an answer is required,
@@ -29,6 +30,7 @@ Every key, with something in it. Nothing here is required.
   "consentRequired": false,
   "policyUrl": "/privacy/",
   "hideFloatingButton": false,
+  "urlPassthrough": false,
   "consents": {
     "strictly_necessary": { "defaultState": "granted" },
     "preferences_functionality": { "defaultState": "denied" },
@@ -50,6 +52,7 @@ Every key, with something in it. Nothing here is required.
 | `consentRequired` | boolean | `false` | Shows a full-screen blocking overlay behind the bar and modal until the visitor answers |
 | `policyUrl` | string | none | Where the banner's privacy policy link points, on the bar and in the panel. It opens in a new tab. Leave it out and no link is shown. A language pack may name [its own address]({{ '/language/' | relative_url }}#the-keys) instead. It must start with `http://`, `https://` or a single `/` for a page on your own site — anything else is dropped with a warning on the console, because the address goes into an `href` and is not escaped the way a text is |
 | `hideFloatingButton` | boolean | `false` | Removes the round settings button the banner leaves in the bottom right corner. **Only set it once your own link is on every page** — see [Reopening the settings]({{ '/events/' | relative_url }}#reopening-the-settings-from-your-own-link). With it on and no link, a visitor cannot change their answer, and Consentio says so on the console |
+| `urlPassthrough` | boolean | `false` | Tells Google's tags to carry the ad-click id across your own links in the URL while ad storage is denied, so a Google Ads click still counts for a visitor who refused. It puts a click id in every internal link, which is why it is off. **Not read on the HTML route at all** — set `data-url-passthrough` on the tag instead, and Consentio says so on the console if you put it here. **On the Tag Manager route this file is where it lives.** See [What it tells Google]({{ '/datalayer/' | relative_url }}#url-passthrough) |
 | `consents` | object | the four categories | Keyed by category. The only thing in it is `defaultState` — see below |
 
 ## 📋 The four categories {#consents}
@@ -81,12 +84,12 @@ text instead of a switch, and no file can change that. The other three start den
 
 ## 🧰 Build the file {#build-the-file}
 
-Every key above, as a control. Change what you want and the file below says only that — a key left at its
-default is left out. Take it as `consentio-settings.json` for the [HTML route]({{ '/install/direct/' | relative_url }}),
+Every key above, as a control. Change what you want and the file says only that — a key left at its
+default is left out. *Show* opens it; the two copies take it straight to the clipboard. Take it as `consentio-settings.json` for the [HTML route]({{ '/install/direct/' | relative_url }}),
 or as a Custom JavaScript variable to paste into Tag Manager for the
-[other one]({{ '/install/tag-manager/' | relative_url }}). `cookieName` and `version` are here too: on the
-HTML route they go on the [loader tag]({{ '/loader/' | relative_url }}) instead, and on the Tag Manager
-route the name is ignored.
+[other one]({{ '/install/tag-manager/' | relative_url }}). `cookieName`, `version` and `urlPassthrough` are here too: on
+the HTML route they go on the [loader tag]({{ '/loader/' | relative_url }}) instead, and on the Tag
+Manager route the name is ignored.
 
 <form class="builder" id="settings-builder" markdown="0">
 <div class="builder__grid">
@@ -104,11 +107,7 @@ route the name is ignored.
 </label>
 {%- endfor %}
 </div>
-<div class="builder__output">
-<span class="builder__switch"><label><input type="radio" name="output" value="file" checked> The file</label> <label><input type="radio" name="output" value="variable"> A Tag Manager variable</label></span>
-<pre><code id="settings-output"></code></pre>
-<div class="builder__actions"><button type="button" class="button" id="settings-copy">Copy</button> <button type="reset" class="button button--quiet">Start again</button></div>
-</div>
+<div class="builder__actions"><button type="button" class="button button--quiet" id="settings-show">Show</button> <button type="button" class="button" id="settings-file">Copy as file</button> <button type="button" class="button" id="settings-variable">Copy as Tag Manager variable</button> <button type="reset" class="button button--quiet">Start again</button></div>
 </form>
 <script type="application/json" id="settings-data">{{ site.data.settings | jsonify | replace: '</', '<\/' }}</script>
 
@@ -131,9 +130,10 @@ The tag's **Settings** picker takes the same file, three ways:
 
 Left at *None* on a page with no `ConsentioSettings`, the banner uses the defaults above.
 
-Two keys read differently there. **`cookieName` is ignored** — the template names the cookie it reads when
-it is published, so on that route it is always `consentio`. **`version` is read from this file**, because
-there is no loader tag to carry it; a site running both routes keeps it equal to the tag's `data-version`.
+Three keys read differently there. **`cookieName` is ignored** — the template names the cookie it reads
+when it is published, so on that route it is always `consentio`. **`version` and `urlPassthrough` are read
+from this file**, because there is no loader tag to carry them; a site running both routes keeps them equal
+to the tag's `data-version` and `data-url-passthrough`.
 [The tag]({{ '/tag/' | relative_url }}#the-pickers) has the detail.
 
 ## ⚠️ When the file is missing or wrong {#when-the-file-is-missing-or-wrong}
@@ -142,8 +142,8 @@ there is no loader tag to carry it; a site running both routes keeps it equal to
 - **The file does not load:** the banner does not start, and the console has `Initialization failed:`
   with the address and the reason. The language pack and the cookie table are forgiven that way; this file is not.
 - **A category key that is not one of the four:** ignored with a warning, and the banner runs.
-- **`cookieName` or `version` in the file on the HTML route:** ignored with a warning saying which tag
-  attribute to set instead.
+- **`cookieName`, `version` or `urlPassthrough` in the file on the HTML route:** ignored with a warning
+  saying which tag attribute to set instead.
 - **A `policyUrl` that does not start with `http://`, `https://` or `/`:** dropped with a warning, and no
   link is shown.
 

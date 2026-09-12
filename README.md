@@ -92,7 +92,8 @@ unless it is marked:
         src="https://vendor.example/analytics.js"></script>
 ```
 
-Consentio replaces it with a live copy once that category is granted, and not before.
+Consentio replaces it with a live copy once that category is granted, and not before. An `<iframe>` is
+held the same way, with its address on `data-src` and no `src`; the address moves to `src` on grant.
 [`website/pages/hold-scripts.md`](website/pages/hold-scripts.md) has what it reaches and what it does not.
 
 [`website/_layouts/base.html`](website/_layouts/base.html) is a live working example of this route: it prints the tag through [`website/_plugins/consentio.rb`](website/_plugins/consentio.rb).

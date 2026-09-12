@@ -40,20 +40,22 @@ required; the smallest working tag is the `src` and that one attribute.
 | `data-share-across-subdomains` | no | `false` | `"true"` stores one answer for every hostname your site answers on, instead of one each |
 | `data-version` | no | `1` | Which stored answers are still valid. [Asking everyone again]({{ '/versioning/' | relative_url }}) is what raising it does. A value that is not a whole number is read as `1`, with a warning |
 | `data-debug` | no | `false` | `"true"` prints each address it fetches, what came back, and the consent default it pushed. Every other line — the errors, the warnings and `Initialized successfully` — is printed either way. The banner's own logging is `debug` in the [settings file]({{ '/configuration/' | relative_url }}#top-level) |
+| `data-url-passthrough` | no | `false` | `"true"` tells Google's tags to carry the ad-click id across your own links in the URL while ad storage is denied. It puts a click id in every internal link, so it is off unless you say so. See [What it tells Google]({{ '/datalayer/' | relative_url }}#url-passthrough) |
 | `data-wait-for-update` | no | `500` | Milliseconds tags should wait for an answer before giving up. Only sent to a visitor who has not answered yet |
 
 ## 🥇 The tag wins over the settings file {#the-tag-wins}
 
-**Four of these can also be keys in the settings file, and the tag wins.** If you put `cookieName`,
-`version`, `cookieLifetime` or `shareAcrossSubdomains` in both places, the value on the tag is the one used
+**Five of these can also be keys in the settings file, and the tag wins.** If you put `cookieName`,
+`version`, `urlPassthrough`, `cookieLifetime` or `shareAcrossSubdomains` in both places, the value on the tag is the one used
 — everywhere, including inside the banner. You cannot end up with the tag reading one cookie and the banner
 writing another. The settings-file versions exist for the Tag Manager route, which has no tag.
 
-**`cookieName` and `version` are decided by the tag even when it does not name them**, because the script
-has to read the cookie before any file has been fetched: leave them off the tag and you get `consentio` and
-`1`, not what the settings file says. **Putting either in a settings file on this route does nothing at
-all**, and Consentio says so on the console rather than leaving you to find it. The other two are not read
-that early, so leaving them off the tag is what lets the settings file name them.
+**`cookieName`, `version` and `urlPassthrough` are decided by the tag even when it does not name them**,
+because the script has to read the cookie and push the first message before any file has been fetched:
+leave them off the tag and you get `consentio`, `1` and off, not what the settings file says. **Putting
+any of the three in a settings file on this route does nothing at all**, and Consentio says so on the
+console rather than leaving you to find it. The other two are not read that early, so leaving them off the
+tag is what lets the settings file name them.
 
 ## 🔍 What it leaves on `window` {#what-it-leaves-on-window}
 
@@ -62,7 +64,7 @@ happened.
 
 | Type this | You get |
 |---|---|
-| `window.ConsentioDefault` | What the first message to Google was built from: `cookieName`, `version`, `consents`, and `consentGiven` — which is `false` when the visitor has not answered yet. `cookieLifetime` and `shareAcrossSubdomains` are there too when their attributes are on the tag |
+| `window.ConsentioDefault` | What the first message to Google was built from: `cookieName`, `version`, `consents`, and `consentGiven` — which is `false` when the visitor has not answered yet. `urlPassthrough` says whether that was sent. `cookieLifetime` and `shareAcrossSubdomains` are there too when their attributes are on the tag |
 | `window.ConsentioInstance` | The banner itself. While this exists, the script will not start a second one, and a Tag Manager tag on the same page stands down |
 | `window.Consentio` | The code that builds a banner, once the main file has loaded |
 

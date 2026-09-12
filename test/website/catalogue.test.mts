@@ -3,11 +3,9 @@ import assert from 'node:assert/strict';
 
 import mount, { selected, count } from '../../website/scripts/catalogue.js';
 import { asFile, asVariable } from '../../website/scripts/lib/output.js';
+import { PANEL_MARKUP, dialog, panelCode, panelShape, panelTitle } from './panel.mjs';
 
-/**
- * The catalogue's side panel and copy controls, against the markup the page prints.
- * jsdom has no showModal, so the dialog gets the two methods the script calls.
- */
+/** The catalogue's rows, copy controls and builder strip, against the markup the page prints. */
 
 const ROWS = [
 	{ name: '_ga', purpose: 'Tells visitors apart', provenance: 'Google Analytics', duration: '2 years', category: 'statistics_performance' },
@@ -26,20 +24,7 @@ const MARKUP = `
 <button class="builder-strip__show">Show</button><button class="builder-strip__file">Copy as file</button>
 <button class="builder-strip__variable">Copy as Tag Manager variable</button><button class="builder-strip__clear">Clear</button></div>
 <script type="application/json" id="catalogue-data">${JSON.stringify([{ vendor: 'Google Analytics', rows: ROWS }])}</script>
-<dialog id="catalogue-panel" tabindex="-1">
-<p class="catalogue-panel__title"></p>
-<button class="catalogue-panel__close">Close</button>
-<pre><code class="catalogue-panel__code"></code></pre>
-<button class="catalogue-panel__copy">Copy</button>
-</dialog>`;
-
-function dialog(): HTMLDialogElement & { opened: number } {
-	const panel = document.getElementById('catalogue-panel') as HTMLDialogElement & { opened: number };
-	panel.opened = 0;
-	panel.showModal = () => { panel.opened += 1; panel.setAttribute('open', ''); };
-	panel.close = () => { panel.removeAttribute('open'); panel.dispatchEvent(new Event('close')); };
-	return panel;
-}
+${PANEL_MARKUP}`;
 
 test('the ticked rows come back in catalogue order, and the strip counts them', () => {
 	const vendors = [{ vendor: 'A', rows: [ROWS[0]!] }, { vendor: 'B', rows: [ROWS[1]!] }];
@@ -64,10 +49,10 @@ test('the JSON button opens the panel on that row, and closing it gives focus ba
 	const button = document.querySelector<HTMLElement>('.catalogue__open[data-row="1"]')!;
 	button.click();
 	assert.equal(panel.opened, 1);
-	assert.equal(panel.querySelector('.catalogue-panel__title')!.textContent, '_gid');
-	assert.equal(panel.querySelector('.catalogue-panel__code')!.textContent, JSON.stringify(ROWS[1], null, 2));
+	assert.equal(panelTitle(), '_gid');
+	assert.equal(panelCode(), JSON.stringify(ROWS[1], null, 2));
 
-	panel.querySelector<HTMLElement>('.catalogue-panel__close')!.click();
+	panel.querySelector<HTMLElement>('.panel__close')!.click();
 	assert.equal(document.activeElement, button);
 });
 
@@ -77,7 +62,7 @@ test('a click on the row reaches the same button, and a click on the tick box do
 	mount(document);
 	document.querySelector<HTMLElement>('.catalogue__row td:nth-child(2)')!.click();
 	assert.equal(panel.opened, 1);
-	assert.equal(panel.querySelector('.catalogue-panel__title')!.textContent, '_ga');
+	assert.equal(panelTitle(), '_ga');
 	document.querySelector<HTMLElement>('.catalogue__pick')!.click();
 	assert.equal(panel.opened, 1);
 });
@@ -119,8 +104,14 @@ test('without a clipboard the strip opens the panel on the output instead', () =
 	document.querySelector<HTMLInputElement>('.catalogue__pick')!.click();
 	document.querySelector<HTMLElement>('.builder-strip__variable')!.click();
 	assert.equal(panel.opened, 1);
-	assert.equal(panel.querySelector('.catalogue-panel__title')!.textContent, 'Your cookie table, as a Tag Manager variable - 1 cookie selected');
-	assert.equal(panel.querySelector('.catalogue-panel__code')!.textContent, asVariable([ROWS[0]]));
+	assert.equal(panelTitle(), 'Your cookie table - 1 cookie selected');
+	assert.equal(panelCode(), asVariable([ROWS[0]]), 'opened on the shape the button named');
+	panelShape('file');
+	assert.equal(panelCode(), asFile([ROWS[0]]));
+
+	document.querySelector<HTMLElement>('.builder-strip__show')!.click();
+	assert.equal(panel.opened, 2);
+	assert.equal(panelCode(), asFile([ROWS[0]]), 'Show opens on the file');
 });
 
 test('copy all rows without a clipboard opens the panel on the whole file instead', () => {
@@ -129,8 +120,8 @@ test('copy all rows without a clipboard opens the panel on the whole file instea
 	mount(document);
 	document.querySelector<HTMLElement>('.catalogue__copy-all')!.click();
 	assert.equal(panel.opened, 1);
-	assert.equal(panel.querySelector('.catalogue-panel__title')!.textContent, 'Google Analytics - all rows');
-	assert.equal(panel.querySelector('.catalogue-panel__code')!.textContent, asFile(ROWS));
+	assert.equal(panelTitle(), 'Google Analytics - all rows');
+	assert.equal(panelCode(), asFile(ROWS));
 });
 
 test('copy all rows with a clipboard writes the file and says so', async () => {

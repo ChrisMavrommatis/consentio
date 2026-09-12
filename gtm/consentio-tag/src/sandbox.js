@@ -178,6 +178,10 @@ if (!storedConsents) {
 
 setDefaultConsentState(signals);
 gtagSet({ ads_data_redaction: adsDataRedaction });
+// Off unless the settings file says so: it puts a click id in every internal link.
+if (settings.urlPassthrough === true) {
+  gtagSet({ url_passthrough: true });
+}
 
 log('consent default =', signals);
 

@@ -115,20 +115,35 @@ module Jekyll
     end
   end
 
-  # One block per built <locale>.gtm.js under data/i18n/: the pack as a Custom JavaScript
-  # variable, with a copy control. The page's script wires the button.
-  class ConsentioPackSnippetsTag < Liquid::Tag
+  # One row per built pack under data/i18n/, and a JSON block carrying each pack in both
+  # shapes - the <locale>.json file and the <locale>.gtm.js variable - for the panel the
+  # page's script opens. The argument is the shape the panel opens on: `file` or `variable`.
+  class ConsentioPacksTag < Liquid::Tag
+    def initialize(tag_name, markup, tokens)
+      super
+      @shape = markup.strip == 'variable' ? 'variable' : 'file'
+    end
+
     def render(context)
-      dir = File.join(context.registers[:site].source, Consentio::PACKS_DIR)
-      Dir.glob(File.join(dir, '*.gtm.js')).sort.map do |file|
+      site = context.registers[:site]
+      dir = File.join(site.source, Consentio::PACKS_DIR)
+      release = "#{site.config['repository_url']}/releases/latest"
+      packs = Dir.glob(File.join(dir, '*.gtm.js')).sort.map do |file|
         locale = File.basename(file, '.gtm.js')
-        name = JSON.parse(File.read(File.join(dir, "#{locale}.json")))['name']
-        code = CGI.escapeHTML(File.read(file).chomp)
-        %(<figure class="snippet" markdown="0">) \
-          + %(<figcaption class="snippet__bar"><span>#{name} <code>#{locale}.gtm.js</code></span>) \
-          + %(<button type="button" class="button button--quiet snippet__copy">Copy</button></figcaption>) \
-          + %(<pre><code>#{code}</code></pre></figure>)
-      end.join("\n")
+        json = File.read(File.join(dir, "#{locale}.json"))
+        { 'locale' => locale, 'name' => JSON.parse(json)['name'], 'file' => json, 'variable' => File.read(file) }
+      end
+      rows = packs.each_with_index.map do |pack, index|
+        name = CGI.escapeHTML(pack['name'])
+        %(<tr class="packs__row"><td>#{name}</td><td><code>#{pack['locale']}</code></td>) \
+          + %(<td><a href="#{release}">#{pack['locale']}.json</a></td>) \
+          + %(<td><button type="button" class="button button--quiet packs__open" data-pack="#{index}" aria-label="Open #{name}">Open</button></td></tr>)
+      end
+      data = packs.to_json.gsub('</', '<\/')
+      %(<table class="packs" data-shape="#{@shape}">) \
+        + %(<thead><tr><th>Language</th><th>Code</th><th>On the release</th><th><span class="visually-hidden">Open</span></th></tr></thead>) \
+        + %(<tbody>#{rows.join}</tbody></table>) \
+        + %(<script type="application/json" id="packs-data">#{data}</script>)
     end
   end
 
@@ -167,4 +182,4 @@ end
 
 Liquid::Template.register_tag('consentio_head', Jekyll::ConsentioHeadTag)
 Liquid::Template.register_tag('consentio_globals', Jekyll::ConsentioGlobalsTag)
-Liquid::Template.register_tag('consentio_pack_snippets', Jekyll::ConsentioPackSnippetsTag)
+Liquid::Template.register_tag('consentio_packs', Jekyll::ConsentioPacksTag)

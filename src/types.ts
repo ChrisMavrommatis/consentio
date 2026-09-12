@@ -63,6 +63,8 @@ export interface ConsentioSettings {
 	policyUrl: string;
 	/** Drops the round reopen button, for a site that has its own link - issue 40. */
 	hideFloatingButton: boolean;
+	/** Carries the ad-click id in same-site links while ad storage is denied. Read on the tag route; the loader tag carries it on the other. */
+	urlPassthrough: boolean;
 	consents: Record<string, CategorySettings>;
 }
 
@@ -131,6 +133,8 @@ export interface ConsentioDefaultState {
 	version: number;
 	consents: ConsentRecord;
 	consentGiven: boolean;
+	/** True when `url_passthrough` went out with the default. */
+	urlPassthrough?: boolean;
 	cookieLifetime?: number;
 	shareAcrossSubdomains?: boolean;
 }

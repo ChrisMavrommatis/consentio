@@ -35,6 +35,10 @@
   type: boolean
   default: false
   label: Log what the banner does
+- key: urlPassthrough
+  type: boolean
+  default: false
+  label: Carry the ad-click id across your links
 - key: consents.preferences_functionality.defaultState
   type: state
   default: denied

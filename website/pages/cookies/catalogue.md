@@ -4,6 +4,7 @@ anchor: cookie-catalogue
 permalink: /cookies/catalogue/
 description: Rows for the cookies common tools set, already in Consentio's shape. Tick the ones your site sets and take the cookie table as the file, or as a variable for Tag Manager.
 scripts: [catalogue]
+panel: true
 ---
 
 Rows for the cookies common tools set, in the shape [your cookie table]({{ '/cookies/' | relative_url }})
@@ -51,15 +52,3 @@ Read from [the vendor's own page]({{ vendor.documentation }}) on {{ vendor.check
 <button type="button" class="button button--quiet builder-strip__clear">Clear</button>
 </span>
 </div>
-
-<dialog class="catalogue-panel" id="catalogue-panel" aria-labelledby="catalogue-panel-title" tabindex="-1" markdown="0">
-<div class="catalogue-panel__inner">
-<div class="catalogue-panel__bar">
-<p class="catalogue-panel__title" id="catalogue-panel-title"></p>
-<button type="button" class="button button--quiet catalogue-panel__close">Close</button>
-</div>
-<p class="catalogue-panel__lead">In the shape <a href="{{ '/cookies/' | relative_url }}">the cookie table</a> takes. Check it against the vendor before you ship it.</p>
-<pre><code class="catalogue-panel__code"></code></pre>
-<div class="catalogue-panel__actions"><button type="button" class="button catalogue-panel__copy">Copy</button></div>
-</div>
-</dialog>

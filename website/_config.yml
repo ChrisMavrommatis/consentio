@@ -60,7 +60,7 @@ consentio:
     hideFloatingButton  : false
 
 # The Google Tag Manager container. Empty here, so a local build emits no snippet at all.
-gtm_container_id        : "GTM-K6V53LMT"
+gtm_container_id        : ""
 
 ############################################################
 # Where things are

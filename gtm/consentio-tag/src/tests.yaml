@@ -147,6 +147,19 @@ scenarios:
     mock('getCookieValues', () => ['{"version":1,"consents":{"strictly_necessary":"granted","preferences_functionality":"granted","statistics_performance":"granted","marketing_advertising":"granted"}}']);
     runCode(mockData);
     assertThat(redaction, 'a visitor who granted ad storage does not need it').isEqualTo(false);
+- name: url_passthrough is pushed only when the settings say so
+  code: |-
+    const sets = [];
+    mock('gtagSet', (obj) => { sets.push(obj); });
+    mock('getCookieValues', () => []);
+
+    runCode(mockData);
+    assertThat(sets.some((obj) => obj.url_passthrough !== undefined), 'nothing asked for it').isEqualTo(false);
+
+    storage = {};
+    mockData.settings = '{"urlPassthrough": true}';
+    runCode(mockData);
+    assertThat(sets.some((obj) => obj.url_passthrough === true), 'the settings asked for it').isEqualTo(true);
 - name: a second firing pushes nothing and injects nothing
   code: |-
     mock('templateStorage', {

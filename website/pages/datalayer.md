@@ -120,15 +120,24 @@ document.addEventListener('consentio:consent-update', (event) => {
 });
 ```
 
+## 🔗 `url_passthrough`, if you ask for it {#url-passthrough}
+
+Google's third flag beside `wait_for_update` and `ads_data_redaction`. With `ad_storage` denied, it carries
+the ad-click id (`gclid`, `dclid`) across your own pages in the URL instead of a cookie, so a Google Ads
+click still counts for a visitor who refused. It only matters to a site running Google Ads, and it puts a
+click id into every internal link — which is why it is off unless you turn it on.
+
+Turn it on with `data-url-passthrough="true"` on the [loader tag]({{ '/loader/' | relative_url }}#the-attributes),
+or `"urlPassthrough": true` in the [settings file]({{ '/configuration/' | relative_url }}#top-level) on the
+Tag Manager route. Either way it goes out as a `set`, straight after the default:
+
+```js
+['set', 'url_passthrough', true]
+```
+
 ## 🚫 What Consentio does not send {#what-consentio-does-not-send}
 
-Two things Google's consent API takes and Consentio leaves alone:
-
-- **A default that depends on the visitor's country.** Google's `default` command takes a `region` list, so
-  a site can grant by default outside the EU. Consentio denies everywhere it runs. If you need a granted
-  default for some regions, that is a decision to make in the container's own consent settings, after the
-  tag — Consentio will not push one.
-- **`url_passthrough`.** With `ad_storage` denied, this flag carries Google's ad-click id across your own
-  pages in the URL instead of a cookie. It only matters to a site running Google Ads, and it puts a click id
-  in every internal link, so Consentio does not turn it on. If you want it, push `gtag('set',
-  'url_passthrough', true)` yourself, above the container snippet.
+One thing Google's consent API takes and Consentio leaves alone: **a default that depends on the visitor's
+country.** Google's `default` command takes a `region` list, so a site can grant by default outside the EU.
+Consentio denies everywhere it runs. If you need a granted default for some regions, that is a decision to
+make in the container's own consent settings, after the tag — Consentio will not push one.

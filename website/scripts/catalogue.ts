@@ -7,6 +7,11 @@
 import type { CookieTableRow } from '../../src/types.js';
 import { copyText } from './lib/clipboard.js';
 import { asFile, asVariable } from './lib/output.js';
+import { mountPanel } from './lib/panel.js';
+import type { Shape } from './lib/panel.js';
+
+const ROW_LEAD = 'In the shape the cookie table takes. Check it against the vendor before you ship it.';
+const TABLE_LEAD = 'Your cookie table, from the rows you ticked. Save it as consentio-cookies.json, or paste the variable into Tag Manager.';
 
 interface Vendor {
 	vendor: string;
@@ -33,48 +38,16 @@ export function count(n: number): string {
 
 /** Wires the page. False when the panel is not there, or the browser has no <dialog>. */
 export default function mount(root: Document = document): boolean {
-	const panel = root.getElementById('catalogue-panel') as HTMLDialogElement | null;
+	const panel = mountPanel(root);
 	const data = root.getElementById('catalogue-data');
-	if (!panel || !data || typeof panel.showModal !== 'function') {
+	if (!panel || !data) {
 		return false;
 	}
 
 	const vendors = JSON.parse(data.textContent ?? '[]') as Vendor[];
-	const title = panel.querySelector('.catalogue-panel__title') as HTMLElement;
-	const code = panel.querySelector('.catalogue-panel__code') as HTMLElement;
-	const copy = panel.querySelector('.catalogue-panel__copy') as HTMLElement;
-	const close = panel.querySelector('.catalogue-panel__close') as HTMLElement;
-	let opener: HTMLElement | null = null;
-
-	const open = (heading: string, text: string, from: HTMLElement): void => {
-		opener = from;
-		title.textContent = heading;
-		code.textContent = text;
-		copy.textContent = 'Copy';
-		panel.showModal();
-		panel.focus();
+	const open = (title: string, text: string, from: HTMLElement): void => {
+		panel.open({ title, lead: ROW_LEAD, text, from });
 	};
-
-	panel.addEventListener('close', () => {
-		opener?.focus();
-		opener = null;
-	});
-
-	// A click on the backdrop lands on the dialog itself; the inner box fills it, so
-	// anything inside reports the inner element as its target.
-	panel.addEventListener('click', (event) => {
-		if (event.target === panel) {
-			panel.close();
-		}
-	});
-
-	close.addEventListener('click', () => { panel.close(); });
-
-	copy.addEventListener('click', () => {
-		copyText(code.textContent ?? '', copy, () => {
-			copy.textContent = 'Select the text and copy it';
-		});
-	});
 
 	for (const block of root.querySelectorAll<HTMLElement>('.catalogue')) {
 		const vendor = vendors[Number(block.dataset.vendor)];
@@ -133,19 +106,28 @@ export default function mount(root: Document = document): boolean {
 			box.addEventListener('change', update);
 		}
 
-		strip.querySelector('.builder-strip__show')?.addEventListener('click', (event) => {
-			open(`Your cookie table - ${count(rows().length)}`, asFile(rows()), event.currentTarget as HTMLElement);
-		});
-
-		const copyAs = (selector: string, shape: (rows: CookieTableRow[]) => string, heading: string): void => {
-			const button = strip.querySelector<HTMLElement>(selector);
-			button?.addEventListener('click', () => {
-				const text = shape(rows());
-				copyText(text, button, () => { open(`${heading} - ${count(rows().length)}`, text, button); });
+		const show = (shape: Shape, from: HTMLElement): void => {
+			panel.open({
+				title: `Your cookie table - ${count(rows().length)}`,
+				lead: TABLE_LEAD,
+				text: { file: asFile(rows()), variable: asVariable(rows()) },
+				shape,
+				from
 			});
 		};
-		copyAs('.builder-strip__file', asFile, 'Your cookie table, as the file');
-		copyAs('.builder-strip__variable', asVariable, 'Your cookie table, as a Tag Manager variable');
+
+		strip.querySelector('.builder-strip__show')?.addEventListener('click', (event) => {
+			show('file', event.currentTarget as HTMLElement);
+		});
+
+		const copyAs = (selector: string, shape: Shape, as: (rows: CookieTableRow[]) => string): void => {
+			const button = strip.querySelector<HTMLElement>(selector);
+			button?.addEventListener('click', () => {
+				copyText(as(rows()), button, () => { show(shape, button); });
+			});
+		};
+		copyAs('.builder-strip__file', 'file', asFile);
+		copyAs('.builder-strip__variable', 'variable', asVariable);
 
 		strip.querySelector('.builder-strip__clear')?.addEventListener('click', () => {
 			for (const box of boxes) {

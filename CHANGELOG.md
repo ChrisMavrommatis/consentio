@@ -13,11 +13,27 @@ release body, so write these entries for the people using Consentio, not for the
 
 ### ✨ Added
 
+- **An embed waits for the visitor's answer too.** An `<iframe>` with `data-consentio` naming its category
+  and its address on `data-src` instead of `src` loads nothing until that category is granted; then the
+  address moves to `src` and it loads in place. The same rule as a held script: nothing marked loads before
+  there is an answer, and revoking does not unload it. The **Hold a script until consent** page has the
+  tag before and after.
+- **`url_passthrough`, if you ask for it.** Google's third flag beside `wait_for_update` and
+  `ads_data_redaction`: with ad storage denied it carries the ad-click id across your own links in the URL,
+  so a Google Ads click still counts for a visitor who refused. Off unless you turn it on —
+  `data-url-passthrough="true"` on the loader tag, or `"urlPassthrough": true` in the settings file on the
+  Tag Manager route — because it puts a click id in every internal link. The settings builder has the
+  switch, and the template asks for one more write permission, `url_passthrough`.
 - **The documentation site builds your files.** [The settings file](https://chrismavrommatis.github.io/consentio/configuration/#build-the-file)
   page has a control per key and hands back `consentio-settings.json` with only what you changed; the
   [cookie catalogue](https://chrismavrommatis.github.io/consentio/cookies/catalogue/) has a tick box per
   row and hands back `consentio-cookies.json` from the ones you ticked. Each also copies as a Custom
   JavaScript variable for the Tag Manager route, in the same shape as the language packs to paste.
+- **Anything you copy from the site opens in one panel.** The published language packs are a list on
+  [the language pack](https://chrismavrommatis.github.io/consentio/language/) page and on the
+  [packs to paste](https://chrismavrommatis.github.io/consentio/language/tag-manager/) page — open one and
+  the panel shows it as the file or as the Tag Manager variable, with a copy control. The two builders and
+  the catalogue's rows use the same panel. Code blocks on the site are now only for reference.
 
 ### 🗑️ Removed
 

@@ -49,7 +49,7 @@ CDN at a version you pin. Apache-2.0, no dependencies.
 
 There are two ways to install it, and **they are not the same**. One is a script tag in every page's
 `<head>`; the other is a template in your container. **The container covers only what it loads**; a script
-pasted into a page is held back by marking it, on either route.
+or an embed pasted into a page is held back by marking it, on either route.
 
 [Choose a route]({{ '/routes/' | relative_url }}) puts the two side by side — what each can stop, what
 each costs, where the words and the settings come from.

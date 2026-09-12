@@ -4,6 +4,7 @@ anchor: tag-manager-language-packs
 permalink: /language/tag-manager/
 description: Every published language pack as a variable to paste into Google Tag Manager, and the three things it does not tell you about it.
 scripts: [packs]
+panel: true
 ---
 
 On the Tag Manager route the words can come from a variable: the tag's **Language** set to *From a
@@ -24,9 +25,11 @@ works the same way.
 
 ## 🌍 The packs {#the-packs}
 
-Paste one as the variable's whole value.
+Open one, copy it, and paste it as the variable's whole value. The panel opens on the variable; switch it
+to the file for the plain JSON a Constant takes. With scripts off, the link in each row is the file on the
+latest release.
 
-{% consentio_pack_snippets %}
+{% consentio_packs variable %}
 
 ## ⚙️ Pick it on the tag {#pick-it-on-the-tag}
 

@@ -1,9 +1,10 @@
 import type { ConsentRecord } from '../types.js';
 
 /**
- * Runs every `<script type="text/plain" data-consentio="<category>">` whose category is
- * granted. A browser ignores the unknown type, so the site owner's script has not run;
- * once released it stays run - revoking cannot take a script back.
+ * Runs every `<script type="text/plain" data-consentio="<category>">` and loads every
+ * `<iframe data-consentio="<category>" data-src="...">` whose category is granted. A
+ * browser ignores the unknown type and an iframe with no src, so the site owner's thing has
+ * not run; once released it stays released - revoking cannot take it back.
  */
 function releaseHeldScripts(consents: ConsentRecord): void {
 	// A stored answer arrives while the page may still be parsing, and a tag below the
@@ -25,6 +26,14 @@ function releaseHeldScripts(consents: ConsentRecord): void {
 		}
 		live.textContent = held.textContent;
 		held.replaceWith(live);
+	}
+	// An iframe loads when src is set, so the element stays and only the attribute moves.
+	for (const held of document.querySelectorAll<HTMLIFrameElement>('iframe[data-consentio][data-src]:not([src])')) {
+		if (consents[held.dataset.consentio!] !== 'granted') {
+			continue;
+		}
+		held.setAttribute('src', held.dataset.src!);
+		held.removeAttribute('data-src');
 	}
 }
 

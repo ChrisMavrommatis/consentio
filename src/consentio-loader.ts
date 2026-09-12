@@ -17,7 +17,7 @@
  * @license Apache-2.0
  */
 
-import { ADS_DATA_REDACTION, needsAdsDataRedaction, toConsentDefault, toGoogleSignals } from './lib/consent-signals.js';
+import { ADS_DATA_REDACTION, URL_PASSTHROUGH, needsAdsDataRedaction, toConsentDefault, toGoogleSignals } from './lib/consent-signals.js';
 import { BASELINE_CONSENTS, readConsents } from './lib/consent-store.js';
 import type { ConsentioDefaultState } from './types.js';
 
@@ -99,8 +99,14 @@ import type { ConsentioDefaultState } from './types.js';
 		// wait_for_update only helps a first-time visitor; a returning one already has an answer.
 		gtag('consent', 'default', toConsentDefault(signals, stored ? null : waitForUpdate));
 		gtag('set', ADS_DATA_REDACTION, needsAdsDataRedaction(signals));
+		// A `set` has to be on dataLayer before the tag manager reads it, which is why it is an
+		// attribute and not a settings key.
+		const urlPassthrough = loaderScript.dataset.urlPassthrough === 'true';
+		if (urlPassthrough) {
+			gtag('set', URL_PASSTHROUGH, true);
+		}
 
-		const publish: ConsentioDefaultState = { cookieName, version, consents, consentGiven: stored !== null };
+		const publish: ConsentioDefaultState = { cookieName, version, consents, consentGiven: stored !== null, urlPassthrough };
 
 		// Carried across, not used: an attribute the tag leaves out must not beat a settings file.
 		if (loaderScript.dataset.cookieLifetime) {

@@ -6,6 +6,10 @@
  */
 import { copyText } from './lib/clipboard.js';
 import { asFile, asVariable } from './lib/output.js';
+import { mountPanel } from './lib/panel.js';
+import type { Shape } from './lib/panel.js';
+
+const LEAD = 'Only what you changed. Save it as consentio-settings.json, or paste the variable into Tag Manager.';
 
 export interface SettingKey {
 	key: string;
@@ -54,38 +58,46 @@ function readControl(form: HTMLFormElement, setting: SettingKey): Value | undefi
 	return control.value;
 }
 
-/** Wires the page. False when the builder is not there. */
+/** Wires the page. False when the builder or the panel is not there. */
 export default function mount(root: Document = document): boolean {
 	const form = root.getElementById('settings-builder') as HTMLFormElement | null;
 	const data = root.getElementById('settings-data');
-	const output = root.getElementById('settings-output');
-	if (!form || !data || !output) {
+	const panel = mountPanel(root);
+	if (!form || !data || !panel) {
 		return false;
 	}
 
 	const keys = JSON.parse(data.textContent ?? '[]') as SettingKey[];
 
-	const text = (): string => {
-		const file = changed(keys, new Map(keys.map((setting) => [setting.key, readControl(form, setting)])));
-		const shape = (form.elements.namedItem('output') as RadioNodeList | null)?.value;
-		return shape === 'variable' ? asVariable(file) : asFile(file);
+	const file = (): Record<string, unknown> =>
+		changed(keys, new Map(keys.map((setting) => [setting.key, readControl(form, setting)])));
+
+	const show = (shape: Shape, from: HTMLElement): void => {
+		const value = file();
+		panel.open({
+			title: 'Your settings file',
+			lead: LEAD,
+			text: { file: asFile(value), variable: asVariable(value) },
+			shape,
+			from
+		});
 	};
 
-	const render = (): void => {
-		output.textContent = text();
-	};
-
-	form.addEventListener('input', render);
-	form.addEventListener('change', render);
-	form.addEventListener('reset', () => { setTimeout(render, 0); });
 	form.addEventListener('submit', (event) => { event.preventDefault(); });
 
-	const copy = root.getElementById('settings-copy');
-	copy?.addEventListener('click', () => {
-		copyText(text(), copy, () => { copy.textContent = 'Select the text and copy it'; });
+	root.getElementById('settings-show')?.addEventListener('click', (event) => {
+		show('file', event.currentTarget as HTMLElement);
 	});
 
-	render();
+	const copyAs = (id: string, shape: Shape, as: (value: unknown) => string): void => {
+		const button = root.getElementById(id);
+		button?.addEventListener('click', () => {
+			copyText(as(file()), button, () => { show(shape, button); });
+		});
+	};
+	copyAs('settings-file', 'file', asFile);
+	copyAs('settings-variable', 'variable', asVariable);
+
 	return true;
 }
 

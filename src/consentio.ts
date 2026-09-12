@@ -25,7 +25,7 @@ import type {
 /** The behaviour keys a settings file may carry. Anything else in it is ignored. */
 const SETTINGS_KEYS = [
 	'cookieName', 'cookieLifetime', 'shareAcrossSubdomains', 'debug', 'version', 'consentRequired',
-	'policyUrl', 'hideFloatingButton'
+	'policyUrl', 'hideFloatingButton', 'urlPassthrough'
 ] as const;
 
 /** The words a pack may carry, taken from en.yaml so there is one key list. */
@@ -47,6 +47,7 @@ class Consentio {
 		consentRequired: false,
 		policyUrl: '',
 		hideFloatingButton: false,
+		urlPassthrough: false,
 		consents: {
 			strictly_necessary: { defaultState: 'granted' },
 			preferences_functionality: { defaultState: 'denied' },
@@ -158,16 +159,18 @@ class Consentio {
 	}
 
 	/**
-	 * A settings file cannot name the cookie or the version, because the loader has already
-	 * read the cookie by the time the file arrives. Said out loud rather than dropped. Issue 43.
+	 * A settings file cannot name the cookie, the version or url_passthrough, because the
+	 * loader has pushed the default by the time the file arrives. Said out loud rather than
+	 * dropped. Issue 43.
 	 */
 	static warnLoaderWins(supplied: SettingsInput, fromLoader: ConsentioDefaultState, logger: Console | null = null): void {
 		const attributes: [keyof ConsentioDefaultState & keyof SettingsInput, string][] = [
 			['cookieName', 'data-cookie-name'],
-			['version', 'data-version']
+			['version', 'data-version'],
+			['urlPassthrough', 'data-url-passthrough']
 		];
 		for (const [key, attribute] of attributes) {
-			if (supplied[key] !== undefined && supplied[key] !== fromLoader[key]) {
+			if (supplied[key] !== undefined && supplied[key] !== (fromLoader[key] ?? false)) {
 				logger?.warn(`[Consentio] "${key}" in the settings file is ignored - the loader tag reads the cookie before the file arrives. Set ${attribute} on the tag instead.`);
 			}
 		}
@@ -201,6 +204,7 @@ class Consentio {
 			Consentio.warnLoaderWins(settings, fromLoader, logger);
 			this.settings.cookieName = fromLoader.cookieName;
 			this.settings.version = fromLoader.version;
+			this.settings.urlPassthrough = fromLoader.urlPassthrough ?? false;
 			// Published only when the tag names them, so a settings file still gets to.
 			if (fromLoader.cookieLifetime !== undefined) {
 				this.settings.cookieLifetime = fromLoader.cookieLifetime;

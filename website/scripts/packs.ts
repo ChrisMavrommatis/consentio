@@ -1,21 +1,57 @@
 /**
- * The copy button on each language pack the packs page prints. The pack's text is the
- * <pre> beside the button, so nothing here knows what a pack looks like.
+ * The language packs, on both language pages: a row per built pack, and the panel showing
+ * the one that was opened as the file or as a Tag Manager variable. The packs arrive in a
+ * JSON block the page prints from data/i18n/; the table says which shape to open on.
  */
-import { copyText } from './lib/clipboard.js';
+import { mountPanel } from './lib/panel.js';
+import type { Shape } from './lib/panel.js';
 
-/** Wires the page. False when there is no pack on it. */
+const LEAD = 'The whole pack. Change the words you want; a key you leave out falls back to the built-in English.';
+
+interface Pack {
+	locale: string;
+	name: string;
+	file: string;
+	variable: string;
+}
+
+/** Wires the page. False when there is no pack table on it, or no <dialog>. */
 export default function mount(root: Document = document): boolean {
-	const buttons = root.querySelectorAll<HTMLElement>('.snippet__copy');
-	if (buttons.length === 0) {
+	const panel = mountPanel(root);
+	const table = root.querySelector<HTMLElement>('.packs');
+	const data = root.getElementById('packs-data');
+	if (!panel || !table || !data) {
 		return false;
 	}
-	for (const button of buttons) {
+
+	const packs = JSON.parse(data.textContent ?? '[]') as Pack[];
+	const shape = (table.dataset.shape === 'variable' ? 'variable' : 'file') as Shape;
+
+	for (const button of table.querySelectorAll<HTMLElement>('.packs__open')) {
 		button.addEventListener('click', () => {
-			const code = button.closest('.snippet')?.querySelector('pre')?.textContent ?? '';
-			copyText(code, button, () => {
-				button.textContent = 'Select the text and copy it';
-			});
+			const pack = packs[Number(button.dataset.pack)];
+			if (pack) {
+				panel.open({
+					title: `${pack.name} - ${pack.locale}`,
+					lead: LEAD,
+					text: { file: pack.file, variable: pack.variable },
+					shape,
+					from: button
+				});
+			}
+		});
+	}
+
+	// The whole row opens the panel too, through its button. A drag to select text does not.
+	for (const row of table.querySelectorAll<HTMLElement>('.packs__row')) {
+		row.addEventListener('click', (event) => {
+			if ((event.target as Element).closest('button, a')) {
+				return;
+			}
+			if (window.getSelection()?.toString()) {
+				return;
+			}
+			row.querySelector<HTMLElement>('.packs__open')?.click();
 		});
 	}
 	return true;

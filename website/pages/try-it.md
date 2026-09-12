@@ -31,6 +31,19 @@ clear the cookie below and it comes back.
 <p class="fixture__state" id="consentio-readout" role="status">Reading&hellip;</p>
 </div>
 
+<div class="fixture" markdown="1">
+### 🖼️ A held embed {#a-held-embed}
+
+An OpenStreetMap frame with its address on `data-src`, marked `preferences_functionality`. It is empty until
+that category is granted and loads in place when it is — [hold a script until consent]({{ '/hold-scripts/' | relative_url }}#an-embed-before-and-after)
+is the page for it. Revoking leaves it loaded until the next page load.
+
+<div class="fixture__embed" markdown="0">
+<iframe data-consentio="preferences_functionality" data-src="https://www.openstreetmap.org/export/embed.html?bbox=23.70%2C37.96%2C23.74%2C37.99&amp;layer=mapnik" title="A map, held until preferences are granted" loading="lazy"></iframe>
+<p class="fixture__embed-note">Empty until <code>preferences_functionality</code> is granted.</p>
+</div>
+</div>
+
 ## 🔍 What to look at {#what-to-look-at}
 
 - **The bar and the settings modal** are rendered inside a closed shadow root, so nothing on this page can

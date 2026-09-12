@@ -215,7 +215,7 @@ lines only with `debug` on in the settings file.
 | `[Consentio Loader] Initialized successfully` | the banner is built |
 | `[Consentio Loader] Initialization failed:` | the settings file did not load — `<url> did not load: HTTP 404` — or the banner threw while being built |
 | `[Consentio] unknown consent category "<key>" ignored - the four categories are fixed` | a settings file or language pack names a fifth category |
-| `[Consentio] "cookieName" in the settings file is ignored - the loader tag reads the cookie before the file arrives. Set data-cookie-name on the tag instead.` | the settings file names a cookie the tag does not. The same line for `"version"` and `data-version` |
+| `[Consentio] "cookieName" in the settings file is ignored - the loader tag reads the cookie before the file arrives. Set data-cookie-name on the tag instead.` | the settings file names a cookie the tag does not. The same line for `"version"` and `data-version`, and for `"urlPassthrough"` and `data-url-passthrough` |
 | `[Consentio] policy URL "<value>" ignored - it must start with http://, https:// or /` | a `policyUrl` in either file that is not one of those |
 | `[Consentio] hideFloatingButton is set - the site now owes the visitor a link of its own calling window.ConsentioInstance.openSettings()` | the setting is on |
 | `[Consentio] the answer did not read back - the browser did not keep the "<name>" cookie. Nothing Consentio asks for should be refused, so look for something else on the page clearing cookies.` | the cookie was written and was not there afterwards |
