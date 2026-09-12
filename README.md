@@ -36,11 +36,11 @@ it is written for.
 |---|---|---|
 | What you add | `consentio-loader.min.js` as a plain **blocking** `<script>` in `<head>`, above the tag manager snippet | the Consentio tag, on the **Consent Initialization - All Pages** trigger |
 | What pushes the consent default | the loader, on its first pass, before it fetches or injects anything | the template's own sandboxed code, before it calls `injectScript` |
-| Where settings come from | three JSON files, fetched by URL | the template's own fields |
-| Where the words come from | built-in English, a language file at any URL, or `data-language="el"` for the published pack at the CDN | built-in English, the tag's fields, a variable, or a published pack the tag loads from the CDN |
+| Where settings come from | three JSON files, fetched by URL | the same three files, each in a variable or on the page |
+| Where the words come from | built-in English, a language file at any URL, or `data-language="el"` for the published pack at the CDN | built-in English, the same file in a variable, or a published pack the tag loads from the CDN |
 | Uses the loader | yes | **no — never** |
 | What it holds back | scripts marked `type="text/plain" data-consentio`, released when their category is granted — nothing it is not told about | tags in the container |
-| The cost | it blocks. 5.3 KB has to download before the page paints | **it only covers tags in that container** |
+| The cost | it blocks. Around 5.4 KB has to download before the page paints | **it only covers tags in that container** |
 
 **The tag manager route's catch belongs in the open.** A template can only gate what the tag manager loads.
 Take that route and *every* tag and cookie-setting script on the site has to be managed from the container —
@@ -97,16 +97,19 @@ Consentio replaces it with a live copy once that category is granted, and not be
 
 ## 🏷️ Tag manager template
 
-Two templates you import into your container by hand: the tag itself, and an optional variable holding your
-cookie table. They are built by `npm run build:gtm` from the parts in **[`gtm/`](gtm/)**, which explains what
-each one is and how they are edited. Both are attached to every release as a `.tpl` file.
+One template you import into your container by hand, built by `npm run build:gtm` from the parts in
+**[`gtm/`](gtm/)**, which explains what it is and how it is edited. It is attached to every release as
+`consentio-tag.tpl`. Until 1.0.0 there was a second one holding the cookie table a row at a time; the tag
+now takes the cookie file itself.
 
-**They are provided as they are.** Neither is listed anywhere, and there is nothing to subscribe to - a fix
+**It is provided as it is.** It is not listed anywhere, and there is nothing to subscribe to - a fix
 reaches your container when you import the newer file.
 
-The tag's *Text source* has four values: built-in English, its own pre-filled fields, a variable, or a
-published language pack it loads from the CDN at the same version as the banner. A pack that does not
-load is logged and the banner keeps its English.
+The tag has three pickers - **Settings**, **Language**, **Cookie table** - and each takes the same JSON file
+the HTML route fetches, pasted into a Constant or returned by any variable; left at *None*, the tag reads
+`window.ConsentioSettings`, `window.ConsentioLanguage` or `window.ConsentioCookies` off the page instead.
+**Language** can also load a published pack from the CDN at the same version as the banner; a pack that
+does not load is logged and the banner keeps its English.
 
 ## 🍪 The cookie
 
@@ -137,7 +140,7 @@ the catalogue of other tools' cookies the site renders for copying into a cookie
 /consentio
 ├── /src         # TypeScript source — the banner, the loader, the web components
 ├── /test        # node:test suites, one scenario per file
-├── /dist        # what the CDN serves: the bundles, the two templates, the language packs
+├── /dist        # what the CDN serves: the bundles, the template, the language packs
 ├── /gtm         # the Google Tag Manager templates, as the parts they are built from
 ├── /i18n        # the banner's words, one yaml file per language
 ├── /scripts     # the build and release helpers — the packs, the templates, the changelog
@@ -155,11 +158,16 @@ npm test              # node --test over test/**/*.test.mts
 npm run test:plain    # the same page-free tests again, with no jsdom at all
 npm run build:js      # the bundles,        into build/
 npm run build:i18n    # the language packs, into build/i18n/
-npm run build:gtm     # the two templates,  into build/<name>.tpl
+npm run build:gtm     # the template,       into build/<name>.tpl
 npm run build:site    # the site's assets,  then Jekyll into website/_site/
 npm run serve         # the same, served on 127.0.0.1:4001
-npm run watch         # the bundles, rebuilt into website/js/ as you edit
+npm run watch         # the bundles and the page scripts, rebuilt into website/js/ as you edit
 ```
+
+**The docs site has scripts of its own** - the readout on the try-it pages, the catalogue's side panel,
+the copy buttons - and they are TypeScript under `website/scripts/`, built by the `website` target into
+`website/js/pages/`, typechecked and tested like everything else. A page names what it needs in front
+matter, `scripts: [catalogue]`, and the layout prints the tag; no markdown page carries JavaScript.
 
 **Two verbs.** `build:` is yours - `build:js`, `build:i18n` and `build:gtm` write `build/`, which mirrors
 what a release ships, and `build:site` writes the site into `website/`. `publish:` is the workflows' -

@@ -135,18 +135,6 @@ export interface ConsentioDefaultState {
 	shareAcrossSubdomains?: boolean;
 }
 
-/**
- * The merged object of 0.1.0 - `ConsentioOptions`, with `texts` and an array of
- * `ConsentCategoryOverride` beside the behaviour. Still accepted as argument one, and
- * split into a settings and a language internally. `alwaysOn` is read and dropped.
- */
-export type LegacyConfig =
-	Partial<Omit<ConsentioSettings, 'consents'>>
-	& {
-		texts?: Partial<ConsentioTexts>;
-		consents?: (Partial<CategoryTexts> & Partial<CategorySettings> & { key: string; alwaysOn?: boolean })[];
-	};
-
 /** One row of the per-category cookie table, as supplied by the cookies JSON. */
 export interface CookieTableRow {
 	name: string;

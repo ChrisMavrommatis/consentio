@@ -1,8 +1,0 @@
-{
-	"type": "CHECKBOX",
-	"name": "hideFloatingButton",
-	"checkboxText": "Hide Floating Button",
-	"simpleValueType": true,
-	"alwaysInSummary": true,
-	"help": "Removes the round settings button the banner leaves in the bottom right corner. Turn it on only if your site has its own link calling window.ConsentioInstance.openSettings() - with it on and no link, a visitor cannot change their answer."
-}

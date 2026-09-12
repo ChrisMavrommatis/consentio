@@ -13,7 +13,7 @@ import Consentio from '../../src/consentio.js';
 test('the config JSON supplies the cookie identity when no loader ran', () => {
 	assert.equal(window.ConsentioDefault, undefined, 'precondition: nothing published a default');
 
-	const instance = new Consentio({ cookieName: 'from-config', version: 7 }, [], null);
+	const instance = new Consentio({ cookieName: 'from-config', version: 7 }, {}, [], null);
 	assert.equal(instance.config.cookieName, 'from-config');
 	assert.equal(instance.config.version, 7);
 });
@@ -21,7 +21,7 @@ test('the config JSON supplies the cookie identity when no loader ran', () => {
 test('what the loader resolved wins over the config JSON', () => {
 	window.ConsentioDefault = { cookieName: 'from-tag', version: 3, consents: {}, consentGiven: false };
 
-	const instance = new Consentio({ cookieName: 'from-config', version: 7 }, [], null);
+	const instance = new Consentio({ cookieName: 'from-config', version: 7 }, {}, [], null);
 	assert.equal(instance.config.cookieName, 'from-tag');
 	assert.equal(instance.config.version, 3);
 });
@@ -29,7 +29,7 @@ test('what the loader resolved wins over the config JSON', () => {
 test('inheriting the cookie identity changes nothing else in the config', () => {
 	window.ConsentioDefault = { cookieName: 'from-tag', version: 3, consents: {}, consentGiven: false };
 
-	const instance = new Consentio({ cookieName: 'from-config', consentRequired: true, texts: { barTitle: 'Ours' } }, [], null);
+	const instance = new Consentio({ cookieName: 'from-config', consentRequired: true }, { texts: { barTitle: 'Ours' } }, [], null);
 	assert.equal(instance.config.consentRequired, true);
 	assert.equal(instance.config.texts.barTitle, 'Ours');
 });
@@ -41,7 +41,7 @@ test('inheriting the cookie identity changes nothing else in the config', () => 
 test('what the settings file says about the cookie reaches the state that writes it', () => {
 	window.ConsentioDefault = { cookieName: 'from-tag', version: 3, consents: {}, consentGiven: false };
 
-	const instance = new Consentio({ cookieLifetime: 365, shareAcrossSubdomains: true }, [], null);
+	const instance = new Consentio({ cookieLifetime: 365, shareAcrossSubdomains: true }, {}, [], null);
 	assert.equal(instance.config.cookieLifetime, 365);
 	assert.equal(instance.config.shareAcrossSubdomains, true);
 	assert.deepEqual(instance.state!.cookie, { lifetime: 365, shared: true });
@@ -53,7 +53,7 @@ test('a lifetime and a subdomain setting on the tag win over the settings file',
 		cookieLifetime: 30, shareAcrossSubdomains: false
 	};
 
-	const instance = new Consentio({ cookieLifetime: 365, shareAcrossSubdomains: true }, [], null);
+	const instance = new Consentio({ cookieLifetime: 365, shareAcrossSubdomains: true }, {}, [], null);
 	assert.equal(instance.config.cookieLifetime, 30);
 	assert.equal(instance.config.shareAcrossSubdomains, false);
 });
@@ -61,7 +61,7 @@ test('a lifetime and a subdomain setting on the tag win over the settings file',
 test('a site that names neither gets 90 days on this host only', () => {
 	window.ConsentioDefault = { cookieName: 'from-tag', version: 3, consents: {}, consentGiven: false };
 
-	const instance = new Consentio({}, [], null);
+	const instance = new Consentio({}, {}, [], null);
 	assert.equal(instance.config.cookieLifetime, 90);
 	assert.equal(instance.config.shareAcrossSubdomains, false);
 });
@@ -75,7 +75,7 @@ test('a settings file naming the cookie or the version is told the tag decides',
 	const warnings: string[] = [];
 	const logger = { warn: (message: string) => warnings.push(message) } as unknown as Console;
 
-	new Consentio({ cookieName: 'from-config', version: 7 }, [], logger);
+	new Consentio({ cookieName: 'from-config', version: 7 }, {}, [], logger);
 
 	assert.equal(warnings.length, 2);
 	assert.match(warnings[0], /data-cookie-name/);
@@ -87,7 +87,7 @@ test('a settings file naming what the tag already resolved is not warned at', ()
 	const warnings: string[] = [];
 	const logger = { warn: (message: string) => warnings.push(message) } as unknown as Console;
 
-	new Consentio({ cookieName: 'from-tag', version: 3 }, [], logger);
+	new Consentio({ cookieName: 'from-tag', version: 3 }, {}, [], logger);
 
 	assert.deepEqual(warnings, []);
 });
@@ -97,7 +97,7 @@ test('a settings file naming neither is not warned at', () => {
 	const warnings: string[] = [];
 	const logger = { warn: (message: string) => warnings.push(message) } as unknown as Console;
 
-	new Consentio({ consentRequired: true }, [], logger);
+	new Consentio({ consentRequired: true }, {}, [], logger);
 
 	assert.deepEqual(warnings, []);
 });

@@ -62,7 +62,7 @@ test('issue 28 - the rest of a language carrying an unknown key still applies', 
 });
 
 test('issue 28 - a banner is still built from a config carrying an unknown key', () => {
-	assert.doesNotThrow(() => new Consentio({ consents: [{ key: 'site_specific', title: 'Ours' }] }, [], null));
+	assert.doesNotThrow(() => new Consentio({ consents: { site_specific: { defaultState: 'granted' } } } as never, { consents: { site_specific: { title: 'Ours' } } } as never, [], null));
 });
 
 test('issue 28 - a category cannot re-point a Google signal', () => {
@@ -128,7 +128,7 @@ test('issue 37 - no policy URL is not a mistake, so nothing is logged', () => {
 });
 
 test('issue 37 - the config carries the checked address, not the one supplied', () => {
-	const instance = new Consentio({ policyUrl: 'javascript:alert(1)' }, [], null);
+	const instance = new Consentio({ policyUrl: 'javascript:alert(1)' }, {}, [], null);
 	assert.equal(instance.config.policyUrl, '');
 });
 
@@ -152,7 +152,7 @@ test('a language that says nothing about it falls back to the settings', () => {
 test('issue 40 - hiding the floating button says what the site now owes', () => {
 	const warnings: string[] = [];
 	const logger = { warn: (message: string) => { warnings.push(message); } } as unknown as Console;
-	new Consentio({ hideFloatingButton: true }, [], logger);
+	new Consentio({ hideFloatingButton: true }, {}, [], logger);
 	assert.equal(warnings.length, 1);
 	assert.match(warnings[0], /openSettings/);
 });
@@ -160,7 +160,7 @@ test('issue 40 - hiding the floating button says what the site now owes', () => 
 test('issue 40 - leaving it alone is the default and warns about nothing', () => {
 	const warnings: string[] = [];
 	const logger = { warn: (message: string) => { warnings.push(message); } } as unknown as Console;
-	const instance = new Consentio({}, [], logger);
+	const instance = new Consentio({}, {}, [], logger);
 	assert.equal(instance.config.hideFloatingButton, false);
 	assert.deepEqual(warnings, []);
 });

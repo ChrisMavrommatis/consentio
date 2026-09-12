@@ -277,8 +277,16 @@
 	text-align: right;
 }
 
-.catalogue td:first-child code {
+.catalogue td:nth-child(2) code {
 	white-space: nowrap;
+}
+
+.catalogue__pick {
+	width: 1.05rem;
+	height: 1.05rem;
+	margin: 0;
+	vertical-align: middle;
+	cursor: pointer;
 }
 
 // The purpose is the only cell with a sentence in it; without a floor it is the column the
@@ -415,4 +423,114 @@
 	overflow-x: auto;
 	white-space: pre-wrap;
 	overflow-wrap: anywhere;
+}
+
+// ---- the builders: a strip that follows the ticked rows, and a form that writes a file ---
+
+.builder-strip {
+	position: sticky;
+	bottom: 0;
+	z-index: 2;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: .6rem;
+	margin: 1.5rem 0;
+	padding: .7rem .9rem;
+	border: 1px solid var(--rule-strong);
+	border-radius: var(--radius);
+	background: var(--bg-soft);
+	box-shadow: 0 -4px 16px rgba(0, 0, 0, .06);
+	font-size: .9rem;
+}
+
+.builder-strip__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: .5rem;
+}
+
+.builder-strip .button {
+	padding: .3rem .8rem;
+	font-size: .85rem;
+}
+
+.builder {
+	margin: 0 0 1.5rem;
+	padding: 1.1rem 1.25rem;
+	border: 1px solid var(--rule-strong);
+	border-radius: var(--radius);
+	background: var(--bg-soft);
+}
+
+.builder__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+	gap: .6rem 1.5rem;
+}
+
+.builder__row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: .8rem;
+	padding: .35rem 0;
+	border-bottom: 1px solid var(--rule);
+	font-size: .92rem;
+}
+
+.builder__label code {
+	display: block;
+	font-size: .78rem;
+	opacity: .75;
+}
+
+.builder__row input[type="text"],
+.builder__row input[type="number"],
+.builder__row select {
+	max-width: 11rem;
+	padding: .3rem .5rem;
+	border: 1px solid var(--rule-strong);
+	border-radius: 6px;
+	background: var(--bg);
+	color: inherit;
+	font: inherit;
+	font-size: .88rem;
+}
+
+.builder__row input[type="checkbox"] {
+	width: 1.05rem;
+	height: 1.05rem;
+	margin: 0;
+}
+
+.builder__output {
+	margin-top: 1rem;
+}
+
+.builder__switch {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	margin-bottom: .6rem;
+	font-size: .9rem;
+}
+
+.builder__switch label {
+	display: inline-flex;
+	align-items: center;
+	gap: .35rem;
+}
+
+.builder__output pre {
+	margin: 0;
+	max-height: 24rem;
+}
+
+.builder__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: .6rem;
+	margin-top: .8rem;
 }

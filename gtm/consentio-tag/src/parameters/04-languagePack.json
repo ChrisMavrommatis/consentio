@@ -1,6 +1,6 @@
 {
 	"type": "SELECT",
-	"name": "textsPack",
+	"name": "languagePack",
 	"displayName": "Language pack",
 	"macrosInSelect": false,
 	"selectItems": {
@@ -10,7 +10,7 @@
 	"defaultValue": "en",
 	"enablingConditions": [
 		{
-			"paramName": "textSource",
+			"paramName": "languageSource",
 			"paramValue": "pack",
 			"type": "EQUALS"
 		}

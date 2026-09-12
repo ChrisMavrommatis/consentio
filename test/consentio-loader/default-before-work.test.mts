@@ -6,7 +6,7 @@ import { pushes } from '../basics.mjs';
 // The loader fetches the config and injects the bundle - it just does neither until the
 // default is already out.
 
-document.head.innerHTML = '<script data-consentio-loader src="/js/consentio-loader.min.js" data-config-url="/c.json"></script>';
+document.head.innerHTML = '<script data-consentio-loader src="/js/consentio-loader.min.js" data-settings-url="/c.json"></script>';
 
 const fetches: unknown[] = [];
 globalThis.fetch = ((...args: unknown[]) => {

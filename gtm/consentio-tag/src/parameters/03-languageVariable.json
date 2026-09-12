@@ -1,0 +1,21 @@
+{
+	"type": "SELECT",
+	"name": "languageVariable",
+	"displayName": "Language pack variable",
+	"macrosInSelect": true,
+	"selectItems": [
+		{
+			"value": "none",
+			"displayValue": "None"
+		}
+	],
+	"simpleValueType": true,
+	"enablingConditions": [
+		{
+			"paramName": "languageSource",
+			"paramValue": "variable",
+			"type": "EQUALS"
+		}
+	],
+	"help": "Any Tag Manager variable holding a whole language pack - the JSON text of a published en.json or el.json in a Constant, a Custom JavaScript variable returning it, or a Lookup Table keyed on the page's language. Take the pack exactly as downloaded: the words under texts, the four categories keyed under consents, and optionally policyUrl. Anything it leaves out falls back to the built-in English."
+}

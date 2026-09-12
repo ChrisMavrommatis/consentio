@@ -8,8 +8,8 @@ description: Every attribute on the loader script tag, which ones win over the s
 The loader is the one script tag on the HTML route. It runs before anything else on the page, reads the
 cookie, pushes the first consent message to Google, then fetches your files and starts the banner. Every
 option it has is an attribute on the tag, because it has to read the cookie before it has fetched anything.
-The Tag Manager route has no loader: the template does this job, with [fields on the
-tag]({{ '/tag/' | relative_url }}#the-fields).
+The Tag Manager route has no loader: the template does this job, with the same three files
+[picked from variables]({{ '/tag/' | relative_url }}#the-pickers).
 
 ## 📄 A complete example {#a-complete-example}
 
@@ -35,7 +35,6 @@ required; the smallest working tag is the `src` and that one attribute.
 | `data-language-url` | no | none | Where the [language pack]({{ '/language/' | relative_url }}) is. Leave it out and the banner speaks its built-in English |
 | `data-language` | no | none | A language code, `el`, for a published pack fetched from the CDN at this loader's own version. `data-language-url` wins if both are set, and the console says so |
 | `data-cookies-url` | no | none | Where the [cookie table]({{ '/cookies/' | relative_url }}) is. Leave it out and the settings panel shows no table |
-| `data-config-url` | no | none | **Deprecated, removed in 1.0.0.** [The older single settings file]({{ '/configuration/' | relative_url }}#the-older-single-file). Still read, with a console warning |
 | `data-cookie-name` | no | `consentio` | Name of the cookie the answer is stored in |
 | `data-cookie-lifetime` | no | `90` | Days an answer is kept before the visitor is asked again |
 | `data-share-across-subdomains` | no | `false` | `"true"` stores one answer for every hostname your site answers on, instead of one each |
@@ -84,4 +83,4 @@ three.
 - **`data-language` names a code with no published pack:** the same — English, and the address on the
   console.
 - **Both `data-language` and `data-language-url`:** the URL wins, and the console says so.
-- **Both `data-config-url` and `data-settings-url`:** `data-settings-url` wins, and the console says so.
+- **`data-config-url` on the tag:** not read since 1.0.0 — [the older single file]({{ '/configuration/' | relative_url }}#the-older-single-file) says what to split it into. The banner starts with its built-in settings as if the attribute were not there.

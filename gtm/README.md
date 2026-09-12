@@ -1,28 +1,32 @@
 # gtm
 
-The two Google Tag Manager templates. They live here and nowhere else, and are provided as they are.
+The Google Tag Manager template. It lives here and nowhere else, and is provided as it is.
 
-## 🏷️ The two templates
+## 🏷️ The template
 
 | Folder | Type | What it is | Pins the banner version |
 |---|---|---|---|
-| [consentio-tag/](consentio-tag/) | TAG | the banner. Sets the consent default from the cookie, injects `consentio.min.js` and calls `Consentio.Create`. Holds every string it renders | **yes**, in its CDN URL |
-| [consentio-tag-cookies/](consentio-tag-cookies/) | MACRO | a variable supplying the cookie table shown in the settings modal | no |
+| [consentio-tag/](consentio-tag/) | TAG | the banner. Sets the consent default from the cookie, injects `consentio.min.js` and calls `Consentio.Create` with three objects - settings, language, cookie table. Holds every string it renders | **yes**, in its CDN URL |
 
-**Only the TAG template pins a version**, in the CDN URL at the top of `consentio-tag/src/sandbox.js`. A
-version bump moves that one template and leaves the MACRO alone.
+**It pins a version** in the CDN URL at the top of `consentio-tag/src/sandbox.js`, filled in at build time
+from `package.json`, so a released template loads the release it shipped in.
+
+**There used to be a second one.** `consentio-tag-cookies` was a MACRO template with the cookie table typed
+in one field at a time; 1.0.0 retired it. The tag's **Cookie table** field takes the site's
+`consentio-cookies.json` as text in a Constant, the rows from any variable, or `window.ConsentioCookies`
+from the page.
 
 ## 📥 How anyone gets one
 
-**Download and import.** Every release attaches both `.tpl` files. In Tag Manager: **Templates → Tag
+**Download and import.** Every release attaches the `.tpl` file. In Tag Manager: **Templates → Tag
 Templates → New**, the **⋮** menu, **Import**, pick the file, Save.
 
-Neither is listed anywhere, so nothing tells anyone a newer one exists. **What someone imported is what
+It is not listed anywhere, so nothing tells anyone a newer one exists. **What someone imported is what
 their container runs until they import a newer file** — including the banner version its CDN URL pins.
 
-**The strings live on the tag** rather than in a third template of their own: they are set once per container
-and never touched again, so the reuse a variable exists for was reuse nobody was doing. The cookie table
-stays a variable because it is data — a table, plausibly shared, edited on a different rhythm.
+**The strings live on the tag** rather than in a template of their own: they are set once per container
+and never touched again, so the reuse a variable exists for was reuse nobody was doing. The cookie table is
+data and arrives through a variable, but a plain one — a Constant holding the file — not a template.
 
 ## 🔗 Why they are developed beside the banner
 
@@ -53,9 +57,9 @@ The MACRO template reads no cookie, so the fixture does not reach it.
 | `src/permissions.json` | `___WEB_PERMISSIONS___` |
 | `src/tests.yaml` | `___TESTS___` |
 | `src/notes.txt` | `___NOTES___` |
-| `terms-of-service.txt` | `___TERMS_OF_SERVICE___`, shared by both |
+| `terms-of-service.txt` | `___TERMS_OF_SERVICE___`, one file for the folder |
 
-**Nothing built lives in this folder.** Each template composes to one file, named after the template it is:
+**Nothing built lives in this folder.** The template composes to one file, named after it:
 
 ```bash
 npm run build:gtm      # the parts -> build/<name>.tpl
@@ -75,9 +79,10 @@ run against a real export yet**; it needs the editor, like everything else here.
 `test/gtm/template-composed.test.mts` runs `--check`, so bad JSON in a part, or a `$text` naming a string
 `i18n/en.yaml` does not have, fails the suite rather than the template editor.
 
-**The TAG template's twenty-one pre-filled strings are references, not copies.** A field holds
-`{"$text": "texts.barTitle"}` and the build fills it from `i18n/en.yaml` - the same file the banner falls
-back to. Correct a string once and both change.
+**A part may reference `i18n/en.yaml` rather than copy it.** A field holding `{"$text": "texts.barTitle"}`
+is filled from that file at build time, the same file the banner falls back to. Since 1.0.0 no field does -
+the words reach the tag as a whole pack - but the mechanism stays, and `{"$locales": true}` in the pack
+picker is the same idea for the list of published languages.
 
 **The editor is still the only place that checks a permission is declared, runs the tests and previews the
 fields.** An edit made here is not finished until the built `.tpl` has been imported into the editor and

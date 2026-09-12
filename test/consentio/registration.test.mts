@@ -8,12 +8,12 @@ import Consentio from '../../src/consentio.js';
 // sharing the process.
 
 test('the first Consentio registers every tag it renders', () => {
-	new Consentio({}, [], null);
+	new Consentio({}, {}, [], null);
 	for (const tag of ['consentio-app', 'consentio-bar', 'consentio-required', 'consentio-floating-button', 'consentio-consent-item', 'consentio-modal']) {
 		assert.ok(customElements.get(tag), `${tag} was not registered`);
 	}
 });
 
 test('issue 8 - a second Consentio does not throw on customElements.define', () => {
-	assert.doesNotThrow(() => new Consentio({}, [], null), 'define is called unconditionally, with no customElements.get guard');
+	assert.doesNotThrow(() => new Consentio({}, {}, [], null), 'define is called unconditionally, with no customElements.get guard');
 });

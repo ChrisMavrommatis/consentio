@@ -10,5 +10,5 @@ test('issue 10 - constructing before <body> exists does not throw', () => {
 	document.documentElement.removeChild(document.body);
 	assert.equal(document.body, null, 'precondition: no body');
 
-	assert.doesNotThrow(() => new Consentio({}, [], null), 'the constructor appends straight to document.body');
+	assert.doesNotThrow(() => new Consentio({}, {}, [], null), 'the constructor appends straight to document.body');
 });

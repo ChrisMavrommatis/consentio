@@ -2,14 +2,15 @@
 title: The settings file
 anchor: configuration
 permalink: /configuration/
-description: Every key in Consentio's settings file with its type and default, the four categories, and the older single file.
+description: Every key in Consentio's settings file with its type and default, the four categories, the same file on the Tag Manager route, and the single file that 1.0.0 removed.
+scripts: [settings-builder]
 ---
 
 The settings file holds how the banner behaves: the cookie, the version, whether an answer is required,
 what each category starts at. It is one of three files, and the only one that is not words. The
 [language pack]({{ '/language/' | relative_url }}) holds every word the visitor reads and the
 [cookie table]({{ '/cookies/' | relative_url }}) holds the rows shown in the settings panel. On the Tag
-Manager route there are no files: the same options are [fields on the tag](#on-the-tag-manager-route).
+Manager route the same file goes [into a variable](#on-the-tag-manager-route).
 
 **You only write what you want to change.** Every key is merged over the defaults on its own, so leaving one
 out gives you the default. A blank string is not a missing key: `""` is a value you asked for.
@@ -41,11 +42,11 @@ Every key, with something in it. Nothing here is required.
 
 | Key | Type | Default | What it does |
 |---|---|---|---|
-| `cookieName` | string | `consentio` | Name of the cookie the answer is stored in. **Not read on the HTML route at all** — set `data-cookie-name` on the tag instead, and Consentio says so on the console if you put it here. **The Tag Manager route always uses `consentio`**: a template has to name the cookie it reads when it is published, so it cannot be a field |
+| `cookieName` | string | `consentio` | Name of the cookie the answer is stored in. **Not read on the HTML route at all** — set `data-cookie-name` on the tag instead, and Consentio says so on the console if you put it here. **The Tag Manager route always uses `consentio`**: a template has to name the cookie it reads when it is published, so the file's value is ignored there |
 | `cookieLifetime` | number | `90` | Days an answer is kept before the visitor is asked again. **Ignored if you also set `data-cookie-lifetime` on the tag.** Anything that is not a positive number falls back to 90. See [How long it lasts]({{ '/cookie/' | relative_url }}#how-long-it-lasts) |
 | `shareAcrossSubdomains` | boolean | `false` | One answer for every hostname your site answers on, instead of one each. There is no domain to type: Consentio works out the one your hosts share by asking the browser. **Ignored if you also set `data-share-across-subdomains` on the tag.** See [One answer across subdomains]({{ '/cookie/' | relative_url }}#one-answer-across-subdomains) |
 | `debug` | boolean | `false` | Turns on the banner's informational logging |
-| `version` | number | `1` | Raise it to throw away every stored answer and ask everyone again. **Not read on the HTML route at all** — set `data-version` on the tag instead, and Consentio says so on the console if you put it here. See [Asking everyone again]({{ '/versioning/' | relative_url }}#versioning-stored-consent) |
+| `version` | number | `1` | Raise it to throw away every stored answer and ask everyone again. **Not read on the HTML route at all** — set `data-version` on the tag instead, and Consentio says so on the console if you put it here. **On the Tag Manager route this file is where it lives.** See [Asking everyone again]({{ '/versioning/' | relative_url }}#versioning-stored-consent) |
 | `consentRequired` | boolean | `false` | Shows a full-screen blocking overlay behind the bar and modal until the visitor answers |
 | `policyUrl` | string | none | Where the banner's privacy policy link points, on the bar and in the panel. Leave it out and no link is shown. A language pack may name [its own address]({{ '/language/' | relative_url }}#the-keys) instead. It must start with `http://`, `https://` or a single `/` for a page on your own site — anything else is dropped with a warning on the console, because the address goes into an `href` and is not escaped the way a text is |
 | `hideFloatingButton` | boolean | `false` | Removes the round settings button the banner leaves in the bottom right corner. **Only set it once your own link is on every page** — see [Reopening the settings]({{ '/events/' | relative_url }}#reopening-the-settings-from-your-own-link). With it on and no link, a visitor cannot change their answer, and Consentio says so on the console |
@@ -78,6 +79,39 @@ text instead of a switch, and no file can change that. The other three start den
 }
 ```
 
+## 🧰 Build the file {#build-the-file}
+
+Every key above, as a control. Change what you want and the file below says only that — a key left at its
+default is left out. Take it as `consentio-settings.json` for the [HTML route]({{ '/install/direct/' | relative_url }}),
+or as a Custom JavaScript variable to paste into Tag Manager for the
+[other one]({{ '/install/tag-manager/' | relative_url }}). `cookieName` and `version` are here too: on the
+HTML route they go on the [loader tag]({{ '/loader/' | relative_url }}) instead, and on the Tag Manager
+route the name is ignored.
+
+<form class="builder" id="settings-builder" markdown="0">
+<div class="builder__grid">
+{%- for setting in site.data.settings %}
+<label class="builder__row"><span class="builder__label">{{ setting.label }} <code>{{ setting.key }}</code></span>
+{%- if setting.type == "boolean" %}
+<input type="checkbox" name="{{ setting.key }}"{% if setting.default %} checked{% endif %}>
+{%- elsif setting.type == "number" %}
+<input type="number" name="{{ setting.key }}" value="{{ setting.default }}" min="1" step="1">
+{%- elsif setting.type == "state" %}
+<select name="{{ setting.key }}"><option value="granted"{% if setting.default == "granted" %} selected{% endif %}>granted</option><option value="denied"{% if setting.default == "denied" %} selected{% endif %}>denied</option></select>
+{%- else %}
+<input type="text" name="{{ setting.key }}" value="{{ setting.default | escape }}">
+{%- endif %}
+</label>
+{%- endfor %}
+</div>
+<div class="builder__output">
+<span class="builder__switch"><label><input type="radio" name="output" value="file" checked> The file</label> <label><input type="radio" name="output" value="variable"> A Tag Manager variable</label></span>
+<pre><code id="settings-output"></code></pre>
+<div class="builder__actions"><button type="button" class="button" id="settings-copy">Copy</button> <button type="reset" class="button button--quiet">Start again</button></div>
+</div>
+</form>
+<script type="application/json" id="settings-data">{{ site.data.settings | jsonify | replace: '</', '<\/' }}</script>
+
 ## 🚀 On the HTML route {#on-the-html-route}
 
 `data-settings-url` on the [loader tag]({{ '/loader/' | relative_url }}) names the file. Four of the keys
@@ -87,9 +121,20 @@ lists every attribute.
 
 ## 🏷️ On the Tag Manager route {#on-the-tag-manager-route}
 
-There is no file. Every key above is a field on the Consentio tag, and the cookie's name is fixed at
-`consentio`. [The Tag Manager tag]({{ '/tag/' | relative_url }}) lists every field, its default, and the
-key it stands for.
+The tag's **Settings** picker takes the same file, three ways:
+
+- **A Constant variable** holding the JSON text above, pasted in whole. The tag parses it. This is the
+  usual way.
+- **A Custom JavaScript variable** returning the object, `function () { return { ... }; }`.
+- **The page itself**, with the picker at *None*: `<script>window.ConsentioSettings = { ... }</script>` in
+  `<head>`, above the container snippet. A site that runs both routes keeps one file this way.
+
+Left at *None* on a page with no `ConsentioSettings`, the banner uses the defaults above.
+
+Two keys read differently there. **`cookieName` is ignored** — the template names the cookie it reads when
+it is published, so on that route it is always `consentio`. **`version` is read from this file**, because
+there is no loader tag to carry it; a site running both routes keeps it equal to the tag's `data-version`.
+[The tag]({{ '/tag/' | relative_url }}#the-pickers) has the detail.
 
 ## ⚠️ When the file is missing or wrong {#when-the-file-is-missing-or-wrong}
 
@@ -105,20 +150,8 @@ key it stands for.
 ## 🗂️ The older single settings file {#the-older-single-file}
 
 Before the language pack existed, `data-config-url` fetched one file carrying the behaviour, a `texts`
-object and a `consents` **array**:
-
-```json
-{
-  "consentRequired": true,
-  "texts": { "barTitle": "Cookies on this site" },
-  "consents": [{ "key": "marketing_advertising", "title": "Advertising" }]
-}
-```
-
-**That still works, and it is deprecated: it is removed in 1.0.0.** `data-config-url` is still read, a file
-in that shape is taken apart into settings and a language pack for you, and the console says once that the
-attribute is going. `alwaysOn` in such a file is ignored — only `strictly_necessary` is ever always on, and
-it is decided by the key rather than by a field.
-
-Move to the three files before 1.0.0. A translator can then be given one file that contains nothing but
-words.
+object and a `consents` **array**. **That was removed in 1.0.0.** The attribute is no longer read and a file
+in that shape is not taken apart any more. Split it into [the settings file](#the-keys) and
+[the language pack]({{ '/language/' | relative_url }}) — the behaviour keys stay here, `texts` and the
+words of each category move to the pack, and `consents` becomes an object keyed by category in both — then
+put `data-settings-url` and `data-language-url` on the loader tag.

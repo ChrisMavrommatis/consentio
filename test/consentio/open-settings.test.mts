@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 
 import Consentio from '../../src/consentio.js';
 
-const instance = new Consentio({}, [], null);
+const instance = new Consentio({}, {}, [], null);
 const app = instance.el!;
 
 const shown = (el: HTMLElement | null) => el!.style.display !== 'none';

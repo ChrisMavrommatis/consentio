@@ -42,7 +42,9 @@ in a row.
 change the wording or run in another language, put a [language pack]({{ '/language/' | relative_url }})
 beside the other two and point `data-language-url` at it.
 
-[Settings]({{ '/configuration/' | relative_url }}) lists every key in the settings file.
+[Settings]({{ '/configuration/' | relative_url }}) lists every key in the settings file, and
+[builds one]({{ '/configuration/' | relative_url }}#build-the-file) from switches;
+[the catalogue]({{ '/cookies/catalogue/' | relative_url }}) builds a cookie table from ticked rows.
 
 **3. Paste the tag into `<head>`, above everything else.**
 
@@ -136,12 +138,12 @@ That warning is printed whatever `data-debug` says. A banner that silently arriv
 
 ## ⚖️ What it costs {#what-it-costs}
 
-The tag blocks, so **5.3 KB has to download and run before the page appears** — about 2.3 KB once your
+The tag blocks, so **around 5.4 KB has to download and run before the page appears** — about 2.4 KB once your
 server compresses it. That is the price of the answer arriving in time. There is no version of this that is
 both correct and non-blocking, so it is better to know the number now than to find it in a performance
 audit later.
 
-The main file, `consentio.min.js`, is 42.5 KB (about 13 KB compressed) and loads in the background. It
+The main file, `consentio.min.js`, is around 42.5 KB (about 13 KB compressed) and loads in the background. It
 blocks nothing.
 
 [How it works]({{ '/how-it-works/' | relative_url }}#what-it-weighs) has both figures in one table.

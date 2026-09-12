@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { parse } from 'yaml';
 
 const ROOT = new URL('../', import.meta.url);
-const TEMPLATES = ['consentio-tag', 'consentio-tag-cookies'];
+const TEMPLATES = ['consentio-tag'];
 
 // The CDN pin. `sandbox.js` writes `consentio@__VERSION__` and this fills it in from
 // package.json, so the .tpl a release attaches loads that release's bundle.
@@ -194,5 +194,5 @@ if (DECOMPOSE !== -1) {
 	for (const template of TEMPLATES) {
 		writeFileSync(new URL(`${dest}/${template}.tpl`, ROOT), compose(template));
 	}
-	process.stdout.write(`gtm: ${TEMPLATES.length} templates -> ${dest}/<name>.tpl\n`);
+	process.stdout.write(`gtm: ${TEMPLATES.length} template -> ${dest}/<name>.tpl\n`);
 }

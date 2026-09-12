@@ -49,9 +49,8 @@ import type { ConsentioDefaultState } from './types.js';
 
 	const loaderSrc = loaderScript.getAttribute('src');
 
-	// Three files, one per concern. `data-config-url` is 0.1.0's merged one: still read, warned about, gone in 1.0.0.
+	// Three files, one per concern.
 	const settingsUrl = loaderScript.dataset.settingsUrl || null;
-	const configUrl = loaderScript.dataset.configUrl || null;
 	const cookiesUrl = loaderScript.dataset.cookiesUrl || null;
 
 	// `data-language="el"` is the published pack at this loader's own version; a url beats it.
@@ -146,15 +145,10 @@ import type { ConsentioDefaultState } from './types.js';
 			resources.push([name, url]);
 		};
 
-		if (settingsUrl && configUrl) {
-			logger.warn('[Consentio Loader] both data-config-url and data-settings-url are set - data-settings-url wins');
-		} else if (configUrl) {
-			logger.warn('[Consentio Loader] data-config-url is deprecated and is removed in 1.0.0 - use data-settings-url and data-language-url');
-		}
 		if (loaderScript.dataset.languageUrl && languageCode) {
 			logger.warn('[Consentio Loader] both data-language and data-language-url are set - data-language-url wins');
 		}
-		add('settings', settingsUrl || configUrl);
+		add('settings', settingsUrl);
 		add('language', languageUrl);
 		add('cookies', cookiesUrl);
 
@@ -178,8 +172,6 @@ import type { ConsentioDefaultState } from './types.js';
 				});
 			}
 
-			// A settings file carrying `texts`, or `consents` as an array, is 0.1.0's config
-			// and the banner splits it. That is what keeps a site on two files working.
 			global.ConsentioInstance = new global.Consentio(settings, language, cookies, logger);
 			logger.info('[Consentio Loader] Initialized successfully');
 		} catch (error) {

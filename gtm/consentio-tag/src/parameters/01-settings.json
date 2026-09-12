@@ -1,0 +1,15 @@
+{
+	"type": "SELECT",
+	"name": "settings",
+	"displayName": "Settings",
+	"macrosInSelect": true,
+	"selectItems": [
+		{
+			"value": "none",
+			"displayValue": "None"
+		}
+	],
+	"simpleValueType": true,
+	"alwaysInSummary": true,
+	"help": "A variable holding how the banner behaves - the JSON text of your consentio-settings.json in a Constant, or any variable returning the same object. Left at None, the tag reads window.ConsentioSettings from the page if the site puts it there; otherwise the banner uses its defaults. cookieName is ignored on this route: the tag can only read the cookie named consentio."
+}

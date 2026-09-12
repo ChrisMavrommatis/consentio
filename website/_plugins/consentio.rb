@@ -46,15 +46,39 @@ module Jekyll
       end
     end
 
-    # The settings file is fetched by the page, so an address in it needs the same prefix
-    # the loader tag's URLs get.
-    def self.settings_json(site, settings)
-      resolved = settings.each_with_object({}) do |(key, value), out|
-        next if TAG_ATTRIBUTES.key?(key)
+    # An address in the settings needs the same prefix the loader tag's URLs get. The
+    # file leaves the two tag attributes out; the page global carries them, because the
+    # tag route has no loader tag and reads the version from the settings.
+    def self.resolved_settings(site, settings, with_tag_attributes: false)
+      settings.each_with_object({}) do |(key, value), out|
+        next if TAG_ATTRIBUTES.key?(key) && !with_tag_attributes
 
         out[key] = key.end_with?('Url') ? relative_url(site, value) : value
       end
-      JSON.pretty_generate(resolved)
+    end
+
+    def self.settings_json(site, settings)
+      JSON.pretty_generate(resolved_settings(site, settings))
+    end
+
+    # The language file the loader tag names, read at build time. It has to exist: the
+    # published packs are built into data/i18n/ before Jekyll runs.
+    def self.language(site, config)
+      path = config['language'].to_s
+      path = LANGUAGE_FALLBACK if path.empty?
+      file = File.join(site.source, path.sub(%r{\A/}, ''))
+      raise "consentio: the language file #{path} is not there - run the i18n build first" unless File.exist?(file)
+
+      JSON.parse(File.read(file))
+    end
+
+    def self.cookies(site)
+      JSON.parse(File.read(File.join(site.source, COOKIES_PATH.sub(%r{\A/}, ''))))
+    end
+
+    # Inside a <script>, the one sequence that can end it early.
+    def self.script_json(value)
+      JSON.generate(value).gsub('</', '<\/')
     end
   end
 
@@ -73,6 +97,21 @@ module Jekyll
         %(data-cookies-url="#{Consentio.relative_url(site, Consentio::COOKIES_PATH)}")
       ] + Consentio.tag_settings(Consentio.settings(config))
       "<script #{attributes.join(' ')}></script>"
+    end
+  end
+
+  # The three files as page globals, on every page, so the tag reads them at None and the
+  # site has one copy of each whichever route a page runs. The loader keeps fetching.
+  class ConsentioGlobalsTag < Liquid::Tag
+    def render(context)
+      site = context.registers[:site]
+      config = Consentio.config(site)
+      settings = Consentio.resolved_settings(site, Consentio.settings(config), with_tag_attributes: true)
+      '<script>' \
+        + "window.ConsentioSettings=#{Consentio.script_json(settings)};" \
+        + "window.ConsentioLanguage=#{Consentio.script_json(Consentio.language(site, config))};" \
+        + "window.ConsentioCookies=#{Consentio.script_json(Consentio.cookies(site))}" \
+        + '</script>'
     end
   end
 
@@ -127,4 +166,5 @@ module Jekyll
 end
 
 Liquid::Template.register_tag('consentio_head', Jekyll::ConsentioHeadTag)
+Liquid::Template.register_tag('consentio_globals', Jekyll::ConsentioGlobalsTag)
 Liquid::Template.register_tag('consentio_pack_snippets', Jekyll::ConsentioPackSnippetsTag)

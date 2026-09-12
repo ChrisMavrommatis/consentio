@@ -16,7 +16,8 @@ before deciding, so a name in it that your site does not set is a false statemen
 cookie you do set but leave out is the one that matters. Open the browser's storage inspector on a page
 where you have accepted everything, and write down what is actually there.
 [The cookie catalogue]({{ '/cookies/catalogue/' | relative_url }}) has rows in this shape for the tools a
-site commonly runs, to copy in and check against the vendor.
+site commonly runs: tick the ones you set and it hands back this file for the HTML route, or a variable for
+the Tag Manager route — then check every row against the vendor.
 
 ## 📄 A complete example {#a-complete-example}
 
@@ -70,15 +71,17 @@ but any address your site serves. Leave the attribute out and the panel shows no
 
 ## 🏷️ On the Tag Manager route {#on-the-tag-manager-route}
 
-The tag's **Cookies Variable** field takes any variable that returns the rows. Two kinds do:
+The tag's **Cookie table** picker takes the same file, three ways:
 
-- **A Consentio Tag - Cookies variable** — the second template in the release, imported under Variable
-  Templates as the [install steps]({{ '/install/tag-manager/' | relative_url }}#four-steps) say. It is a
-  table with the same five columns, filled in one row per cookie.
-- **A Custom JavaScript variable** returning the array above, `function () { return [ ... ]; }` — the
-  way to paste rows from the catalogue rather than type them.
+- **A Constant variable** holding the JSON text above, pasted in whole. The tag parses it. This is the
+  usual way.
+- **A Custom JavaScript variable** returning the array, `function () { return [ ... ]; }` — what the
+  catalogue's *Copy as Tag Manager variable* gives you.
+- **The page itself**, with the picker at *None*: `<script>window.ConsentioCookies = [ ... ]</script>` in
+  `<head>`, above the container snippet. A site that runs both routes keeps one file this way.
 
-Left at *None*, the panel shows no table.
+Left at *None* on a page with no `ConsentioCookies`, the panel shows no table.
+[The tag]({{ '/tag/' | relative_url }}#three-ways-in) has the detail.
 
 ## ⚠️ When the file is missing or wrong {#when-the-file-is-missing-or-wrong}
 

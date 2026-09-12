@@ -6,11 +6,14 @@ permalink: /try-it/
 # answering for one visitor.
 loader: true
 description: The banner on this site is the real thing, running the direct install route. Clear the cookie here and it asks again, or reopen the settings from this page's own link.
+scripts: [try-it]
 ---
 
-**The banner on this site is not a screenshot.** Every page here loads `consentio-loader.min.js` as a
+**The banner on this site is not a screenshot.** This page loads `consentio-loader.min.js` as a
 blocking script in `<head>` — [route 1]({{ '/install/direct/' | relative_url }}#route-1-directly-in-the-site),
-the same markup the documentation gives you.
+the same markup the documentation gives you. Every other page on this site gets the banner from a Tag
+Manager container instead — route 2 — and [the container page]({{ '/try-it/tag-manager/' | relative_url }})
+is where to look at that one.
 
 It also runs with `consentRequired: true`, which is the hardest setting to get right: a full-screen
 blocking overlay that a visitor has to answer before they can reach the page. If you have already answered,
@@ -60,77 +63,3 @@ sets out both.
 ```js
 document.addEventListener('consentio:consent-update', (e) => console.log(e.detail));
 ```
-
-{% raw %}
-<script>
-	(function () {
-		var readout = document.getElementById('consentio-readout');
-		var reset = document.getElementById('consentio-reset');
-		var refresh = document.getElementById('consentio-refresh');
-		var openPanel = document.getElementById('consentio-open');
-		if (!readout || !reset || !refresh || !openPanel) return;
-
-		// The banner publishes the name it actually used. Reading it back beats hard-coding
-		// the default here and quietly drifting from the page that documents it.
-		function cookieName() {
-			var d = window.ConsentioDefault;
-			return (d && d.cookieName) || 'consentio';
-		}
-
-		function readCookie(name) {
-			var parts = document.cookie ? document.cookie.split('; ') : [];
-			for (var i = 0; i < parts.length; i++) {
-				var eq = parts[i].indexOf('=');
-				if (eq > -1 && parts[i].slice(0, eq) === name) {
-					return decodeURIComponent(parts[i].slice(eq + 1));
-				}
-			}
-			return null;
-		}
-
-		function show() {
-			var name = cookieName();
-			var raw = readCookie(name);
-			if (raw === null) {
-				readout.textContent = 'No "' + name + '" cookie. You have not answered yet, '
-					+ 'so the banner should be showing.';
-				return;
-			}
-			try {
-				readout.textContent = name + ' = ' + JSON.stringify(JSON.parse(raw), null, 2);
-			} catch (err) {
-				readout.textContent = name + ' = ' + raw + '  (does not parse as JSON, '
-					+ 'which reads as no stored answer)';
-			}
-		}
-
-		reset.addEventListener('click', function () {
-			// A cookie is only removed at the Domain it was written at. With the answer shared
-			// across subdomains it sits on the domain the hostnames share, so this expires it
-			// host-only and at every parent domain the browser could have accepted.
-			var name = cookieName();
-			var labels = window.location.hostname.split('.');
-			document.cookie = name + '=; path=/; max-age=0; SameSite=Lax';
-			for (var i = 0; i <= labels.length - 2; i++) {
-				document.cookie = name + '=; path=/; max-age=0; SameSite=Lax; domain=' + labels.slice(i).join('.');
-			}
-			window.location.reload();
-		});
-
-		openPanel.addEventListener('click', function () {
-			// The guard the events page asks every site for: the bundle is injected by the
-			// loader, so a click in the first moment of a page load can arrive before it.
-			if (!window.ConsentioInstance) {
-				readout.textContent = 'The banner has not loaded yet. That is what the guard around '
-					+ 'openSettings() is for.';
-				return;
-			}
-			window.ConsentioInstance.openSettings();
-		});
-
-		refresh.addEventListener('click', show);
-		document.addEventListener('consentio:consent-update', show);
-		show();
-	})();
-</script>
-{% endraw %}

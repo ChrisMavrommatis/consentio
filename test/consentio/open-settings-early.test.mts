@@ -7,7 +7,7 @@ import Consentio from '../../src/consentio.js';
 
 test('issue 40 - openSettings before the banner is attached is ignored, not thrown', () => {
 	document.documentElement.removeChild(document.body);
-	const instance = new Consentio({}, [], null);
+	const instance = new Consentio({}, {}, [], null);
 
 	assert.equal(instance.el!.isRendered, false, 'precondition: nothing has been built');
 	assert.doesNotThrow(() => instance.openSettings());

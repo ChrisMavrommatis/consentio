@@ -1,6 +1,7 @@
 /build
 /node_modules
 /website/js/consentio*
+/website/js/pages
 /website/_site
 .idea
 

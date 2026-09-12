@@ -100,7 +100,7 @@ has tabbed to.
 
 <div class="callout callout--warn" markdown="1">
 **If you turn the round button off, this link is the only way back in.** Set
-[`hideFloatingButton`]({{ '/configuration/' | relative_url }}#top-level) — or tick **Hide Floating Button**
-on the tag — only once your own link is on every page. Consentio warns on the console when the option is
+[`hideFloatingButton`]({{ '/configuration/' | relative_url }}#top-level) — on either route — only once
+your own link is on every page. Consentio warns on the console when the option is
 set, because it cannot see whether you added one.
 </div>

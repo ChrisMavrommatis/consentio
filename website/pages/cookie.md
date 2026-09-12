@@ -58,7 +58,7 @@ your wording.
 ## ⏳ How long it lasts {#how-long-it-lasts}
 
 **90 days, unless you say otherwise.** Set `cookieLifetime` in your settings file — a number of days — or
-`data-cookie-lifetime` on the tag, or fill in **Cookie Lifetime (days)** on the Tag Manager route.
+`data-cookie-lifetime` on the tag. On the Tag Manager route the settings file is the one place.
 
 ```json
 { "cookieLifetime": 365 }
@@ -78,8 +78,8 @@ Turn on `shareAcrossSubdomains` and one answer covers all of them:
 { "shareAcrossSubdomains": true }
 ```
 
-On the tag it is `data-share-across-subdomains="true"`; on the Tag Manager route it is the
-**Share the answer across subdomains** checkbox.
+On the tag it is `data-share-across-subdomains="true"`; on the Tag Manager route the settings file is the
+one place.
 
 **There is no domain to type, and that is the point.** A domain the browser will not take is dropped **with
 no error at all** — nothing stored, and the banner back on every page load — so the one thing worth removing

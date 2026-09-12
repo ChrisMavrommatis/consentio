@@ -12,5 +12,5 @@
 		// Inert since consentio-loader.ts became a module and is strict either way.
 		"alwaysStrict": false
 	},
-	"include": ["src/**/*.ts", "src/**/*.d.ts", "test/**/*.mts"]
+	"include": ["src/**/*.ts", "src/**/*.d.ts", "website/scripts/**/*.ts", "test/**/*.mts"]
 }

@@ -1,4 +1,5 @@
 const path = require('path');
+const { readdirSync } = require('fs');
 const webpack = require('webpack');
 const { parse } = require('yaml');
 
@@ -150,11 +151,33 @@ module.exports = (env, argv) => {
 		}
 	}
 
+	// The docs site's page scripts: one entry per file at the top of website/scripts/,
+	// built only for the site. A page names what it needs in front matter and the layout
+	// prints the tag.
+	const pageScripts = readdirSync(path.resolve(__dirname, 'website/scripts'))
+		.filter((file) => file.endsWith('.ts'))
+		.map((file) => [file.slice(0, -3), `./website/scripts/${file}`]);
+	const pages = {
+		entry: Object.fromEntries(pageScripts),
+		mode: 'production',
+		output: {
+			filename: '[name].js',
+			path: path.resolve(__dirname, dest, 'pages'),
+			clean: false
+		},
+		resolve: loader.resolve,
+		module: loader.module,
+		optimization: {
+			minimize: true
+		}
+	}
+
 	return [
 		consentio,
 		minifiedConsentio,
 		loader,
 		minifiedLoader,
+		...(target === 'website' ? [pages] : [])
 	];
 
 };

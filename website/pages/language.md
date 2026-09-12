@@ -132,9 +132,13 @@ built-in English.
 
 ## 🏷️ On the Tag Manager route {#on-the-tag-manager-route}
 
-The tag's **Text source** field picks where the words come from: its own fields, a published pack it loads
-itself, or a variable holding a pack. [Tag Manager language packs]({{ '/language/tag-manager/' | relative_url }})
-has the packs ready to paste into a variable, and the one paragraph on letting the tag load one.
+The tag's **Language** picker has three choices: its built-in English, a published pack it loads itself,
+or a variable holding a pack — the same file as above, pasted into a Constant as JSON text or returned by a
+Custom JavaScript variable. With the picker at *Built-in English*, a page that carries
+`window.ConsentioLanguage` — which is what a published `<locale>.js` sets — is read as the pack.
+[Tag Manager language packs]({{ '/language/tag-manager/' | relative_url }}) has the packs ready to paste
+into a variable, and the one paragraph on letting the tag load one.
+[The tag]({{ '/tag/' | relative_url }}#the-three-language-choices) has the detail.
 
 ## ⚠️ When the file is missing or wrong {#when-the-file-is-missing-or-wrong}
 

@@ -10,7 +10,7 @@
 import { JSDOM } from 'jsdom';
 
 import TemplateRenderer from '../src/lib/template-renderer.js';
-import type { CookieTableRow, LanguageInput, LegacyConfig, SettingsInput } from '../src/types.js';
+import type { CookieTableRow, LanguageInput, SettingsInput } from '../src/types.js';
 import Consentio from '../src/consentio.js';
 import type ConsentioAppElement from '../src/elements/consentio-app.js';
 
@@ -80,7 +80,7 @@ export function click(el: Element): void {
  * its own process and its own registry from node:test.
  */
 export function boot(
-	settings: SettingsInput | LegacyConfig = {},
+	settings: SettingsInput = {},
 	language: LanguageInput = {},
 	cookies: CookieTableRow[] = []
 ): ConsentioAppElement {

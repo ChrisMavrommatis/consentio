@@ -16,7 +16,7 @@ src/elements/…            ->  test/elements/…
 
 `mount.mts` files next to a folder's tests are shared fixtures, not test files.
 
-Three folders do not mirror `src/`, because what they cover is not in `src/`:
+Four folders do not mirror `src/`, because what they cover is not in `src/`:
 
 - `test/scripts/` covers the release machinery — `scripts/changelog.mjs` and `.github/scripts/dist-guard.sh`
   — by running each against a throwaway file or repository. Both would otherwise only ever be exercised by a
@@ -24,6 +24,9 @@ Three folders do not mirror `src/`, because what they cover is not in `src/`:
 - `test/gtm/` covers the tag manager templates: that the sandboxed cookie reader still answers to
   `gtm/contract.fixture.json`, and that every template still composes from its parts
 - `test/i18n/` covers the language files: that every translation carries exactly English's keys and no blanks
+- `test/website/` covers the docs site's page scripts under `website/scripts/` - the readout, the catalogue
+  panel, the copy buttons - against the markup the pages print, and the rule that a markdown page carries no
+  JavaScript of its own
 
 ## 🧩 Why the files are so small
 

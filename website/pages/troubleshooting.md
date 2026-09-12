@@ -105,7 +105,7 @@ The console says which file:
 `data-language` is one a published pack exists for — `el`, not `gr`.
 
 `Consentio Tag: the language pack did not load, so the banner keeps its built-in English`
-: On the Tag Manager route, with *Text source* set to *A published language pack*. The tag loads the pack
+: On the Tag Manager route, with **Language** set to *A published language pack*. The tag loads the pack
 from the CDN at the same version as the banner, so something between the visitor and the CDN stopped it.
 
 ## 🧩 Two banners at once {#two-banners-at-once}

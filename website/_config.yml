@@ -40,6 +40,11 @@ repository_url          : "https://github.com/ChrisMavrommatis/consentio"
 #           site-relative and the build puts baseurl in front of it. Changing version
 #           discards every answer already stored. Leaving consents out gives the four
 #           defaults one home, and it is the banner.
+#
+# Whatever the route, every page also carries the settings, the language file and
+# data/consentio-cookies.json as window.ConsentioSettings, ConsentioLanguage and
+# ConsentioCookies, so the container's tag reads them with its pickers at None and the
+# site has one copy of each file.
 consentio:
   route                 : "direct"
   language              : "/data/i18n/en.json"
@@ -55,7 +60,7 @@ consentio:
     hideFloatingButton  : false
 
 # The Google Tag Manager container. Empty here, so a local build emits no snippet at all.
-gtm_container_id        : ""
+gtm_container_id        : "GTM-K6V53LMT"
 
 ############################################################
 # Where things are

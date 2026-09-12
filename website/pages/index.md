@@ -81,13 +81,13 @@ Start at the top. The reference is split by route: read your route's pages, then
 | Page | What is in it |
 |---|---|
 | [The loader tag]({{ '/loader/' | relative_url }}) | every attribute on the tag, which ones win, what it leaves on `window` |
-| [The settings file]({{ '/configuration/' | relative_url }}) | every key, the four categories, the older single file |
+| [The settings file]({{ '/configuration/' | relative_url }}) | every key, the four categories, the single file 1.0.0 removed |
 
 **Reference: Tag Manager**
 
 | Page | What is in it |
 |---|---|
-| [The tag]({{ '/tag/' | relative_url }}) | every field on the template, the four text sources, the Cookies variable, the permissions |
+| [The tag]({{ '/tag/' | relative_url }}) | the three pickers on the template, the three ways a file reaches each, the language choices, the permissions |
 | [Language packs to paste]({{ '/language/tag-manager/' | relative_url }}) | the published packs as variables to paste into a container |
 
 **Reference: both routes**

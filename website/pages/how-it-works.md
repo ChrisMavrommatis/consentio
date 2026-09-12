@@ -42,11 +42,11 @@ at load.
    other route ran on this page — and prints one line saying so.
 3. The template reads the same cookie, by the same rules, in sandboxed template code, and **sets the consent
    default through Tag Manager's own consent API.**
-4. With *Text source* on *A published language pack*, it calls `injectScript` for `dist/i18n/<locale>.js`
+4. With **Language** on *A published language pack*, it calls `injectScript` for `dist/i18n/<locale>.js`
    at the same pinned version and reads the pack off `window.ConsentioLanguage`. A pack that does not load
    is logged and the banner keeps its built-in English.
-5. It calls `injectScript` for `consentio.min.js` at a pinned version, then `Consentio.Create` from its
-   own fields and the pack, if there was one.
+5. It calls `injectScript` for `consentio.min.js` at a pinned version, then `Consentio.Create` with the
+   three inputs its pickers hold — or read off the page at *None* — and the pack, if there was one.
 
 `injectScript` is always asynchronous, which is why step 3 cannot be handed to the file it loads — by the
 time that file runs, Tag Manager has already decided what it may do.
@@ -80,11 +80,11 @@ that is easiest to get wrong.
 |---|---|---|
 | What you add | `consentio-loader.min.js` as a plain **blocking** `<script>` in `<head>`, above the tag manager snippet | the Consentio tag, on the **Consent Initialization - All Pages** trigger |
 | What pushes the consent default | the loader, on its first pass, before it fetches or injects anything | the template's own sandboxed code, before it calls `injectScript` |
-| Where settings come from | three JSON files, fetched by URL | the template's own fields |
-| Where a published language pack comes from | your own copy at `data-language-url`, or the CDN at the loader's version with `data-language` | the CDN at the template's version, when *Text source* asks for it |
+| Where settings come from | three JSON files, fetched by URL | the same three files, each in a variable or on the page |
+| Where a published language pack comes from | your own copy at `data-language-url`, or the CDN at the loader's version with `data-language` | the CDN at the template's version, when **Language** asks for it |
 | Uses the loader | yes | **no — never** |
 | What it holds back | scripts marked `type="text/plain" data-consentio`, released when their category is granted | tags in the container, through its own consent settings |
-| The cost | it blocks. 5.3 KB has to download before the page paints | **it only covers tags in that container** |
+| The cost | it blocks. Around 5.4 KB has to download before the page paints | **it only covers tags in that container** |
 
 [Choose a route]({{ '/routes/' | relative_url }}) has the same comparison in the terms a site owner
 decides by.
@@ -105,8 +105,8 @@ Measured on the files this site is serving right now.
 
 | File | Minified | Compressed | When it loads |
 |---|---|---|---|
-| `consentio-loader.min.js` | 5.3 KB | about 2.3 KB | blocking, in `<head>`, before the page paints |
-| `consentio.min.js` | 42.5 KB | about 13.1 KB | in the background, after the default is already pushed |
+| `consentio-loader.min.js` | around 5.4 KB | about 2.4 KB | blocking, in `<head>`, before the page paints |
+| `consentio.min.js` | around 42.5 KB | about 13 KB | in the background, after the default is already pushed |
 
 The compressed column is gzip, which is what almost any server will do for you. **Only the first file is on
 the critical path**, and only because the answer has to reach your tag manager before it decides anything.

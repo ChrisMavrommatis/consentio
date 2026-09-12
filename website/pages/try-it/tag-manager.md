@@ -3,6 +3,7 @@ title: Try it through a tag manager
 permalink: /try-it/tag-manager/
 loader: false
 description: The same site, the same cookie, no loader - the page that shows whether the two install routes agree about one visitor.
+scripts: [try-it]
 ---
 
 **This page has no Consentio script tag.** Every other page here has one. This one is left to a Google Tag
@@ -34,30 +35,10 @@ disagree, and a mismatch discards the whole stored value.
 |---|---|---|
 | What runs first | the Consentio script tag, in `<head>` | the template, on the Consent Initialization trigger |
 | Who tells Google what is allowed | the script tag | the Tag Manager template |
-| Where settings come from | the two settings files | fields in Tag Manager |
+| Where settings come from | the three files, fetched by the script tag | the same three files, printed on every page as `window.ConsentioSettings`, `window.ConsentioLanguage` and `window.ConsentioCookies`, read by the template with its pickers at *None* |
 | The cookie | `consentio` | `consentio` — the same one |
 
 `window.ConsentioDefault` is set by the script tag and by nothing else, so it is missing here. That is the
 quickest way to tell which of the two a page is using.
 
 <p class="fixture__state" id="consentio-readout" role="status">Reading&hellip;</p>
-
-{% raw %}
-<script>
-	(function () {
-		var readout = document.getElementById('consentio-readout');
-		if (!readout) return;
-		var name = (window.ConsentioDefault && window.ConsentioDefault.cookieName) || 'consentio';
-		var parts = document.cookie ? document.cookie.split('; ') : [];
-		var raw = null;
-		for (var i = 0; i < parts.length; i++) {
-			var eq = parts[i].indexOf('=');
-			if (eq > -1 && parts[i].slice(0, eq) === name) {
-				raw = decodeURIComponent(parts[i].slice(eq + 1));
-			}
-		}
-		var route = window.ConsentioDefault ? 'script tag ran on this page' : 'no script tag on this page';
-		readout.textContent = route + '\n' + name + ' = ' + (raw === null ? '(not set)' : raw);
-	})();
-</script>
-{% endraw %}
