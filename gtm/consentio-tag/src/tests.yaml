@@ -409,7 +409,7 @@ scenarios:
 
     assertThat(sent.cookies).hasLength(1);
     assertThat(sent.cookies[0].category).isEqualTo('strictly_necessary');
-- name: the cookie table left at None is no table
+- name: the cookie table left at None ignores a table the page happens to carry
   code: |-
     mock('getCookieValues', () => []);
     mock('copyFromWindow', (key) => key === 'ConsentioCookies' ? [{ name: '_ga' }] : undefined);
