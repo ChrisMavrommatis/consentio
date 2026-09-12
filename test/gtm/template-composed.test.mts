@@ -65,8 +65,9 @@ test('issue 49 - the tag reads ConsentioDefault and declares it, read-only', () 
 	const tests = readFileSync(new URL('gtm/consentio-tag/src/tests.yaml', ROOT), 'utf8');
 	assert.match(code, /copyFromWindow\('ConsentioDefault'\)/);
 	assert.ok(permissions.includes('"ConsentioDefault"'), 'permissions.json does not name ConsentioDefault');
-	for (const name of ['ConsentioSettings', 'ConsentioLanguage', 'ConsentioCookies']) {
-		assert.ok(permissions.includes(`"${name}"`), `permissions.json does not name ${name}`);
+	assert.ok(permissions.includes('"ConsentioLanguage"'), 'permissions.json does not name ConsentioLanguage, which the CDN pack load needs');
+	for (const name of ['ConsentioSettings', 'ConsentioCookies']) {
+		assert.ok(!permissions.includes(`"${name}"`), `permissions.json still names ${name}; a picker at None reads nothing off the page`);
 	}
 	assert.match(tests, /ConsentioDefault[\s\S]*?assertApi\('injectScript'\)\.wasNotCalled\(\)/);
 });

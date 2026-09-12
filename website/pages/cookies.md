@@ -71,17 +71,15 @@ but any address your site serves. Leave the attribute out and the panel shows no
 
 ## 🏷️ On the Tag Manager route {#on-the-tag-manager-route}
 
-The tag's **Cookie table** picker takes the same file, three ways:
+The tag's **Cookie table** picker takes the same file, two ways:
 
 - **A Constant variable** holding the JSON text above, pasted in whole. The tag parses it. This is the
   usual way.
 - **A Custom JavaScript variable** returning the array, `function () { return [ ... ]; }` — what the
   catalogue's *Copy as Tag Manager variable* gives you.
-- **The page itself**, with the picker at *None*: `<script>window.ConsentioCookies = [ ... ]</script>` in
-  `<head>`, above the container snippet. A site that runs both routes keeps one file this way.
 
-Left at *None* on a page with no `ConsentioCookies`, the panel shows no table.
-[The tag]({{ '/tag/' | relative_url }}#three-ways-in) has the detail.
+Left at *None*, the panel shows no table. [The tag]({{ '/tag/' | relative_url }}#two-ways-in) has the
+detail.
 
 ## ⚠️ When the file is missing or wrong {#when-the-file-is-missing-or-wrong}
 

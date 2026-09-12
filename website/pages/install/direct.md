@@ -94,7 +94,7 @@ This site is built with Jekyll and does exactly that. Its layout prints the tag 
         data-settings-url="/consentio/data/consentio-settings.json"
         data-language-url="/consentio/data/i18n/en.json"
         data-cookies-url="/consentio/data/consentio-cookies.json"
-        data-cookie-name="consentio" data-version="3"></script>
+        data-cookie-name="consentio" data-version="5"></script>
 ```
 
 **Serving the files from a CDN instead of your own site is fine**, as long as the URL names an exact

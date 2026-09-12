@@ -120,15 +120,13 @@ lists every attribute.
 
 ## 🏷️ On the Tag Manager route {#on-the-tag-manager-route}
 
-The tag's **Settings** picker takes the same file, three ways:
+The tag's **Settings** picker takes the same file, two ways:
 
 - **A Constant variable** holding the JSON text above, pasted in whole. The tag parses it. This is the
   usual way.
 - **A Custom JavaScript variable** returning the object, `function () { return { ... }; }`.
-- **The page itself**, with the picker at *None*: `<script>window.ConsentioSettings = { ... }</script>` in
-  `<head>`, above the container snippet. A site that runs both routes keeps one file this way.
 
-Left at *None* on a page with no `ConsentioSettings`, the banner uses the defaults above.
+Left at *None*, the banner uses the defaults above.
 
 Three keys read differently there. **`cookieName` is ignored** — the template names the cookie it reads
 when it is published, so on that route it is always `consentio`. **`version` and `urlPassthrough` are read

@@ -13,8 +13,7 @@ from `package.json`, so a released template loads the release it shipped in.
 
 **There used to be a second one.** `consentio-tag-cookies` was a MACRO template with the cookie table typed
 in one field at a time; 0.3.0 was the last release to attach it. The tag's **Cookie table** field takes the site's
-`consentio-cookies.json` as text in a Constant, the rows from any variable, or `window.ConsentioCookies`
-from the page.
+`consentio-cookies.json` as text in a Constant, or the rows from any variable.
 
 ## 📥 How anyone gets one
 
@@ -26,7 +25,7 @@ their container runs until they import a newer file** — including the banner v
 
 **No string lives on the tag.** The words arrive as a whole language pack - one the tag loads from the CDN,
 or a variable holding the file - and the settings and the cookie table arrive the same way, as the site's
-own files in a Constant, from any variable, or off the page at *None*.
+own files in a Constant or from any variable.
 
 ## 🔗 Why it is developed beside the banner
 

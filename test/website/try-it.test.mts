@@ -71,3 +71,16 @@ test('the readout uses the name the loader published', () => {
 	assert.match(document.getElementById('consentio-readout')!.textContent!, /^The script tag ran on this page\.\nNo "answer" cookie/);
 	delete window.ConsentioDefault;
 });
+
+test('the held embed\'s caption says empty until granted, then loaded once the frame has its src', () => {
+	document.body.innerHTML = MARKUP
+		+ '<div class="fixture__embed"><iframe data-consentio="preferences_functionality" data-src="https://map.example/"></iframe></div>'
+		+ '<p class="fixture__embed-note"></p>';
+	mount(document);
+	const note = document.querySelector('.fixture__embed-note')!;
+	assert.equal(note.textContent, 'Empty until preferences_functionality is granted.');
+
+	document.querySelector('iframe')!.setAttribute('src', 'https://map.example/');
+	document.dispatchEvent(new CustomEvent('consentio:consent-update', { bubbles: true }));
+	assert.match(note.textContent!, /^Loaded: preferences_functionality is granted/);
+});

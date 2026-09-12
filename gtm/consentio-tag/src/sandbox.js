@@ -37,11 +37,8 @@ const BASELINE_CONSENTS = { strictly_necessary: 'granted' };
 
 const RAN_KEY = 'consentio-tag-ran';
 
-// The three inputs a page can carry on window, one per picker, read when the picker is
-// at None. The language one is also what a published <locale>.js assigns the pack to.
-const SETTINGS_GLOBAL = 'ConsentioSettings';
+// What a published <locale>.js assigns the pack to when the tag loads one from the CDN.
 const PACK_GLOBAL = 'ConsentioLanguage';
-const COOKIES_GLOBAL = 'ConsentioCookies';
 
 log('Consentio Tag =', data);
 
@@ -107,15 +104,11 @@ function toGoogleSignals(consents) {
 
 // ## The three inputs ##
 // Each picker takes the same file the loader fetches: JSON text from a Constant, or the
-// parsed value from any other variable. At None the page's own global is read instead.
+// parsed value from any other variable. None is the built-in default.
 
-function hasSelectedVariable(value) {
-  return value !== 'none';
-}
-
-function readInput(value, global) {
-  if (!hasSelectedVariable(value)) {
-    value = copyFromWindow(global);
+function readInput(value) {
+  if (value === 'none') {
+    return undefined;
   }
   if (getType(value) === 'string') {
     // Malformed JSON returns undefined here rather than throwing.
@@ -124,8 +117,8 @@ function readInput(value, global) {
   return value;
 }
 
-function readObject(value, global, what) {
-  value = readInput(value, global);
+function readObject(value, what) {
+  value = readInput(value);
   if (getType(value) !== 'object') {
     if (value !== undefined && value !== null) {
       log('Consentio Tag: the ' + what + ' is not a JSON object, so it is ignored');
@@ -135,7 +128,7 @@ function readObject(value, global, what) {
   return value;
 }
 
-const settings = readObject(data.settings, SETTINGS_GLOBAL, 'Settings');
+const settings = readObject(data.settings, 'Settings');
 
 // The get_cookies permission names one cookie at publish time, so a settings file naming
 // another would leave this tag reading a cookie the banner never writes.
@@ -149,7 +142,7 @@ const version = settings.version === undefined ? 1 : makeNumber(settings.version
 
 // The cookie table is one file however it arrives, and it is an array or nothing.
 function readCookies() {
-  const value = readInput(data.cookies, COOKIES_GLOBAL);
+  const value = readInput(data.cookies);
   if (getType(value) !== 'array') {
     if (value !== undefined && value !== null) {
       log('Consentio Tag: the Cookie table is not a JSON array, so the settings panel shows no table');
@@ -214,9 +207,7 @@ function loadBanner(language) {
 }
 
 if (!fromPack) {
-  // Built-in English still reads the page's own pack at None, the same way the other two
-  // inputs do, so a page that inlines a published <locale>.js needs no picker at all.
-  loadBanner(readObject(fromVariable ? data.languageVariable : 'none', PACK_GLOBAL, 'Language pack'));
+  loadBanner(readObject(fromVariable ? data.languageVariable : 'none', 'Language pack'));
   return;
 }
 

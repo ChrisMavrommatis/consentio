@@ -22,11 +22,11 @@ steps.
 
 | Picker | Default | What it takes | On the HTML route |
 |---|---|---|---|
-| **Settings** | *None* | A variable holding the [settings file]({{ '/configuration/' | relative_url }}) — its JSON text in a Constant, or the object from any variable. Left at *None*, the tag reads `window.ConsentioSettings` from the page; without that, the banner uses its defaults. [Three ways in](#three-ways-in) | `data-settings-url` |
+| **Settings** | *None* | A variable holding the [settings file]({{ '/configuration/' | relative_url }}) — its JSON text in a Constant, or the object from any variable. Left at *None*, the banner uses its defaults. [Two ways in](#two-ways-in) | `data-settings-url` |
 | **Language** | *Built-in English* | Where the words come from. Three choices, [below](#the-three-language-choices) | `data-language-url` or `data-language` |
 | **Language pack variable** | *None* | Shown for *From a variable*. A variable holding a whole [language pack]({{ '/language/tag-manager/' | relative_url }}) — its JSON text, or the object | — |
 | **Language pack** | English | Shown for *A published language pack*. Which pack the tag loads from the CDN, at the same version as the banner | `data-language` |
-| **Cookie table** | *None* | A variable holding the [cookie table]({{ '/cookies/' | relative_url }}#on-the-tag-manager-route) — its JSON text, or the rows. Left at *None*, the tag reads `window.ConsentioCookies` from the page; without that, the settings panel shows no table. [Three ways in](#three-ways-in) | `data-cookies-url` |
+| **Cookie table** | *None* | A variable holding the [cookie table]({{ '/cookies/' | relative_url }}#on-the-tag-manager-route) — its JSON text, or the rows. Left at *None*, the settings panel shows no table. [Two ways in](#two-ways-in) | `data-cookies-url` |
 
 **Three keys of the settings file behave differently on this route.** `cookieName` is ignored: a template has
 to name the cookie it reads when it is published, so here it is always `consentio`, and the console says so
@@ -37,16 +37,16 @@ is `true` — [what it tells Google]({{ '/datalayer/' | relative_url }}#url-pass
 On a site running both routes, keep the file's `version` and `urlPassthrough` equal to the loader tag's
 `data-version` and `data-url-passthrough`.
 
-## 🔀 Three ways in {#three-ways-in}
+## 🔀 Two ways in {#two-ways-in}
 
-Each input is one file, however it arrives. The same three ways work for the **Settings** picker, the
+Each input is one file, however it arrives. The same two ways work for the **Settings** picker, the
 **Language pack variable** and the **Cookie table**.
 
 | Fill it with | What to do |
 |---|---|
 | **A Constant** | Make a *Constant* variable, paste the whole text of the file into it, pick it here. The tag parses the JSON. This is the usual way, and what the [catalogue]({{ '/cookies/catalogue/' | relative_url }}) and the [packs page]({{ '/language/tag-manager/' | relative_url }}) give you |
 | **A Custom JavaScript variable** | `function () { return { ... }; }` returning the object — or the rows, for the cookie table. A Lookup Table returning one of these per page works the same |
-| **Nothing** | Leave it at *None*. If the page carries the matching global in `<head>` above the container snippet — `window.ConsentioSettings`, `window.ConsentioLanguage` or `window.ConsentioCookies` — the tag reads that. A site running both routes keeps one copy this way. Otherwise the banner uses its defaults, its English, or no table |
+| **Nothing** | Leave it at *None*. The banner uses its defaults, its English, or no table. The tag reads nothing off the page |
 
 A value that is not what the input expects is treated as nothing. An array where an object should be, or
 an object where the rows should be, is said on the console in Tag Manager's preview mode:
@@ -59,7 +59,7 @@ parse as JSON is treated as nothing too, and nothing is said — the `settings =
 
 | Choice | What the banner says |
 |---|---|
-| **Built-in English** | Its own words. Nothing is sent, so the wording picks up each release's fixes on its own. A page that inlines a published `<locale>.js` sets `window.ConsentioLanguage`, and the tag reads that here without a picker |
+| **Built-in English** | Its own words. Nothing is sent, so the wording picks up each release's fixes on its own |
 | **From a variable** | Whatever the **Language pack variable** holds — a [pack you pasted]({{ '/language/tag-manager/' | relative_url }}) into a Constant or a Custom JavaScript variable, or a Lookup Table keyed on the page's language |
 | **A published language pack** | The pack named in **Language pack**, loaded from the CDN before the banner, at the banner's own version. If it does not load, the banner keeps its English and the console says so |
 
@@ -97,7 +97,7 @@ Tag Manager shows these when you import it. Each is the least the tag can work w
 | Read the `consentio` cookie | The stored answer |
 | Set consent state | The consent default, for the seven Google signals. The update comes from the banner, on `dataLayer`, and needs no permission |
 | Write `ads_data_redaction` and `url_passthrough` to the data layer | Sent alongside the default; the second only when the settings ask for it |
-| Call `Consentio.Create`; read and write `ConsentioInstance`; read `ConsentioDefault`, `ConsentioSettings`, `ConsentioLanguage` and `ConsentioCookies` on `window` | Start the banner and record that it did; see the HTML route or a second run; read the loaded pack and what the page carries |
+| Call `Consentio.Create`; read and write `ConsentioInstance`; read `ConsentioDefault` and `ConsentioLanguage` on `window` | Start the banner and record that it did; see the HTML route or a second run; read the pack it loaded from the CDN |
 | Template storage | Remember that it ran, so a second trigger on the same page does nothing |
 | Log to the console in preview mode | What the tag read and decided, while you are in Tag Assistant |
 
@@ -116,7 +116,7 @@ Tag Manager shows these when you import it. Each is the least the tag can work w
 - **The settings file's `version` and the HTML route's `data-version` disagree** on a site running both: one
   route's answer is invalid on the other, and the visitor is asked twice. Keep them equal — the loader
   warns on the console when they differ.
-- **A settings file that is not picked up:** the picker is at *None* and the page carries no
-  `window.ConsentioSettings`, or the Constant holds something that is not the file. In preview mode
+- **A settings file that is not picked up:** the picker is at *None*, or the Constant holds something
+  that is not the file. In preview mode
   `settings =` shows what the tag read — `{}` when it read nothing.
 - **The tag fires twice on one page:** the second run stops and says `already initialized`.

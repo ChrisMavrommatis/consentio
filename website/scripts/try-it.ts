@@ -78,9 +78,26 @@ export default function mount(root: Document = document): boolean {
 		instance.openSettings();
 	});
 
+	// The held embed's caption says whether the frame has its src yet, so a map that is
+	// already there reads as "granted earlier" rather than as a hold that failed.
+	const embed = root.querySelector<HTMLIFrameElement>('.fixture__embed iframe');
+	const note = root.querySelector<HTMLElement>('.fixture__embed-note');
+	const describe = (): void => {
+		if (!embed || !note) {
+			return;
+		}
+		const category = embed.dataset.consentio ?? '';
+		note.textContent = embed.hasAttribute('src')
+			? `Loaded: ${category} is granted. Revoke it and the map stays until the next page load.`
+			: `Empty until ${category} is granted.`;
+	};
+
 	root.getElementById('consentio-refresh')?.addEventListener('click', show);
 	root.addEventListener('consentio:consent-update', show);
+	root.addEventListener('consentio:consent-update', describe);
+	root.addEventListener('consentio:initialized', describe);
 	show();
+	describe();
 	return true;
 }
 

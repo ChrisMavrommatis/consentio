@@ -11,6 +11,8 @@ release body, so write these entries for the people using Consentio, not for the
 
 ## [Unreleased]
 
+## [1.0.0]
+
 ### ✨ Added
 
 - **An embed waits for the visitor's answer too.** An `<iframe>` with `data-consentio` naming its category
@@ -55,11 +57,9 @@ release body, so write these entries for the people using Consentio, not for the
 
 - **The tag is three pickers — Settings, Language, Cookie table — and each takes the same JSON file the
   HTML route fetches.** Paste the file's text into a Constant, or return it from any variable, and pick it.
-  Left at *None*, the tag reads `window.ConsentioSettings`, `window.ConsentioLanguage` or
-  `window.ConsentioCookies` off the page, so a site running both routes keeps one copy of each file and
-  needs no variables at all. **Language** at *Built-in English* still reads the page's pack. A new banner
-  setting now ships with the banner; the template does not change for it. The template asks for two more
-  read permissions, `ConsentioSettings` and `ConsentioCookies`.
+  Left at *None*, the banner uses its defaults, its built-in English, or shows no table; the tag reads
+  nothing off the page. A new banner setting now ships with the banner; the template does not change for
+  it.
 - **On the tag, `version` comes from the settings file** and `cookieName` in it is ignored — the template
   can only read the cookie it named when it was published, `consentio`, and says so on the console when the
   file names another. A site running both routes keeps the file's `version` equal to the loader tag's

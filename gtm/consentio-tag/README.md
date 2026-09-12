@@ -28,16 +28,16 @@ until its category is granted; this one cannot.
 ## ⚙️ Pickers {#pickers}
 
 Three inputs, the same three files the direct route fetches, each from a variable - the file's JSON text in
-a Constant, or the parsed value from any other variable. Left at *None*, the tag reads the matching global
-off the page instead, which is how a site running both routes keeps one copy of each file.
+a Constant, or the parsed value from any other variable. Left at *None*, the banner's own default. The
+tag reads nothing off the page.
 
 | Picker | What it takes | At *None* |
 |---|---|---|
-| Settings | `consentio-settings.json` - how the banner behaves | `window.ConsentioSettings`, or the banner's defaults |
-| Language | *Built-in English*, *From a variable* or *A published language pack* - see below | `window.ConsentioLanguage`, or the built-in English |
+| Settings | `consentio-settings.json` - how the banner behaves | the banner's defaults |
+| Language | *Built-in English*, *From a variable* or *A published language pack* - see below | the built-in English |
 | Language pack variable | a whole language pack, `en.json` or `el.json` as published. Shown for *From a variable* | - |
 | Language pack | which published pack to load from the CDN. Shown for *A published language pack* | - |
-| Cookie table | `consentio-cookies.json` - the rows the settings panel shows | `window.ConsentioCookies`, or no table |
+| Cookie table | `consentio-cookies.json` - the rows the settings panel shows | no table |
 
 Two keys of the settings file read differently here. `cookieName` is ignored - the permission below names
 the cookie, so it is always `consentio`, and the tag logs one line when the file says otherwise. `version`
@@ -89,10 +89,10 @@ drift from the banner's is one more way the two can disagree.
 |---|---|
 | Reads cookie value(s): `consentio` | the stored answer |
 | Accesses consent state, write | the consent default |
-| Writes data layer: `ads_data_redaction` | redacts ad identifiers while ad storage is denied |
+| Writes data layer: `ads_data_redaction`, `url_passthrough` | redacts ad identifiers while ad storage is denied; carries the ad-click id in links when the settings ask |
 | Injects script: `cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio*` | the banner, and a published language pack |
 | Accesses globals: `Consentio.Create`, `ConsentioInstance` | starts the banner, and stops a second trigger starting a second one |
-| Reads globals: `ConsentioDefault`, `ConsentioSettings`, `ConsentioLanguage`, `ConsentioCookies` | stands down when the direct route's script tag ran; reads the pack it loaded and whatever the page carries at *None* |
+| Reads globals: `ConsentioDefault`, `ConsentioLanguage` | stands down when the direct route's script tag ran; reads the pack it loaded from the CDN |
 | Template storage | the same guard, before the banner has loaded |
 | Logging | what it read and decided, in preview mode |
 

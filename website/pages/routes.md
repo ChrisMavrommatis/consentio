@@ -46,7 +46,7 @@ Install both and the tag stands down on any page where the script tag ran, and s
 page with the template and no script tag runs the template. Both read and write the same cookie, so a
 visitor who answered on one is remembered on the other — as long as the version matches on both.
 
-A site that does run both keeps one copy of each file by printing the three on every page as
-`window.ConsentioSettings`, `window.ConsentioLanguage` and `window.ConsentioCookies`, in `<head>` above the
-container snippet: the script tag fetches the files, and the tag with its three pickers at *None*
-[reads the page]({{ '/tag/' | relative_url }}#three-ways-in). This site does exactly that.
+The two routes do not share configuration. A site that runs both has two copies of each file — the ones
+the script tag fetches, and the Constants in the container — and keeps them equal by hand, `version`
+above all: a `version` that differs is an answer honoured on one route and discarded on the other. This
+site runs both, on one page, and does exactly that.

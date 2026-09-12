@@ -109,8 +109,8 @@ cookie file itself.
 reaches your container when you import the newer file.
 
 The tag has three pickers - **Settings**, **Language**, **Cookie table** - and each takes the same JSON file
-the HTML route fetches, pasted into a Constant or returned by any variable; left at *None*, the tag reads
-`window.ConsentioSettings`, `window.ConsentioLanguage` or `window.ConsentioCookies` off the page instead.
+the HTML route fetches, pasted into a Constant or returned by any variable; left at *None*, the banner uses
+its defaults, its English, or no table.
 **Language** can also load a published pack from the CDN at the same version as the banner; a pack that
 does not load is logged and the banner keeps its English.
 

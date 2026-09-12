@@ -312,6 +312,13 @@
 	text-align: right;
 }
 
+// Four short columns: the base table is a scrolling block sized to its content, which
+// leaves this one at half the page.
+.packs {
+	display: table;
+	width: 100%;
+}
+
 .panel {
 	position: fixed;
 	inset: 0 0 0 auto;
@@ -445,9 +452,7 @@
 	overflow-wrap: anywhere;
 }
 
-// The note sits behind the iframe, so it shows through until the frame loads over it.
 .fixture__embed {
-	position: relative;
 	margin-top: 1rem;
 	aspect-ratio: 16 / 9;
 	max-width: 100%;
@@ -458,19 +463,14 @@
 }
 
 .fixture__embed iframe {
-	position: relative;
-	z-index: 1;
+	display: block;
 	width: 100%;
 	height: 100%;
 	border: 0;
 }
 
 .fixture__embed-note {
-	position: absolute;
-	inset: 0;
-	display: grid;
-	place-items: center;
-	margin: 0;
+	margin: .5rem 0 0;
 	color: var(--fg-muted);
 	font-size: .9rem;
 }

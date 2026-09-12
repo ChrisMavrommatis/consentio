@@ -1,9 +1,37 @@
 [
 	{
 		"name": "consentio",
-		"purpose": "Stores the answer you gave to this banner, so you are not asked again on every page.",
-		"provenance": "This site",
+		"purpose": "Stores your answer to this cookie banner and the date you gave it.",
+		"provenance": "Consentio",
 		"duration": "90 days",
 		"category": "strictly_necessary"
+	},
+	{
+		"name": "consentio_probe",
+		"purpose": "Written and deleted in the same moment to find which domain the browser accepts, because this site shares the answer across subdomains.",
+		"provenance": "Consentio",
+		"duration": "none; it is removed as soon as it is read",
+		"category": "strictly_necessary"
+	},
+	{
+		"name": "_ga",
+		"purpose": "Tells one visitor apart from another.",
+		"provenance": "Google Analytics",
+		"duration": "2 years",
+		"category": "statistics_performance"
+	},
+	{
+		"name": "_ga_*",
+		"purpose": "Keeps the state of the current visit between pages.",
+		"provenance": "Google Analytics",
+		"duration": "2 years",
+		"category": "statistics_performance"
+	},
+	{
+		"name": "_dc_gtm_*",
+		"purpose": "Helps Google Analytics measure how visitors use the site.",
+		"provenance": "Google Tag Manager",
+		"duration": "1 minute",
+		"category": "statistics_performance"
 	}
 ]

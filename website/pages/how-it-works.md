@@ -47,7 +47,7 @@ at load.
    at the same pinned version and reads the pack off `window.ConsentioLanguage`. A pack that does not load
    is logged and the banner keeps its built-in English.
 5. It calls `injectScript` for `consentio.min.js` at a pinned version, then `Consentio.Create` with the
-   three inputs its pickers hold — or read off the page at *None* — and the pack, if there was one.
+   three inputs its pickers hold and the pack, if there was one.
 
 `injectScript` is always asynchronous, which is why step 3 cannot be handed to the file it loads — by the
 time that file runs, Tag Manager has already decided what it may do.
@@ -124,6 +124,6 @@ On the Tag Manager route neither file blocks.
 
 ## 🔍 What ends up on `window` {#what-ends-up-on-window}
 
-Three globals, listed on [the loader tag]({{ '/loader/' | relative_url }}#what-it-leaves-on-window).
+The three the loader leaves, listed on [the loader tag]({{ '/loader/' | relative_url }}#what-it-leaves-on-window).
 `window.ConsentioDefault` is the useful one when you are checking behaviour: it is set by the loader and by
 nothing else, so its absence tells you a page is running the Tag Manager route.

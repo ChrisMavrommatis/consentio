@@ -35,13 +35,14 @@ clear the cookie below and it comes back.
 ### 🖼️ A held embed {#a-held-embed}
 
 An OpenStreetMap frame with its address on `data-src`, marked `preferences_functionality`. It is empty until
-that category is granted and loads in place when it is — [hold a script until consent]({{ '/hold-scripts/' | relative_url }}#an-embed-before-and-after)
+that category is granted and loads in place when it is — on this visit, or as the page loads if you granted
+it on an earlier one; the caption under it says which — [hold a script until consent]({{ '/hold-scripts/' | relative_url }}#an-embed-before-and-after)
 is the page for it. Revoking leaves it loaded until the next page load.
 
 <div class="fixture__embed" markdown="0">
 <iframe data-consentio="preferences_functionality" data-src="https://www.openstreetmap.org/export/embed.html?bbox=23.70%2C37.96%2C23.74%2C37.99&amp;layer=mapnik" title="A map, held until preferences are granted" loading="lazy"></iframe>
-<p class="fixture__embed-note">Empty until <code>preferences_functionality</code> is granted.</p>
 </div>
+<p class="fixture__embed-note" markdown="0">Empty until preferences_functionality is granted.</p>
 </div>
 
 ## 🔍 What to look at {#what-to-look-at}

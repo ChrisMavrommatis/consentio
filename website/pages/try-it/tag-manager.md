@@ -38,7 +38,7 @@ disagree, and a mismatch discards the whole stored value.
 |---|---|---|
 | What runs first | the Consentio script tag, in `<head>` | the template, on the Consent Initialization trigger |
 | Who tells Google what is allowed | the script tag | the Tag Manager template |
-| Where settings come from | the three files, fetched by the script tag | the same three files, printed on every page as `window.ConsentioSettings`, `window.ConsentioLanguage` and `window.ConsentioCookies`, read by the template with its pickers at *None* |
+| Where settings come from | the three files, fetched by the script tag | three Constants in the container, holding the same three files - kept equal by hand |
 | The cookie | `consentio` | `consentio` — the same one |
 
 `window.ConsentioDefault` is set by the script tag and by nothing else, so it is missing here. That is the

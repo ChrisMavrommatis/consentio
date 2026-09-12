@@ -219,16 +219,14 @@ scenarios:
     assertThat(sent.settings.debug).isEqualTo(true);
     assertThat(sent.settings.hideFloatingButton).isEqualTo(true);
     assertThat(sent.settings.consentRequired).isEqualTo(undefined);
-- name: the settings left at None read the page's own file
+- name: the settings left at None are the banner's defaults
   code: |-
-    // A site that puts window.ConsentioSettings on the page, so the tag and the loader
-    // read one file.
     mock('getCookieValues', () => []);
     mock('copyFromWindow', (key) => key === 'ConsentioSettings' ? { policyUrl: '/page/' } : undefined);
 
     const sent = capture();
 
-    assertThat(sent.settings.policyUrl).isEqualTo('/page/');
+    assertThat(sent.settings).isEqualTo({ cookieName: 'consentio' });
 - name: settings that are not a JSON object are ignored
   code: |-
     mock('getCookieValues', () => []);
@@ -327,16 +325,16 @@ scenarios:
     const sent = capture();
 
     assertThat(sent.language.policyUrl).isEqualTo('');
-- name: built-in English reads the page's own pack
+- name: built-in English ignores a pack the page happens to carry
   code: |-
-    // A page that inlines a published <locale>.js: it assigns window.ConsentioLanguage,
-    // and the tag reads that with the picker left at Built-in English.
+    // The global is how a pack the tag loads from the CDN reaches it, not a setting: a
+    // page that assigned it itself gets the built-in English it picked.
     mock('getCookieValues', () => []);
     mock('copyFromWindow', (key) => key === 'ConsentioLanguage' ? pack('/el/privacy/') : undefined);
 
     const sent = capture();
 
-    assertThat(sent.language.texts.barTitle).isEqualTo('\u03a0\u03bf\u03bb\u03b9\u03c4\u03b9\u03ba\u03ae Cookies');
+    assertThat(sent.language).isEqualTo({});
 - name: a language variable that is not a JSON object is built-in English
   code: |-
     mock('getCookieValues', () => []);
@@ -411,17 +409,14 @@ scenarios:
 
     assertThat(sent.cookies).hasLength(1);
     assertThat(sent.cookies[0].category).isEqualTo('strictly_necessary');
-- name: the cookie table left at None reads the page's own table
+- name: the cookie table left at None is no table
   code: |-
-    // A site that puts window.ConsentioCookies on the page, so the tag and the loader
-    // read one file.
     mock('getCookieValues', () => []);
-    mock('copyFromWindow', (key) => key === 'ConsentioCookies' ? [{ name: '_ga', purpose: 'Tells visitors apart', provenance: 'Google Analytics', duration: '2 years', category: 'statistics_performance' }] : undefined);
+    mock('copyFromWindow', (key) => key === 'ConsentioCookies' ? [{ name: '_ga' }] : undefined);
 
     const sent = capture();
 
-    assertThat(sent.cookies).hasLength(1);
-    assertThat(sent.cookies[0].name).isEqualTo('_ga');
+    assertThat(sent.cookies).isEqualTo([]);
 - name: a cookie table that is not a JSON array is no table
   code: |-
     mock('getCookieValues', () => []);

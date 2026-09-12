@@ -25,9 +25,10 @@ const tests = readFileSync(new URL('gtm/consentio-tag/src/tests.yaml', root), 'u
 const written = tests.replace(/\\u([0-9a-fA-F]{4})/g, (_match, hex: string) => String.fromCharCode(parseInt(hex, 16)));
 
 test('the template reads all three inputs through one reader and calls Create with three objects - issue 34', () => {
-	assert.match(code, /readObject\(data\.settings, SETTINGS_GLOBAL/, 'the settings picker goes through the reader');
-	assert.match(code, /readObject\(fromVariable \? data\.languageVariable : 'none', PACK_GLOBAL/, 'the language variable goes through the reader, and None reads the page');
-	assert.match(code, /readInput\(data\.cookies, COOKIES_GLOBAL\)/, 'the cookie table goes through the reader');
+	assert.match(code, /readObject\(data\.settings, 'Settings'\)/, 'the settings picker goes through the reader');
+	assert.match(code, /readObject\(fromVariable \? data\.languageVariable : 'none', 'Language pack'\)/, 'the language variable goes through the reader');
+	assert.match(code, /readInput\(data\.cookies\)/, 'the cookie table goes through the reader');
+	assert.doesNotMatch(code, /ConsentioSettings|ConsentioCookies/, 'a picker at None reads nothing off the page');
 	assert.match(code, /callInWindow\('Consentio\.Create', settings, language, cookies\)/, 'three objects, one per concern');
 	assert.doesNotMatch(code, /buildSettings|buildLanguage|removeEmptyValues/, 'nothing is composed from fields');
 });
@@ -42,14 +43,14 @@ test('the template fixes the cookie name and reads the version before the cookie
 test("the template's own tests cover every way each input can arrive", () => {
 	assert.match(tests, /the settings as JSON text are parsed/, 'a Constant holding the settings file');
 	assert.match(tests, /the settings as an object are sent as they are/, 'a variable returning the settings');
-	assert.match(tests, /the settings left at None read the page's own file/, 'window.ConsentioSettings with the picker at None');
+	assert.match(tests, /the settings left at None are the banner's defaults/, 'None reads nothing off the page');
 	assert.match(tests, /the cookie name is fixed on this route/);
 	assert.match(tests, /the version is read from the settings before the cookie/);
 	assert.match(tests, /a language pack as JSON text is parsed/, 'a Constant holding a downloaded pack');
-	assert.match(tests, /built-in English reads the page's own pack/, 'window.ConsentioLanguage with the picker at Built-in English');
+	assert.match(tests, /built-in English ignores a pack the page happens to carry/, 'the global is the CDN load, not a setting');
 	assert.match(tests, /as JSON text is parsed/, 'a Constant holding the cookie file');
 	assert.match(tests, /as an array is sent as it is/, 'a variable returning the rows');
-	assert.match(tests, /reads the page's own table/, 'window.ConsentioCookies with the field at None');
+	assert.match(tests, /the cookie table left at None is no table/, 'None reads nothing off the page');
 	assert.match(tests, /not a JSON array is no table/, 'anything else is no table, and the tag still succeeds');
 });
 
