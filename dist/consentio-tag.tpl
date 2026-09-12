@@ -46,7 +46,7 @@ ___TEMPLATE_PARAMETERS___
     ],
     "simpleValueType": true,
     "alwaysInSummary": true,
-    "help": "A variable holding how the banner behaves - the JSON text of your consentio-settings.json in a Constant, or any variable returning the same object. Left at None, the banner uses its defaults. cookieName is ignored on this route: the tag can only read the cookie named consentio."
+    "help": "A variable holding how the banner behaves - a Custom JavaScript variable returning your consentio-settings.json as an object, or its JSON text in a Constant. Left at None, the banner uses its defaults. cookieName is ignored on this route: the tag can only read the cookie named consentio."
   },
   {
     "type": "SELECT",
@@ -131,7 +131,7 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "simpleValueType": true,
-    "help": "A variable holding the cookies your site sets - the JSON text of your consentio-cookies.json in a Constant, or any variable returning the same rows. Left at None, the settings panel shows no cookie table."
+    "help": "A variable holding the cookies your site sets - a Custom JavaScript variable returning the rows of your consentio-cookies.json, or its JSON text in a Constant. Left at None, the settings panel shows no cookie table."
   }
 ]
 
@@ -140,9 +140,9 @@ ___SANDBOXED_JS_FOR_WEB_TEMPLATE___
 
 // `scripts/gtm.mjs` fills the version in from package.json when it composes the .tpl, so a
 // released template loads the release it shipped in. Do not type a version here.
-const url = 'https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@1.0.1/dist/consentio.min.js';
+const url = 'https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@1.0.2/dist/consentio.min.js';
 // The published language packs, at the same release as the bundle so the two cannot disagree.
-const packBaseUrl = 'https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@1.0.1/dist/i18n/';
+const packBaseUrl = 'https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@1.0.2/dist/i18n/';
 
 const log = require('logToConsole');
 const injectScript = require('injectScript');
@@ -1281,8 +1281,8 @@ scenarios:
     runCode(mockData);
 
     assertThat(injected).hasLength(2);
-    assertThat(injected[0]).contains('consentio@1.0.1/dist/i18n/el.js');
-    assertThat(injected[1]).contains('consentio@1.0.1/dist/consentio.min.js');
+    assertThat(injected[0]).contains('consentio@1.0.2/dist/i18n/el.js');
+    assertThat(injected[1]).contains('consentio@1.0.2/dist/consentio.min.js');
     assertThat(sent.language.texts.barTitle).isEqualTo('\u03a0\u03bf\u03bb\u03b9\u03c4\u03b9\u03ba\u03ae Cookies');
     assertThat(sent.language.consents.strictly_necessary.title).isEqualTo('\u0391\u03c0\u03bf\u03bb\u03cd\u03c4\u03c9\u03c2 \u03b1\u03c0\u03b1\u03c1\u03b1\u03af\u03c4\u03b7\u03c4\u03b1');
     assertThat(sent.language.policyUrl).isEqualTo('/el/privacy/');
