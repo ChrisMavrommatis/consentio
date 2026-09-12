@@ -34,113 +34,29 @@ ___TEMPLATE_PARAMETERS___
 
 [
   {
-    "type": "TEXT",
-    "name": "version",
-    "displayName": "Version",
-    "simpleValueType": true,
-    "defaultValue": 1,
-    "valueValidators": [
+    "type": "SELECT",
+    "name": "settings",
+    "displayName": "Settings",
+    "macrosInSelect": true,
+    "selectItems": [
       {
-        "type": "POSITIVE_NUMBER"
+        "value": "none",
+        "displayValue": "None"
       }
     ],
-    "alwaysInSummary": true,
-    "help": "The version of the question you are asking. Raise it and every visitor is asked again, so change it only when the categories or the cookies you use have really changed. Leave it at 1 otherwise."
-  },
-  {
-    "type": "CHECKBOX",
-    "name": "debug",
-    "checkboxText": "Debug",
     "simpleValueType": true,
     "alwaysInSummary": true,
-    "help": "Logs what the tag decided to the browser console. Turn it off before publishing."
-  },
-  {
-    "type": "CHECKBOX",
-    "name": "consentRequired",
-    "checkboxText": "Consent Required",
-    "simpleValueType": true,
-    "alwaysInSummary": true,
-    "help": "Shows the banner as a full-screen overlay the visitor has to answer before they can use the page. Off, the banner sits at the bottom and the page stays usable."
-  },
-  {
-    "type": "GROUP",
-    "name": "consents",
-    "displayName": "Consents",
-    "groupStyle": "ZIPPY_CLOSED",
-    "subParams": [
-      {
-        "type": "SELECT",
-        "name": "preferencesFunctionalityDefaultState",
-        "displayName": "Preferences Functionality Default State",
-        "macrosInSelect": false,
-        "selectItems": [
-          {
-            "value": "denied",
-            "displayValue": "Denied"
-          },
-          {
-            "value": "granted",
-            "displayValue": "Granted"
-          }
-        ],
-        "simpleValueType": true,
-        "defaultValue": "denied",
-        "help": "What this category starts at in the settings panel. It is not what is sent to Google before the visitor answers - that is always denied."
-      },
-      {
-        "type": "SELECT",
-        "name": "statisticsPerformanceDefaultState",
-        "displayName": "Statistics Performance Default State",
-        "macrosInSelect": false,
-        "selectItems": [
-          {
-            "value": "denied",
-            "displayValue": "Denied"
-          },
-          {
-            "value": "granted",
-            "displayValue": "Granted"
-          }
-        ],
-        "simpleValueType": true,
-        "defaultValue": "denied",
-        "help": "What this category starts at in the settings panel. It is not what is sent to Google before the visitor answers - that is always denied."
-      },
-      {
-        "type": "SELECT",
-        "name": "marketingAdvertisingDefaultState",
-        "displayName": "Marketing Advertising Default State",
-        "macrosInSelect": false,
-        "selectItems": [
-          {
-            "value": "denied",
-            "displayValue": "Denied"
-          },
-          {
-            "value": "granted",
-            "displayValue": "Granted"
-          }
-        ],
-        "simpleValueType": true,
-        "defaultValue": "denied",
-        "help": "What this category starts at in the settings panel. It is not what is sent to Google before the visitor answers - that is always denied."
-      }
-    ]
+    "help": "A variable holding how the banner behaves - the JSON text of your consentio-settings.json in a Constant, or any variable returning the same object. Left at None, the banner uses its defaults. cookieName is ignored on this route: the tag can only read the cookie named consentio."
   },
   {
     "type": "SELECT",
-    "name": "textSource",
-    "displayName": "Text source",
+    "name": "languageSource",
+    "displayName": "Language",
     "macrosInSelect": false,
     "selectItems": [
       {
         "value": "builtin",
         "displayValue": "Built-in English"
-      },
-      {
-        "value": "custom",
-        "displayValue": "Custom - fill in the fields below"
       },
       {
         "value": "variable",
@@ -154,484 +70,11 @@ ___TEMPLATE_PARAMETERS___
     "simpleValueType": true,
     "defaultValue": "builtin",
     "alwaysInSummary": true,
-    "help": "Where the banner\u0027s wording comes from. Built-in English sends nothing and lets the banner use its own strings, so it picks up improvements with each version. Custom shows every string, filled in with the English text - edit it, or paste a translation over it. From a variable takes a whole language pack - a released en.json or el.json, unedited - from any Tag Manager variable. A published language pack loads one from the CDN, at the same version as the banner, so the words move with each release."
-  },
-  {
-    "type": "GROUP",
-    "name": "textsGroup",
-    "displayName": "Texts",
-    "groupStyle": "ZIPPY_CLOSED",
-    "subParams": [
-      {
-        "type": "GROUP",
-        "name": "bar",
-        "displayName": "Bar",
-        "groupStyle": "ZIPPY_CLOSED",
-        "subParams": [
-          {
-            "type": "TEXT",
-            "name": "barTitle",
-            "displayName": "Bar Title",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 1,
-            "defaultValue": "Cookie Policy",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "barDescription",
-            "displayName": "Bar Description",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 3,
-            "defaultValue": "This site uses cookies. Until you choose, only the ones the site cannot run without are on. Accept them all, reject the rest, or open the settings to choose category by category.",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          }
-        ],
-        "enablingConditions": [
-          {
-            "paramName": "textSource",
-            "paramValue": "custom",
-            "type": "EQUALS"
-          }
-        ]
-      },
-      {
-        "type": "GROUP",
-        "name": "modal",
-        "displayName": "Modal",
-        "groupStyle": "ZIPPY_CLOSED",
-        "subParams": [
-          {
-            "type": "TEXT",
-            "name": "modalTitle",
-            "displayName": "Modal Title",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 1,
-            "defaultValue": "Cookie Settings",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "modalDescription",
-            "displayName": "Modal Description",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 4,
-            "defaultValue": "Choose which cookies this site may use. Save stores your choice, Cancel leaves it as it was. Under the European general data protection regulation (GDPR) and the ePrivacy directive, a site must have your consent before it uses any cookie besides the strictly necessary ones. Expand a category to read what it covers.",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          }
-        ],
-        "enablingConditions": [
-          {
-            "paramName": "textSource",
-            "paramValue": "custom",
-            "type": "EQUALS"
-          }
-        ]
-      },
-      {
-        "type": "GROUP",
-        "name": "buttons",
-        "displayName": "Buttons",
-        "groupStyle": "ZIPPY_CLOSED",
-        "subParams": [
-          {
-            "type": "TEXT",
-            "name": "buttonSettings",
-            "displayName": "Settings Button",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 1,
-            "defaultValue": "Settings",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "buttonSave",
-            "displayName": "Save Button",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 1,
-            "defaultValue": "Save",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "buttonCancel",
-            "displayName": "Cancel Button",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 1,
-            "defaultValue": "Cancel",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "buttonAcceptAll",
-            "displayName": "Accept All Button",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 1,
-            "defaultValue": "Accept All",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "buttonRejectAll",
-            "displayName": "Reject All Button",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 1,
-            "defaultValue": "Reject All",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          }
-        ],
-        "enablingConditions": [
-          {
-            "paramName": "textSource",
-            "paramValue": "custom",
-            "type": "EQUALS"
-          }
-        ]
-      },
-      {
-        "type": "GROUP",
-        "name": "policy",
-        "displayName": "Privacy Policy",
-        "groupStyle": "ZIPPY_CLOSED",
-        "subParams": [
-          {
-            "type": "TEXT",
-            "name": "policyLinkLabel",
-            "displayName": "Privacy Policy Link",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 1,
-            "defaultValue": "Privacy Policy",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          }
-        ],
-        "enablingConditions": [
-          {
-            "paramName": "textSource",
-            "paramValue": "custom",
-            "type": "EQUALS"
-          }
-        ]
-      },
-      {
-        "type": "GROUP",
-        "name": "cookiesTable",
-        "displayName": "Cookie Table",
-        "groupStyle": "ZIPPY_CLOSED",
-        "subParams": [
-          {
-            "type": "TEXT",
-            "name": "alwaysOnLabel",
-            "displayName": "Always On Label",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 1,
-            "defaultValue": "Always On",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "cookieTableHeaderName",
-            "displayName": "Name Heading",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 1,
-            "defaultValue": "Cookie Name",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "cookieTableHeaderPurpose",
-            "displayName": "Purpose Heading",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 1,
-            "defaultValue": "Cookie Purpose",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "cookieTableHeaderProvenance",
-            "displayName": "Provenance Heading",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 1,
-            "defaultValue": "Provenance",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "cookieTableHeaderDuration",
-            "displayName": "Duration Heading",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 1,
-            "defaultValue": "Duration",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          }
-        ],
-        "enablingConditions": [
-          {
-            "paramName": "textSource",
-            "paramValue": "custom",
-            "type": "EQUALS"
-          }
-        ]
-      },
-      {
-        "type": "GROUP",
-        "name": "textsConsents",
-        "displayName": "Consent Categories",
-        "groupStyle": "ZIPPY_CLOSED",
-        "subParams": [
-          {
-            "type": "TEXT",
-            "name": "strictlyNecessaryTitle",
-            "displayName": "Strictly Necessary Title",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 1,
-            "defaultValue": "Strictly Necessary Cookies",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "strictlyNecessaryDescription",
-            "displayName": "Strictly Necessary Description",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 4,
-            "defaultValue": "These cookies are essential for you to browse the website and use its features, such as accessing secure areas of the site. Cookies that allow web shops to hold your items in your cart while you are shopping online are an example of strictly necessary cookies.",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "preferencesFunctionalityTitle",
-            "displayName": "Preferences Title",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 1,
-            "defaultValue": "Preferences Cookies",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "preferencesFunctionalityDescription",
-            "displayName": "Preferences Description",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 3,
-            "defaultValue": "Preference cookies enable a website to remember information that changes the way the website behaves or looks, such as your preferred language or the region that you are in.",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "statisticsPerformanceTitle",
-            "displayName": "Statistics Title",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 1,
-            "defaultValue": "Statistics Cookies",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "statisticsPerformanceDescription",
-            "displayName": "Statistics Description",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 3,
-            "defaultValue": "Statistic cookies help website owners to understand how visitors interact with websites by collecting and reporting information anonymously.",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "marketingAdvertisingTitle",
-            "displayName": "Marketing Title",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 1,
-            "defaultValue": "Marketing Cookies",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "marketingAdvertisingDescription",
-            "displayName": "Marketing Description",
-            "simpleValueType": true,
-            "canBeEmptyString": true,
-            "lineCount": 4,
-            "defaultValue": "Marketing cookies are used to track visitors across websites. The intention is to display ads that are relevant and engaging for the individual user and thereby more valuable for publishers and third party advertisers.",
-            "enablingConditions": [
-              {
-                "paramName": "textSource",
-                "paramValue": "custom",
-                "type": "EQUALS"
-              }
-            ]
-          }
-        ],
-        "enablingConditions": [
-          {
-            "paramName": "textSource",
-            "paramValue": "custom",
-            "type": "EQUALS"
-          }
-        ]
-      }
-    ],
-    "enablingConditions": [
-      {
-        "paramName": "textSource",
-        "paramValue": "custom",
-        "type": "EQUALS"
-      }
-    ]
+    "help": "Where the banner\u0027s wording comes from. Built-in English sends nothing and lets the banner use its own words, so it picks up improvements with each version. From a variable takes a whole language pack - the JSON text of a released en.json or el.json in a Constant, or any variable returning the same object. A published language pack loads one from the CDN, at the same version as the banner, so the words move with each release."
   },
   {
     "type": "SELECT",
-    "name": "textsVariable",
+    "name": "languageVariable",
     "displayName": "Language pack variable",
     "macrosInSelect": true,
     "selectItems": [
@@ -643,16 +86,16 @@ ___TEMPLATE_PARAMETERS___
     "simpleValueType": true,
     "enablingConditions": [
       {
-        "paramName": "textSource",
+        "paramName": "languageSource",
         "paramValue": "variable",
         "type": "EQUALS"
       }
     ],
-    "help": "Any Tag Manager variable returning a whole language pack - a Custom JavaScript variable, or a Lookup Table keyed on the page\u0027s language. It takes a published pack (en.json, el.json) exactly as downloaded: the words under texts, the four categories keyed under consents, and optionally policyUrl. Anything it leaves out falls back to the built-in English."
+    "help": "Any Tag Manager variable holding a whole language pack - the JSON text of a published en.json or el.json in a Constant, a Custom JavaScript variable returning it, or a Lookup Table keyed on the page\u0027s language. Take the pack exactly as downloaded: the words under texts, the four categories keyed under consents, and optionally policyUrl. Anything it leaves out falls back to the built-in English."
   },
   {
     "type": "SELECT",
-    "name": "textsPack",
+    "name": "languagePack",
     "displayName": "Language pack",
     "macrosInSelect": false,
     "selectItems": [
@@ -669,7 +112,7 @@ ___TEMPLATE_PARAMETERS___
     "defaultValue": "en",
     "enablingConditions": [
       {
-        "paramName": "textSource",
+        "paramName": "languageSource",
         "paramValue": "pack",
         "type": "EQUALS"
       }
@@ -679,7 +122,7 @@ ___TEMPLATE_PARAMETERS___
   {
     "type": "SELECT",
     "name": "cookies",
-    "displayName": "Cookies Variable",
+    "displayName": "Cookie table",
     "macrosInSelect": true,
     "selectItems": [
       {
@@ -688,45 +131,7 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "simpleValueType": true,
-    "help": "A Consentio Tag - Cookies variable, listing the cookies your site sets. Leave it at None and the settings panel shows no cookie table."
-  },
-  {
-    "type": "TEXT",
-    "name": "policyUrl",
-    "displayName": "Privacy Policy URL",
-    "simpleValueType": true,
-    "canBeEmptyString": true,
-    "lineCount": 1,
-    "valueHint": "/privacy/",
-    "help": "Where the banner\u0027s privacy policy link points. Leave it empty and no link is shown. It must start with http://, https:// or a single / for a page on this site; anything else is dropped with a warning on the console. It is not a text, so it stays the same whichever Text source you pick."
-  },
-  {
-    "type": "CHECKBOX",
-    "name": "hideFloatingButton",
-    "checkboxText": "Hide Floating Button",
-    "simpleValueType": true,
-    "alwaysInSummary": true,
-    "help": "Removes the round settings button the banner leaves in the bottom right corner. Turn it on only if your site has its own link calling window.ConsentioInstance.openSettings() - with it on and no link, a visitor cannot change their answer."
-  },
-  {
-    "type": "TEXT",
-    "name": "cookieLifetime",
-    "displayName": "Cookie Lifetime (days)",
-    "simpleValueType": true,
-    "defaultValue": 90,
-    "valueValidators": [
-      {
-        "type": "POSITIVE_NUMBER"
-      }
-    ],
-    "help": "How long an answer is kept before the visitor is asked again. Leave it at 90 unless you have a reason: a longer life asks less often, a shorter one keeps the answer fresher. It does not change what is stored, only how long the browser keeps it."
-  },
-  {
-    "type": "CHECKBOX",
-    "name": "shareAcrossSubdomains",
-    "checkboxText": "Share the answer across subdomains",
-    "simpleValueType": true,
-    "help": "Turn this on if your site answers on more than one hostname. The answer is stored on the domain those hostnames share, so someone who answers on www.example.com is not asked again on shop.example.com. Left off, the answer belongs to the one hostname it was given on."
+    "help": "A variable holding the cookies your site sets - the JSON text of your consentio-cookies.json in a Constant, or any variable returning the same rows. Left at None, the settings panel shows no cookie table."
   }
 ]
 
@@ -735,9 +140,9 @@ ___SANDBOXED_JS_FOR_WEB_TEMPLATE___
 
 // `scripts/gtm.mjs` fills the version in from package.json when it composes the .tpl, so a
 // released template loads the release it shipped in. Do not type a version here.
-const url = 'https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@0.3.0/dist/consentio.min.js';
+const url = 'https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@1.0.0/dist/consentio.min.js';
 // The published language packs, at the same release as the bundle so the two cannot disagree.
-const packBaseUrl = 'https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@0.3.0/dist/i18n/';
+const packBaseUrl = 'https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@1.0.0/dist/i18n/';
 
 const log = require('logToConsole');
 const injectScript = require('injectScript');
@@ -749,8 +154,8 @@ const setDefaultConsentState = require('setDefaultConsentState');
 const gtagSet = require('gtagSet');
 const templateStorage = require('templateStorage');
 const makeNumber = require('makeNumber');
+const getType = require('getType');
 const JSON = require('JSON');
-const Object = require('Object');
 
 // Not a field: the get_cookies permission can only name a cookie known at publish time.
 const COOKIE_NAME = 'consentio';
@@ -772,7 +177,7 @@ const BASELINE_CONSENTS = { strictly_necessary: 'granted' };
 
 const RAN_KEY = 'consentio-tag-ran';
 
-// What <locale>.js assigns the pack to.
+// What a published <locale>.js assigns the pack to when the tag loads one from the CDN.
 const PACK_GLOBAL = 'ConsentioLanguage';
 
 log('Consentio Tag =', data);
@@ -837,11 +242,64 @@ function toGoogleSignals(consents) {
 }
 
 
+// ## The three inputs ##
+// Each picker takes the same file the loader fetches: JSON text from a Constant, or the
+// parsed value from any other variable. None is the built-in default.
+
+function readInput(value) {
+  if (value === 'none') {
+    return undefined;
+  }
+  if (getType(value) === 'string') {
+    // Malformed JSON returns undefined here rather than throwing.
+    value = JSON.parse(value);
+  }
+  return value;
+}
+
+function readObject(value, what) {
+  value = readInput(value);
+  if (getType(value) !== 'object') {
+    if (value !== undefined && value !== null) {
+      log('Consentio Tag: the ' + what + ' is not a JSON object, so it is ignored');
+    }
+    return {};
+  }
+  return value;
+}
+
+const settings = readObject(data.settings, 'Settings');
+
+// The get_cookies permission names one cookie at publish time, so a settings file naming
+// another would leave this tag reading a cookie the banner never writes.
+if (settings.cookieName !== undefined && settings.cookieName !== COOKIE_NAME) {
+  log('Consentio Tag: cookieName is fixed to ' + COOKIE_NAME + ' on this route, so ' + settings.cookieName + ' is ignored');
+}
+settings.cookieName = COOKIE_NAME;
+
+// The banner defaults to 1; the tag has to agree, or it discards every stored answer.
+const version = settings.version === undefined ? 1 : makeNumber(settings.version);
+
+// The cookie table is one file however it arrives, and it is an array or nothing.
+function readCookies() {
+  const value = readInput(data.cookies);
+  if (getType(value) !== 'array') {
+    if (value !== undefined && value !== null) {
+      log('Consentio Tag: the Cookie table is not a JSON array, so the settings panel shows no table');
+    }
+    return [];
+  }
+  return value;
+}
+
+const cookies = readCookies();
+
+const fromVariable = data.languageSource === 'variable';
+const fromPack = data.languageSource === 'pack' && !!data.languagePack;
+
+
 // ## Consent default ##
 // Before injectScript, which is always async: a default pushed after it is already too late.
-
-// A text field hands back a string once it has been edited.
-const version = makeNumber(data.version);
 
 const storedConsents = readStoredConsents(version);
 const signals = toGoogleSignals(storedConsents || BASELINE_CONSENTS);
@@ -853,150 +311,27 @@ if (!storedConsents) {
 
 setDefaultConsentState(signals);
 gtagSet({ ads_data_redaction: adsDataRedaction });
+// Off unless the settings file says so: it puts a click id in every internal link.
+if (settings.urlPassthrough === true) {
+  gtagSet({ url_passthrough: true });
+}
 
 log('consent default =', signals);
 
 
-// ## Config Setup ##
-function removeEmptyValues(obj){
-  for(const key in obj){
-    const value = obj[key];
-    if(value === null || value === undefined || value === ""){
-      Object.delete(obj, key);
-    }
-  }
-}
-
-function hasSelectedVariable(obj){
-  return obj !== 'none';
-}
-
-const hasCookiesVariable = hasSelectedVariable(data.cookies);
-
-const fromFields = data.textSource === 'custom';
-const fromVariable = data.textSource === 'variable' && hasSelectedVariable(data.textsVariable);
-const fromPack = data.textSource === 'pack' && !!data.textsPack;
-
-const cookies = hasCookiesVariable ? data.cookies : [];
-
-// A pack is a published <locale>.json unchanged, whether a variable held it or the CDN
-// served it: the words under `texts`, the four categories keyed under `consents`. The
-// custom fields are flat on `data`. Null is the built-in English.
-function buildConfig(pack) {
-  const packTexts = pack && pack.texts ? pack.texts : {};
-  const packConsents = pack && pack.consents ? pack.consents : {};
-
-  function text(key) {
-    if (pack) {
-      return packTexts[key];
-    }
-    if (fromFields) {
-      return data[key];
-    }
-    return null;
-  }
-
-  function category(key, titleField, descriptionField) {
-    if (!pack) {
-      return { title: text(titleField), description: text(descriptionField) };
-    }
-    const words = packConsents[key];
-    return { title: words ? words.title : null, description: words ? words.description : null };
-  }
-
-  // A blank policyUrl in a pack means this language has no link; only a missing key falls
-  // back to the tag's own field.
-  const policyUrl = pack && pack.policyUrl !== undefined && pack.policyUrl !== null
-    ? pack.policyUrl
-    : data.policyUrl;
-
-  const strictlyNecessary = category('strictly_necessary', 'strictlyNecessaryTitle', 'strictlyNecessaryDescription');
-  const preferencesFunctionality = category('preferences_functionality', 'preferencesFunctionalityTitle', 'preferencesFunctionalityDescription');
-  const statisticsPerformance = category('statistics_performance', 'statisticsPerformanceTitle', 'statisticsPerformanceDescription');
-  const marketingAdvertising = category('marketing_advertising', 'marketingAdvertisingTitle', 'marketingAdvertisingDescription');
-
-  const config = {
-    cookieName: COOKIE_NAME,
-    version: version,
-    debug: data.debug,
-    consentRequired: data.consentRequired,
-    hideFloatingButton: data.hideFloatingButton,
-    policyUrl: policyUrl,
-    texts: {
-      barTitle: text('barTitle'),
-      barDescription: text('barDescription'),
-      buttonSettings: text('buttonSettings'),
-      buttonSave: text('buttonSave'),
-      buttonCancel: text('buttonCancel'),
-      buttonAcceptAll: text('buttonAcceptAll'),
-      buttonRejectAll: text('buttonRejectAll'),
-      modalTitle: text('modalTitle'),
-      modalDescription: text('modalDescription'),
-      alwaysOnLabel: text('alwaysOnLabel'),
-      policyLinkLabel: text('policyLinkLabel'),
-      cookieTableHeaderName: text('cookieTableHeaderName'),
-      cookieTableHeaderPurpose: text('cookieTableHeaderPurpose'),
-      cookieTableHeaderProvenance: text('cookieTableHeaderProvenance'),
-      cookieTableHeaderDuration: text('cookieTableHeaderDuration')
-    },
-    consents: [
-      {
-        key: 'strictly_necessary',
-        title: strictlyNecessary.title,
-        description: strictlyNecessary.description,
-        alwaysOn: true,
-        defaultState: 'granted'
-      },
-      {
-        key: 'preferences_functionality',
-        title: preferencesFunctionality.title,
-        description: preferencesFunctionality.description,
-        alwaysOn: false,
-        defaultState: data.preferencesFunctionalityDefaultState
-      },
-      {
-        key: 'statistics_performance',
-        title: statisticsPerformance.title,
-        description: statisticsPerformance.description,
-        alwaysOn: false,
-        defaultState: data.statisticsPerformanceDefaultState
-      },
-      {
-        key: 'marketing_advertising',
-        title: marketingAdvertising.title,
-        description: marketingAdvertising.description,
-        alwaysOn: false,
-        defaultState: data.marketingAdvertisingDefaultState
-      }
-    ]
-  };
-  if (data.cookieLifetime) {
-    config.cookieLifetime = makeNumber(data.cookieLifetime);
-  }
-  if (data.shareAcrossSubdomains) {
-    config.shareAcrossSubdomains = true;
-  }
-
-  removeEmptyValues(config.texts);
-  for (const consent of config.consents) {
-    removeEmptyValues(consent);
-  }
-
-  return config;
-}
-
-
 // ## load script ##
 
-function loadBanner(pack) {
-  const config = buildConfig(pack);
-  log('config =', config);
+// A pack is a published <locale>.json unchanged, whether a variable held it, the page
+// carried it or the CDN served it. Built-in English is an empty object.
+function loadBanner(language) {
+  log('settings =', settings);
+  log('language =', language);
   log('cookies =', cookies);
 
   const scriptLoaded = function () {
-    // Two arguments and the merged shape on purpose: the pinned bundle may be older than
-    // this template, and it splits a config carrying `texts` itself.
-    const consentioInstance = callInWindow('Consentio.Create', config, cookies);
+    // Three objects, one per concern - the shape the loader sends. The template loads
+    // the release it shipped in, so the bundle always speaks it.
+    const consentioInstance = callInWindow('Consentio.Create', settings, language, cookies);
     // The banner sets this too; setting it here is what makes the guard above work against
     // an older pinned bundle.
     setInWindow('ConsentioInstance', consentioInstance, true);
@@ -1012,17 +347,17 @@ function loadBanner(pack) {
 }
 
 if (!fromPack) {
-  loadBanner(fromVariable ? data.textsVariable : null);
+  loadBanner(readObject(fromVariable ? data.languageVariable : 'none', 'Language pack'));
   return;
 }
 
 // The pack first, then the bundle either way: a pack that does not load must not cost the
 // visitor the banner.
-const packUrl = packBaseUrl + data.textsPack + '.js';
+const packUrl = packBaseUrl + data.languagePack + '.js';
 
 const packNotLoaded = function () {
   log('Consentio Tag: the language pack did not load, so the banner keeps its built-in English', packUrl);
-  loadBanner(null);
+  loadBanner({});
 };
 
 const packLoaded = function () {
@@ -1552,6 +887,10 @@ ___WEB_PERMISSIONS___
               {
                 "type": 1,
                 "string": "ads_data_redaction"
+              },
+              {
+                "type": 1,
+                "string": "url_passthrough"
               }
             ]
           }
@@ -1730,6 +1069,19 @@ scenarios:
     mock('getCookieValues', () => ['{"version":1,"consents":{"strictly_necessary":"granted","preferences_functionality":"granted","statistics_performance":"granted","marketing_advertising":"granted"}}']);
     runCode(mockData);
     assertThat(redaction, 'a visitor who granted ad storage does not need it').isEqualTo(false);
+- name: url_passthrough is pushed only when the settings say so
+  code: |-
+    const sets = [];
+    mock('gtagSet', (obj) => { sets.push(obj); });
+    mock('getCookieValues', () => []);
+
+    runCode(mockData);
+    assertThat(sets.some((obj) => obj.url_passthrough !== undefined), 'nothing asked for it').isEqualTo(false);
+
+    storage = {};
+    mockData.settings = '{"urlPassthrough": true}';
+    runCode(mockData);
+    assertThat(sets.some((obj) => obj.url_passthrough === true), 'the settings asked for it').isEqualTo(true);
 - name: a second firing pushes nothing and injects nothing
   code: |-
     mock('templateStorage', {
@@ -1753,96 +1105,192 @@ scenarios:
     assertApi('setDefaultConsentState').wasNotCalled();
     assertApi('injectScript').wasNotCalled();
     assertApi('gtmOnSuccess').wasCalled();
-- name: built-in English sends no strings at all
+- name: every picker at None on a bare page sends the defaults
   code: |-
+    // No variables, nothing on window: the banner gets an empty settings object apart
+    // from the cookie name, no words and no table, and reads the cookie at version 1.
     mock('getCookieValues', () => []);
 
-    const config = captureConfig();
+    const sent = capture();
 
-    assertThat(config.texts).isEqualTo({});
-    assertThat(config.consents[0].title).isEqualTo(undefined);
-- name: custom text reaches the banner and the rest still falls back
+    assertThat(sent.settings).isEqualTo({ cookieName: 'consentio' });
+    assertThat(sent.language).isEqualTo({});
+    assertThat(sent.cookies).isEqualTo([]);
+- name: the settings as JSON text are parsed
+  code: |-
+    // A Constant holding the site's consentio-settings.json, pasted in whole. The values
+    // are gtm/settings.fixture.json.
+    mock('getCookieValues', () => []);
+    mockData.settings = settingsText;
+
+    const sent = capture();
+
+    assertThat(sent.settings.consentRequired).isEqualTo(true);
+    assertThat(sent.settings.policyUrl).isEqualTo('/privacy/');
+    assertThat(sent.settings.consents.statistics_performance.defaultState).isEqualTo('granted');
+    assertThat(sent.settings.cookieLifetime).isEqualTo(365);
+    assertThat(sent.settings.shareAcrossSubdomains).isEqualTo(true);
+- name: the settings as an object are sent as they are
+  code: |-
+    // A Custom JavaScript variable returning the object.
+    mock('getCookieValues', () => []);
+    mockData.settings = { debug: true, hideFloatingButton: true };
+
+    const sent = capture();
+
+    assertThat(sent.settings.debug).isEqualTo(true);
+    assertThat(sent.settings.hideFloatingButton).isEqualTo(true);
+    assertThat(sent.settings.consentRequired).isEqualTo(undefined);
+- name: the settings left at None are the banner's defaults
   code: |-
     mock('getCookieValues', () => []);
-    mockData.textSource = 'custom';
-    mockData.barTitle = 'Cookies on this site';
-    mockData.strictlyNecessaryTitle = 'Necessary';
+    mock('copyFromWindow', (key) => key === 'ConsentioSettings' ? { policyUrl: '/page/' } : undefined);
 
-    const config = captureConfig();
+    const sent = capture();
 
-    assertThat(config.texts.barTitle).isEqualTo('Cookies on this site');
-    assertThat(config.texts.barDescription).isEqualTo(undefined);
-    assertThat(config.consents[0].title).isEqualTo('Necessary');
-- name: a language pack variable supplies the whole set
+    assertThat(sent.settings).isEqualTo({ cookieName: 'consentio' });
+- name: settings that are not a JSON object are ignored
+  code: |-
+    mock('getCookieValues', () => []);
+    mockData.settings = '[1, 2]';
+
+    const sent = capture();
+
+    assertThat(sent.settings).isEqualTo({ cookieName: 'consentio' });
+    assertApi('gtmOnSuccess').wasCalled();
+- name: the cookie name is fixed on this route
+  code: |-
+    // The get_cookies permission names one cookie at publish time, so a file naming
+    // another is overridden rather than obeyed.
+    mock('getCookieValues', () => []);
+    mockData.settings = '{"cookieName":"other"}';
+
+    const sent = capture();
+
+    assertThat(sent.settings.cookieName).isEqualTo('consentio');
+- name: the version is read from the settings before the cookie
+  code: |-
+    // A site at version 2 with a visitor who answered at version 2: the stored answer
+    // counts, which it would not if the tag read the cookie at the default of 1.
+    mock('getCookieValues', () => ['{"version":2,"consents":{"strictly_necessary":"granted","preferences_functionality":"granted","statistics_performance":"granted","marketing_advertising":"granted"}}']);
+    mockData.settings = '{"version":2}';
+
+    runCode(mockData);
+
+    assertApi('setDefaultConsentState').wasCalledWith({
+      ad_storage: 'granted',
+      ad_user_data: 'granted',
+      ad_personalization: 'granted',
+      analytics_storage: 'granted',
+      functionality_storage: 'granted',
+      personalization_storage: 'granted',
+      security_storage: 'granted'
+    });
+- name: a language pack variable is sent unchanged
   code: |-
     // A published <locale>.json, unedited: the words under texts, the categories keyed
     // under consents. The values are gtm/settings.fixture.json.
     mock('getCookieValues', () => []);
-    mockData.textSource = 'variable';
-    mockData.policyUrl = '/privacy/';
-    mockData.textsVariable = pack('/el/privacy/');
+    mockData.settings = settingsText;
+    mockData.languageSource = 'variable';
+    mockData.languageVariable = pack('/el/privacy/');
 
-    const config = captureConfig();
+    const sent = capture();
 
-    assertThat(config.texts.barTitle).isEqualTo('\u03a0\u03bf\u03bb\u03b9\u03c4\u03b9\u03ba\u03ae Cookies');
-    assertThat(config.consents[0].title).isEqualTo('\u0391\u03c0\u03bf\u03bb\u03cd\u03c4\u03c9\u03c2 \u03b1\u03c0\u03b1\u03c1\u03b1\u03af\u03c4\u03b7\u03c4\u03b1');
-    assertThat(config.consents[0].description).isEqualTo('\u03a7\u03c9\u03c1\u03af\u03c2 \u03b1\u03c5\u03c4\u03ac \u03bf \u03b9\u03c3\u03c4\u03cc\u03c4\u03bf\u03c0\u03bf\u03c2 \u03b4\u03b5\u03bd \u03bb\u03b5\u03b9\u03c4\u03bf\u03c5\u03c1\u03b3\u03b5\u03af.');
-    assertThat(config.policyUrl).isEqualTo('/el/privacy/');
-- name: what a pack leaves out falls back rather than arriving blank
+    assertThat(sent.language.texts.barTitle).isEqualTo('\u03a0\u03bf\u03bb\u03b9\u03c4\u03b9\u03ba\u03ae Cookies');
+    assertThat(sent.language.consents.strictly_necessary.title).isEqualTo('\u0391\u03c0\u03bf\u03bb\u03cd\u03c4\u03c9\u03c2 \u03b1\u03c0\u03b1\u03c1\u03b1\u03af\u03c4\u03b7\u03c4\u03b1');
+    assertThat(sent.language.consents.strictly_necessary.description).isEqualTo('\u03a7\u03c9\u03c1\u03af\u03c2 \u03b1\u03c5\u03c4\u03ac \u03bf \u03b9\u03c3\u03c4\u03cc\u03c4\u03bf\u03c0\u03bf\u03c2 \u03b4\u03b5\u03bd \u03bb\u03b5\u03b9\u03c4\u03bf\u03c5\u03c1\u03b3\u03b5\u03af.');
+    assertThat(sent.language.policyUrl).isEqualTo('/el/privacy/');
+    assertThat(sent.settings.policyUrl).isEqualTo('/privacy/');
+- name: a language pack as JSON text is parsed
+  code: |-
+    // A Constant holding a downloaded el.json.
+    mock('getCookieValues', () => []);
+    mockData.languageSource = 'variable';
+    mockData.languageVariable = JSON.stringify(pack('/el/privacy/'));
+
+    const sent = capture();
+
+    assertThat(sent.language.locale).isEqualTo('el');
+    assertThat(sent.language.texts.barTitle).isEqualTo('\u03a0\u03bf\u03bb\u03b9\u03c4\u03b9\u03ba\u03ae Cookies');
+- name: what a pack leaves out is left out, so the banner falls back
   code: |-
     mock('getCookieValues', () => []);
-    mockData.textSource = 'variable';
-    mockData.textsVariable = pack('/el/privacy/');
+    mockData.languageSource = 'variable';
+    mockData.languageVariable = pack('/el/privacy/');
 
-    const config = captureConfig();
+    const sent = capture();
 
     // Absent, not empty: the banner keeps its built-in English for these.
-    assertThat(config.texts.buttonSave).isEqualTo(undefined);
-    assertThat(config.consents[1].title).isEqualTo(undefined);
-- name: a pack with no policy address of its own falls back to the field
+    assertThat(sent.language.texts.buttonSave).isEqualTo(undefined);
+    assertThat(sent.language.consents.preferences_functionality).isEqualTo(undefined);
+- name: a pack with no policy address of its own leaves the banner the settings
+  code: |-
+    // The banner resolves the address: a language that names one wins, blank included,
+    // and only a missing key falls back to the settings. The tag sends both untouched.
+    mock('getCookieValues', () => []);
+    mockData.settings = settingsText;
+    mockData.languageSource = 'variable';
+    mockData.languageVariable = pack(undefined);
+
+    const sent = capture();
+
+    assertThat(sent.language.policyUrl).isEqualTo(undefined);
+    assertThat(sent.settings.policyUrl).isEqualTo('/privacy/');
+- name: a blank policy address in a pack is sent blank
   code: |-
     mock('getCookieValues', () => []);
-    mockData.textSource = 'variable';
-    mockData.policyUrl = '/privacy/';
-    mockData.textsVariable = pack(undefined);
+    mockData.settings = settingsText;
+    mockData.languageSource = 'variable';
+    mockData.languageVariable = pack('');
 
-    const config = captureConfig();
+    const sent = capture();
 
-    assertThat(config.policyUrl).isEqualTo('/privacy/');
-- name: a blank policy address in a pack means no link in that language
+    assertThat(sent.language.policyUrl).isEqualTo('');
+- name: built-in English ignores a pack the page happens to carry
+  code: |-
+    // The global is how a pack the tag loads from the CDN reaches it, not a setting: a
+    // page that assigned it itself gets the built-in English it picked.
+    mock('getCookieValues', () => []);
+    mock('copyFromWindow', (key) => key === 'ConsentioLanguage' ? pack('/el/privacy/') : undefined);
+
+    const sent = capture();
+
+    assertThat(sent.language).isEqualTo({});
+- name: a language variable that is not a JSON object is built-in English
   code: |-
     mock('getCookieValues', () => []);
-    mockData.textSource = 'variable';
-    mockData.policyUrl = '/privacy/';
-    mockData.textsVariable = pack('');
+    mockData.languageSource = 'variable';
+    mockData.languageVariable = 'not json';
 
-    const config = captureConfig();
+    const sent = capture();
 
-    assertThat(config.policyUrl).isEqualTo('');
-- name: a published pack is injected before the bundle and fills the texts
+    assertThat(sent.language).isEqualTo({});
+    assertApi('gtmOnSuccess').wasCalled();
+- name: a published pack is injected before the bundle and is the language
   code: |-
     mock('getCookieValues', () => []);
-    mockData.textSource = 'pack';
-    mockData.textsPack = 'el';
+    mockData.languageSource = 'pack';
+    mockData.languagePack = 'el';
     mock('copyFromWindow', (key) => key === 'ConsentioLanguage' ? pack('/el/privacy/') : undefined);
 
     const injected = [];
     let sent = null;
     mock('injectScript', (url, onSuccess) => { injected.push(url); onSuccess(); });
-    mock('callInWindow', (path, config) => { sent = config; });
+    mock('callInWindow', (path, settings, language, cookies) => { sent = { settings, language, cookies }; });
     runCode(mockData);
 
     assertThat(injected).hasLength(2);
-    assertThat(injected[0]).contains('consentio@0.3.0/dist/i18n/el.js');
-    assertThat(injected[1]).contains('consentio@0.3.0/dist/consentio.min.js');
-    assertThat(sent.texts.barTitle).isEqualTo('\u03a0\u03bf\u03bb\u03b9\u03c4\u03b9\u03ba\u03ae Cookies');
-    assertThat(sent.consents[0].title).isEqualTo('\u0391\u03c0\u03bf\u03bb\u03cd\u03c4\u03c9\u03c2 \u03b1\u03c0\u03b1\u03c1\u03b1\u03af\u03c4\u03b7\u03c4\u03b1');
-    assertThat(sent.policyUrl).isEqualTo('/el/privacy/');
+    assertThat(injected[0]).contains('consentio@1.0.0/dist/i18n/el.js');
+    assertThat(injected[1]).contains('consentio@1.0.0/dist/consentio.min.js');
+    assertThat(sent.language.texts.barTitle).isEqualTo('\u03a0\u03bf\u03bb\u03b9\u03c4\u03b9\u03ba\u03ae Cookies');
+    assertThat(sent.language.consents.strictly_necessary.title).isEqualTo('\u0391\u03c0\u03bf\u03bb\u03cd\u03c4\u03c9\u03c2 \u03b1\u03c0\u03b1\u03c1\u03b1\u03af\u03c4\u03b7\u03c4\u03b1');
+    assertThat(sent.language.policyUrl).isEqualTo('/el/privacy/');
 - name: a pack that does not load still gives the visitor the banner
   code: |-
     mock('getCookieValues', () => []);
-    mockData.textSource = 'pack';
-    mockData.textsPack = 'el';
+    mockData.languageSource = 'pack';
+    mockData.languagePack = 'el';
 
     const injected = [];
     let sent = null;
@@ -1850,45 +1298,67 @@ scenarios:
       injected.push(url);
       if (url.indexOf('/dist/i18n/') !== -1) { onFailure(); } else { onSuccess(); }
     });
-    mock('callInWindow', (path, config) => { sent = config; });
+    mock('callInWindow', (path, settings, language, cookies) => { sent = { settings, language, cookies }; });
     runCode(mockData);
 
     assertThat(injected).hasLength(2);
-    assertThat(sent.texts).isEqualTo({});
-    assertThat(sent.consents[0].title).isEqualTo(undefined);
+    assertThat(sent.language).isEqualTo({});
     assertApi('gtmOnSuccess').wasCalled();
-- name: the cookie lifetime and the subdomain setting reach the banner
+- name: the cookie table left at None is no table
   code: |-
-    // The banner writes the cookie, so both are config fields rather than anything this
-    // template does. The banner works out the shared domain from the page it is on.
-    mock('getCookieValues', () => []);
-    mockData.cookieLifetime = 365;
-    mockData.shareAcrossSubdomains = true;
-
-    const config = captureConfig();
-
-    assertThat(config.cookieLifetime).isEqualTo(365);
-    assertThat(config.shareAcrossSubdomains).isEqualTo(true);
-- name: untouched cookie fields send nothing and the banner keeps its own defaults
-  code: |-
-    // The field's own default is 90 days; cleared, it is left out rather than sent blank.
     mock('getCookieValues', () => []);
 
-    const config = captureConfig();
+    const sent = capture();
 
-    assertThat(config.cookieLifetime).isEqualTo(undefined);
-    assertThat(config.shareAcrossSubdomains).isEqualTo(undefined);
+    assertThat(sent.cookies).isEqualTo([]);
+- name: the cookie table as JSON text is parsed
+  code: |-
+    // A Constant holding the site's consentio-cookies.json, pasted in whole.
+    mock('getCookieValues', () => []);
+    mockData.cookies = '[{"name":"consentio","purpose":"The stored answer","provenance":"First-party","duration":"1 year","category":"strictly_necessary"}]';
+
+    const sent = capture();
+
+    assertThat(sent.cookies).hasLength(1);
+    assertThat(sent.cookies[0].name).isEqualTo('consentio');
+- name: the cookie table as an array is sent as it is
+  code: |-
+    // A Custom JavaScript variable returning the rows.
+    mock('getCookieValues', () => []);
+    mockData.cookies = [{ name: 'consentio', purpose: 'The stored answer', provenance: 'First-party', duration: '1 year', category: 'strictly_necessary' }];
+
+    const sent = capture();
+
+    assertThat(sent.cookies).hasLength(1);
+    assertThat(sent.cookies[0].category).isEqualTo('strictly_necessary');
+- name: the cookie table left at None is no table
+  code: |-
+    mock('getCookieValues', () => []);
+    mock('copyFromWindow', (key) => key === 'ConsentioCookies' ? [{ name: '_ga' }] : undefined);
+
+    const sent = capture();
+
+    assertThat(sent.cookies).isEqualTo([]);
+- name: a cookie table that is not a JSON array is no table
+  code: |-
+    mock('getCookieValues', () => []);
+    mockData.cookies = '{"name":"consentio"}';
+
+    const sent = capture();
+
+    assertThat(sent.cookies).isEqualTo([]);
+    assertApi('gtmOnSuccess').wasCalled();
 setup: |-
+  // Every picker at None: what a tag that was only added and published sends.
   const mockData = {
-    version: 1,
-    debug: false,
-    consentRequired: true,
-    preferencesFunctionalityDefaultState: 'denied',
-    statisticsPerformanceDefaultState: 'denied',
-    marketingAdvertisingDefaultState: 'denied',
-    textSource: 'builtin',
+    settings: 'none',
+    languageSource: 'builtin',
+    languageVariable: 'none',
     cookies: 'none'
   };
+
+  // gtm/settings.fixture.json's settings object, as the JSON text a Constant holds.
+  const settingsText = '{"cookieName":"consentio","cookieLifetime":365,"shareAcrossSubdomains":true,"version":1,"debug":false,"consentRequired":true,"policyUrl":"/privacy/","hideFloatingButton":false,"consents":{"strictly_necessary":{"defaultState":"granted"},"preferences_functionality":{"defaultState":"denied"},"statistics_performance":{"defaultState":"granted"},"marketing_advertising":{"defaultState":"denied"}}}';
 
   // gtm/settings.fixture.json's language pack, which the banner's own tests assert
   // against. The Greek is escaped so this file stays ascii; the editor unescapes it.
@@ -1912,11 +1382,11 @@ setup: |-
   };
 
   // injectScript does nothing in the test sandbox, so the success callback - and with it
-  // Consentio.Create - only runs when it is mocked.
-  const captureConfig = () => {
+  // Consentio.Create - only runs when it is mocked. What it captures is the three objects.
+  const capture = () => {
     let sent = null;
     mock('injectScript', (url, onSuccess) => onSuccess());
-    mock('callInWindow', (path, config) => { sent = config; });
+    mock('callInWindow', (path, settings, language, cookies) => { sent = { settings, language, cookies }; });
     runCode(mockData);
     return sent;
   };

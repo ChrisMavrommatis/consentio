@@ -20,7 +20,7 @@ release body, so write these entries for the people using Consentio, not for the
   nothing else in the template changed. Import this file instead of `1.0.0`'s. A test now fails the build
   when two scenarios share a name.
 
-## [1.0.0]
+## [1.0.0] - 2026-09-12
 
 ### ✨ Added
 
