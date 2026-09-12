@@ -1324,7 +1324,7 @@ const TEXT_KEYS = Object.keys(en_namespaceObject.texts);
 /** The one category that is always on. The four are fixed, so this is derived, not supplied. */
 const ALWAYS_ON = 'strictly_necessary';
 class Consentio {
-    static version = "1.0.0";
+    static version = "1.0.1";
     /** Behaviour only. The words live in _defaultLanguage and nowhere else. */
     static _defaultSettings = {
         cookieName: 'consentio',
