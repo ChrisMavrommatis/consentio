@@ -10,5 +10,5 @@
 		}
 	],
 	"simpleValueType": true,
-	"help": "A variable holding the cookies your site sets - the JSON text of your consentio-cookies.json in a Constant, or any variable returning the same rows. Left at None, the settings panel shows no cookie table."
+	"help": "A variable holding the cookies your site sets - a Custom JavaScript variable returning the rows of your consentio-cookies.json, or its JSON text in a Constant. Left at None, the settings panel shows no cookie table."
 }

@@ -11,6 +11,16 @@ release body, so write these entries for the people using Consentio, not for the
 
 ## [Unreleased]
 
+## [1.0.2]
+
+### 🔀 Changed
+
+- **A Custom JavaScript variable is the way to hand the tag a file.** The documentation and the two
+  picker help texts used to say "paste the file into a Constant". A Constant's field is one line, so a
+  settings file or a cookie table cannot be read or edited in it. Make a Custom JavaScript variable
+  instead — *Copy as Tag Manager variable* on the settings builder, the catalogue and the packs page is
+  the whole value to paste. A Constant still works. Nothing in the tag's behaviour changed.
+
 ## [1.0.1] - 2026-09-12
 
 ### 🛠️ Fixed
