@@ -71,3 +71,15 @@ test('issue 49 - the tag reads ConsentioDefault and declares it, read-only', () 
 	}
 	assert.match(tests, /ConsentioDefault[\s\S]*?assertApi\('injectScript'\)\.wasNotCalled\(\)/);
 });
+
+// The template editor refuses an import whose scenarios share a name, and says so only there.
+test('every scenario in tests.yaml has its own name', () => {
+	const tests = readFileSync(new URL('gtm/consentio-tag/src/tests.yaml', ROOT), 'utf8');
+	const names = [...tests.matchAll(/^- name: (.+)$/gm)].map((match) => match[1]!.trim());
+	const seen = new Set<string>();
+	for (const name of names) {
+		assert.ok(!seen.has(name), `two scenarios are named "${name}"`);
+		seen.add(name);
+	}
+	assert.ok(names.length > 0);
+});

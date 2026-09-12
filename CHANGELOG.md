@@ -11,6 +11,15 @@ release body, so write these entries for the people using Consentio, not for the
 
 ## [Unreleased]
 
+## [1.0.1]
+
+### 🛠️ Fixed
+
+- **The template imports again.** `1.0.0`'s `consentio-tag.tpl` carried two test scenarios with the same
+  name, and the template editor refuses to save one like that — `Test name is not unique`. One is renamed;
+  nothing else in the template changed. Import this file instead of `1.0.0`'s. A test now fails the build
+  when two scenarios share a name.
+
 ## [1.0.0] - 2026-09-12
 
 ### ✨ Added
