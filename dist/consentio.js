@@ -134,6 +134,11 @@ const ADS_DATA_REDACTION = 'ads_data_redaction';
 function needsAdsDataRedaction(signals) {
     return signals.ad_storage === 'denied';
 }
+/**
+ * The gtag `set` key that carries the ad-click id across same-site links in the URL while
+ * ad storage is denied. Off unless the site asks: it puts a click id in every internal link.
+ */
+const URL_PASSTHROUGH = 'url_passthrough';
 // `null` for waitForUpdate when there is a stored choice: waiting for a banner that will
 // never appear only delays the tag.
 function toConsentDefault(signals, waitForUpdate) {
@@ -281,9 +286,10 @@ function hideElement(el) {
 
 ;// ./src/lib/held-scripts.ts
 /**
- * Runs every `<script type="text/plain" data-consentio="<category>">` whose category is
- * granted. A browser ignores the unknown type, so the site owner's script has not run;
- * once released it stays run - revoking cannot take a script back.
+ * Runs every `<script type="text/plain" data-consentio="<category>">` and loads every
+ * `<iframe data-consentio="<category>" data-src="...">` whose category is granted. A
+ * browser ignores the unknown type and an iframe with no src, so the site owner's thing has
+ * not run; once released it stays released - revoking cannot take it back.
  */
 function releaseHeldScripts(consents) {
     // A stored answer arrives while the page may still be parsing, and a tag below the
@@ -305,6 +311,14 @@ function releaseHeldScripts(consents) {
         }
         live.textContent = held.textContent;
         held.replaceWith(live);
+    }
+    // An iframe loads when src is set, so the element stays and only the attribute moves.
+    for (const held of document.querySelectorAll('iframe[data-consentio][data-src]:not([src])')) {
+        if (consents[held.dataset.consentio] !== 'granted') {
+            continue;
+        }
+        held.setAttribute('src', held.dataset.src);
+        held.removeAttribute('data-src');
     }
 }
 
@@ -485,9 +499,13 @@ class ConsentioAppElement extends HTMLElement {
             this.floatingButton?.remove();
             this.floatingButton = null;
         }
-        else if (!this.floatingButton) {
-            this.floatingButton = this.renderNode(consentio_floating_button, {});
-            this._shadow.appendChild(this.floatingButton);
+        else {
+            if (!this.floatingButton) {
+                this.floatingButton = this.renderNode(consentio_floating_button, {});
+                this._shadow.appendChild(this.floatingButton);
+            }
+            // An icon-only button has no name of its own. Issue 52.
+            this.floatingButton.button?.setAttribute('aria-label', this.config.texts.buttonSettings);
         }
     }
     /**
@@ -1299,14 +1317,14 @@ const en_namespaceObject = /*#__PURE__*/JSON.parse('{"locale":"en","name":"Engli
 /** The behaviour keys a settings file may carry. Anything else in it is ignored. */
 const SETTINGS_KEYS = [
     'cookieName', 'cookieLifetime', 'shareAcrossSubdomains', 'debug', 'version', 'consentRequired',
-    'policyUrl', 'hideFloatingButton'
+    'policyUrl', 'hideFloatingButton', 'urlPassthrough'
 ];
 /** The words a pack may carry, taken from en.yaml so there is one key list. */
 const TEXT_KEYS = Object.keys(en_namespaceObject.texts);
 /** The one category that is always on. The four are fixed, so this is derived, not supplied. */
 const ALWAYS_ON = 'strictly_necessary';
 class Consentio {
-    static version = "0.3.0";
+    static version = "1.0.0";
     /** Behaviour only. The words live in _defaultLanguage and nowhere else. */
     static _defaultSettings = {
         cookieName: 'consentio',
@@ -1317,6 +1335,7 @@ class Consentio {
         consentRequired: false,
         policyUrl: '',
         hideFloatingButton: false,
+        urlPassthrough: false,
         consents: {
             strictly_necessary: { defaultState: 'granted' },
             preferences_functionality: { defaultState: 'denied' },
@@ -1331,40 +1350,6 @@ class Consentio {
         const instance = new Consentio(settings, language, cookies, window.console);
         window.ConsentioInstance = instance;
         return instance;
-    }
-    /**
-     * A merged object with `texts`, or with `consents` as an array, is 0.1.0's config.
-     * A settings file never has either.
-     */
-    static isLegacy(settings) {
-        if (!settings || typeof settings !== 'object') {
-            return false;
-        }
-        return 'texts' in settings || Array.isArray(settings.consents);
-    }
-    static splitLegacy(config) {
-        const settings = Consentio.copy({}, config, SETTINGS_KEYS);
-        const language = {};
-        if (config.texts) {
-            language.texts = config.texts;
-        }
-        if (!Array.isArray(config.consents)) {
-            return { settings, language };
-        }
-        for (const entry of config.consents) {
-            if (!entry || typeof entry.key !== 'string') {
-                continue;
-            }
-            // alwaysOn is read and dropped: it is derived from the key now.
-            const words = Consentio.copy({}, entry, ['title', 'description']);
-            if (Object.keys(words).length > 0) {
-                language.consents = { ...language.consents, [entry.key]: words };
-            }
-            if (entry.defaultState !== undefined) {
-                settings.consents = { ...settings.consents, [entry.key]: { defaultState: entry.defaultState } };
-            }
-        }
-        return { settings, language };
     }
     /** Field by field, and only the fields named: a spread carries through whatever else was written. */
     static copy(target, source, keys) {
@@ -1413,14 +1398,6 @@ class Consentio {
         }
         return merged;
     }
-    static overlayLanguage(base, over) {
-        return {
-            ...base,
-            ...over,
-            texts: { ...base.texts, ...over.texts },
-            consents: { ...base.consents, ...over.consents }
-        };
-    }
     static resolve(settings, language, logger = null) {
         // A language that names a policy page wins, blank included - '' is no link in this
         // language. Leaving the key out is what falls back to the settings.
@@ -1447,16 +1424,18 @@ class Consentio {
         };
     }
     /**
-     * A settings file cannot name the cookie or the version, because the loader has already
-     * read the cookie by the time the file arrives. Said out loud rather than dropped. Issue 43.
+     * A settings file cannot name the cookie, the version or url_passthrough, because the
+     * loader has pushed the default by the time the file arrives. Said out loud rather than
+     * dropped. Issue 43.
      */
     static warnLoaderWins(supplied, fromLoader, logger = null) {
         const attributes = [
             ['cookieName', 'data-cookie-name'],
-            ['version', 'data-version']
+            ['version', 'data-version'],
+            ['urlPassthrough', 'data-url-passthrough']
         ];
         for (const [key, attribute] of attributes) {
-            if (supplied[key] !== undefined && supplied[key] !== fromLoader[key]) {
+            if (supplied[key] !== undefined && supplied[key] !== (fromLoader[key] ?? false)) {
                 logger?.warn(`[Consentio] "${key}" in the settings file is ignored - the loader tag reads the cookie before the file arrives. Set ${attribute} on the tag instead.`);
             }
         }
@@ -1469,36 +1448,19 @@ class Consentio {
         }
         return url || '';
     }
-    /**
-     * `new Consentio(settings, language, cookies, logger)`.
-     *
-     * 0.1.0's `(config, cookies, logger)` still works: an Array in argument two is that
-     * call, and a settings carrying `texts` is that config, split internally.
-     */
+    /** `new Consentio(settings, language, cookies, logger)` - three objects, one per concern. */
     constructor(settings = {}, language = {}, cookies = [], logger = null) {
-        if (Array.isArray(language)) {
-            logger = cookies ?? null;
-            cookies = language;
-            language = {};
-        }
         const rows = Array.isArray(cookies) ? cookies : [];
-        let settingsInput = settings;
-        let languageInput = language;
-        if (Consentio.isLegacy(settings)) {
-            const split = Consentio.splitLegacy(settings);
-            settingsInput = split.settings;
-            // A pack supplied as argument two beats the wording inside the old config.
-            languageInput = Consentio.overlayLanguage(split.language, languageInput);
-        }
-        this.settings = Consentio.mergeSettings(Consentio._defaultSettings, settingsInput, logger);
-        this.language = Consentio.mergeLanguage(Consentio._defaultLanguage, languageInput, logger);
+        this.settings = Consentio.mergeSettings(Consentio._defaultSettings, settings, logger);
+        this.language = Consentio.mergeLanguage(Consentio._defaultLanguage, language, logger);
         // The loader already resolved the cookie name and version off its own tag. Taking
         // them back is what stops the two halves reading different cookies.
         const fromLoader = typeof window === 'undefined' ? undefined : window.ConsentioDefault;
         if (fromLoader) {
-            Consentio.warnLoaderWins(settingsInput, fromLoader, logger);
+            Consentio.warnLoaderWins(settings, fromLoader, logger);
             this.settings.cookieName = fromLoader.cookieName;
             this.settings.version = fromLoader.version;
+            this.settings.urlPassthrough = fromLoader.urlPassthrough ?? false;
             // Published only when the tag names them, so a settings file still gets to.
             if (fromLoader.cookieLifetime !== undefined) {
                 this.settings.cookieLifetime = fromLoader.cookieLifetime;

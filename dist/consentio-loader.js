@@ -41,6 +41,11 @@ const ADS_DATA_REDACTION = 'ads_data_redaction';
 function needsAdsDataRedaction(signals) {
     return signals.ad_storage === 'denied';
 }
+/**
+ * The gtag `set` key that carries the ad-click id across same-site links in the URL while
+ * ad storage is denied. Off unless the site asks: it puts a click id in every internal link.
+ */
+const URL_PASSTHROUGH = 'url_passthrough';
 // `null` for waitForUpdate when there is a stored choice: waiting for a banner that will
 // never appear only delays the tag.
 function toConsentDefault(signals, waitForUpdate) {
@@ -278,18 +283,16 @@ function clearConsents(cookieName) {
 
 
 (function (global, doc, logger, customElementsRegistry) {
+    // Every failure names the address: the console is the only place a wrong URL shows. Issue 55.
     const getResource = function (url) {
-        return new Promise((resolve, reject) => {
-            fetch(url)
-                .then(response => {
-                if (!response.ok) {
-                    reject(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-                .then(data => resolve(data))
-                .catch(error => reject(`Fetch error: ${error}`));
-        });
+        return fetch(url)
+            .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return response.json();
+        })
+            .catch(error => { throw new Error(`${url} did not load: ${error instanceof Error ? error.message : error}`); });
     };
     const loaderScript = doc.querySelector('script[data-consentio-loader]');
     if (!loaderScript) {
@@ -298,14 +301,13 @@ function clearConsents(cookieName) {
     }
     const debug = loaderScript.dataset.debug === 'true';
     const loaderSrc = loaderScript.getAttribute('src');
-    // Three files, one per concern. `data-config-url` is 0.1.0's merged one: still read, warned about, gone in 1.0.0.
+    // Three files, one per concern.
     const settingsUrl = loaderScript.dataset.settingsUrl || null;
-    const configUrl = loaderScript.dataset.configUrl || null;
     const cookiesUrl = loaderScript.dataset.cookiesUrl || null;
     // `data-language="el"` is the published pack at this loader's own version; a url beats it.
     const languageCode = loaderScript.dataset.language || null;
     const languageUrl = loaderScript.dataset.languageUrl
-        || (languageCode ? `https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@${"0.3.0"}/dist/i18n/${languageCode}.json` : null);
+        || (languageCode ? `https://cdn.jsdelivr.net/gh/ChrisMavrommatis/consentio@${"1.0.0"}/dist/i18n/${languageCode}.json` : null);
     if (global.ConsentioInstance) {
         debug && logger.warn('[Consentio Loader] Consentio is already initialized');
         return;
@@ -321,7 +323,12 @@ function clearConsents(cookieName) {
             logger.warn('[Consentio Loader] loaded with async or defer, so the consent default cannot arrive before the tag manager');
         }
         const cookieName = loaderScript.dataset.cookieName || 'consentio';
-        const version = Number(loaderScript.dataset.version || 1);
+        // NaN matches no stored answer, so a typo would ask every visitor on every page. Issue 54.
+        let version = Number(loaderScript.dataset.version || 1);
+        if (!Number.isInteger(version) || version < 1) {
+            logger.warn(`[Consentio Loader] data-version "${loaderScript.dataset.version}" is not a whole number, so version 1 is used`);
+            version = 1;
+        }
         const waitForUpdate = Number(loaderScript.dataset.waitForUpdate || 500);
         const stored = readConsents(cookieName, version);
         const consents = stored || BASELINE_CONSENTS;
@@ -333,7 +340,13 @@ function clearConsents(cookieName) {
         // wait_for_update only helps a first-time visitor; a returning one already has an answer.
         gtag('consent', 'default', toConsentDefault(signals, stored ? null : waitForUpdate));
         gtag('set', ADS_DATA_REDACTION, needsAdsDataRedaction(signals));
-        const publish = { cookieName, version, consents, consentGiven: stored !== null };
+        // A `set` has to be on dataLayer before the tag manager reads it, which is why it is an
+        // attribute and not a settings key.
+        const urlPassthrough = loaderScript.dataset.urlPassthrough === 'true';
+        if (urlPassthrough) {
+            gtag('set', URL_PASSTHROUGH, true);
+        }
+        const publish = { cookieName, version, consents, consentGiven: stored !== null, urlPassthrough };
         // Carried across, not used: an attribute the tag leaves out must not beat a settings file.
         if (loaderScript.dataset.cookieLifetime) {
             publish.cookieLifetime = Number(loaderScript.dataset.cookieLifetime);
@@ -372,26 +385,25 @@ function clearConsents(cookieName) {
             debug && logger.info(`[Consentio Loader] ${name} URL:`, url);
             resources.push([name, url]);
         };
-        if (settingsUrl && configUrl) {
-            logger.warn('[Consentio Loader] both data-config-url and data-settings-url are set - data-settings-url wins');
-        }
-        else if (configUrl) {
-            logger.warn('[Consentio Loader] data-config-url is deprecated and is removed in 1.0.0 - use data-settings-url and data-language-url');
-        }
         if (loaderScript.dataset.languageUrl && languageCode) {
             logger.warn('[Consentio Loader] both data-language and data-language-url are set - data-language-url wins');
         }
-        add('settings', settingsUrl || configUrl);
+        add('settings', settingsUrl);
         add('language', languageUrl);
         add('cookies', cookiesUrl);
         try {
             if (resources.length > 0) {
-                // A pack that does not load costs the visitor its language, not the banner.
-                const results = await Promise.all(resources.map(([name, url]) => name !== 'language'
+                // Only the settings file can stop the banner: the other two cost their own
+                // words or table, and the tag route already forgives them. Issue 53.
+                const forgiven = {
+                    language: ['the language file did not load, so the banner keeps its built-in English', {}],
+                    cookies: ['the cookie table did not load, so the settings panel shows no table', []]
+                };
+                const results = await Promise.all(resources.map(([name, url]) => !forgiven[name]
                     ? getResource(url)
                     : getResource(url).catch((error) => {
-                        logger.warn(`[Consentio Loader] the language file did not load, so the banner keeps its built-in English: ${url}`, error);
-                        return {};
+                        logger.warn(`[Consentio Loader] ${forgiven[name][0]}: ${url}`, error);
+                        return forgiven[name][1];
                     })));
                 resources.forEach(([name], index) => {
                     const loaded = results[index];
@@ -407,8 +419,6 @@ function clearConsents(cookieName) {
                     }
                 });
             }
-            // A settings file carrying `texts`, or `consents` as an array, is 0.1.0's config
-            // and the banner splits it. That is what keeps a site on two files working.
             global.ConsentioInstance = new global.Consentio(settings, language, cookies, logger);
             logger.info('[Consentio Loader] Initialized successfully');
         }
